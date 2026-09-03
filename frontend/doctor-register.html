@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Doctor Registration | CareConnect</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+
+<body class="bg-slate-50 min-h-screen">
+
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm">
+
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+
+            <div class="flex items-center gap-3">
+
+                <div class="w-10 h-10 bg-emerald-600 rounded-xl
+                            flex items-center justify-center">
+
+                    <span class="text-white text-xl">
+                        🩺
+                    </span>
+
+                </div>
+
+                <h1 class="text-2xl font-bold text-slate-800">
+                    Care<span class="text-emerald-600">Connect</span>
+                </h1>
+
+            </div>
+
+
+            <button
+                onclick="window.location.href='doctor-auth.html'"
+                class="text-slate-500 hover:text-emerald-600">
+
+                ← Back
+
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <!-- Main -->
+    <main class="max-w-5xl mx-auto px-6 py-10">
+
+
+        <!-- Heading -->
+        <div class="mb-8">
+
+            <p class="text-emerald-600 font-semibold">
+                DOCTOR PORTAL
+            </p>
+
+            <h2 class="text-4xl font-bold text-slate-900 mt-2">
+                Create Your Doctor Profile
+            </h2>
+
+            <p class="text-slate-500 mt-2">
+                Register your professional details to manage patient
+                records securely.
+            </p>
+
+        </div>
+
+
+        <!-- Form -->
+        <form
+            id="doctorRegistrationForm"
+            class="bg-white rounded-3xl shadow-lg p-8 space-y-10">
+
+
+            <!-- ================= PERSONAL INFORMATION ================= -->
+
+            <section>
+
+                <div class="flex items-center gap-3 mb-6">
+
+                    <div class="w-10 h-10 bg-emerald-100 rounded-xl
+                                flex items-center justify-center">
+
+                        👤
+
+                    </div>
+
+                    <div>
+
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Personal Information
+                        </h3>
+
+                        <p class="text-sm text-slate-500">
+                            Basic professional information
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid md:grid-cols-2 gap-6">
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Full Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="doctorName"
+                            required
+                            placeholder="Dr. Full Name"
+                            class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Gender
+                        </label>
+
+                        <select
+                            id="doctorGender"
+                            class="form-input">
+
+                            <option value="">
+                                Select gender
+                            </option>
+
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Mobile Number *
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="doctorMobile"
+                            required
+                            pattern="[0-9]{10}"
+                            placeholder="10-digit mobile number"
+                            class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Email Address *
+                        </label>
+
+                        <input
+                            type="email"
+                            id="doctorEmail"
+                            required
+                            placeholder="doctor@email.com"
+                            class="form-input">
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= PROFESSIONAL INFORMATION ================= -->
+
+            <section>
+
+                <div class="flex items-center gap-3 mb-6">
+
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl
+                                flex items-center justify-center">
+
+                        🎓
+
+                    </div>
+
+                    <div>
+
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Professional Information
+                        </h3>
+
+                        <p class="text-sm text-slate-500">
+                            Details about your medical practice
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid md:grid-cols-2 gap-6">
+
+
+                    <!-- Registration Number -->
+                    <div>
+
+                        <label class="form-label">
+                            Medical Registration Number *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="registrationNumber"
+                            required
+                            placeholder="Enter registration number"
+                            class="form-input">
+
+                    </div>
+
+
+                    <!-- Qualification -->
+                    <div>
+
+                        <label class="form-label">
+                            Qualification *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="qualification"
+                            required
+                            placeholder="Example: BAMS, MBBS, BHMS"
+                            class="form-input">
+
+                    </div>
+
+
+                    <!-- Specialization -->
+                    <div>
+
+                        <label class="form-label">
+                            Specialization
+                        </label>
+
+                        <input
+                            type="text"
+                            id="specialization"
+                            placeholder="Example: General Medicine"
+                            class="form-input">
+
+                    </div>
+
+
+                    <!-- Experience -->
+                    <div>
+
+                        <label class="form-label">
+                            Years of Experience
+                        </label>
+
+                        <input
+                            type="number"
+                            id="experience"
+                            min="0"
+                            placeholder="Years"
+                            class="form-input">
+
+                    </div>
+
+
+                    <!-- System -->
+                    <div>
+
+                        <label class="form-label">
+                            Medical System *
+                        </label>
+
+                        <select
+                            id="medicalSystem"
+                            required
+                            class="form-input">
+
+                            <option value="">
+                                Select system
+                            </option>
+
+                            <option>
+                                Allopathy
+                            </option>
+
+                            <option>
+                                Ayurveda
+                            </option>
+
+                            <option>
+                                Yoga & Naturopathy
+                            </option>
+
+                            <option>
+                                Unani
+                            </option>
+
+                            <option>
+                                Siddha
+                            </option>
+
+                            <option>
+                                Homoeopathy
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Department -->
+                    <div>
+
+                        <label class="form-label">
+                            Department
+                        </label>
+
+                        <input
+                            type="text"
+                            id="department"
+                            placeholder="Example: General Medicine"
+                            class="form-input">
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= HOSPITAL INFORMATION ================= -->
+
+            <section>
+
+                <div class="flex items-center gap-3 mb-6">
+
+                    <div class="w-10 h-10 bg-purple-100 rounded-xl
+                                flex items-center justify-center">
+
+                        🏥
+
+                    </div>
+
+                    <div>
+
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Hospital / Institution
+                        </h3>
+
+                        <p class="text-sm text-slate-500">
+                            Where you currently practice
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid md:grid-cols-2 gap-6">
+
+
+                    <div class="md:col-span-2">
+
+                        <label class="form-label">
+                            Hospital / Institution Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="hospital"
+                            required
+                            placeholder="Enter hospital or institution name"
+                            class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            State
+                        </label>
+
+                        <input
+                            type="text"
+                            id="state"
+                            placeholder="State"
+                            class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            City
+                        </label>
+
+                        <input
+                            type="text"
+                            id="city"
+                            placeholder="City"
+                            class="form-input">
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= ACCOUNT ================= -->
+
+            <section>
+
+                <div class="flex items-center gap-3 mb-6">
+
+                    <div class="w-10 h-10 bg-slate-100 rounded-xl
+                                flex items-center justify-center">
+
+                        🔐
+
+                    </div>
+
+                    <div>
+
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Account Security
+                        </h3>
+
+                        <p class="text-sm text-slate-500">
+                            Create your login credentials
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid md:grid-cols-2 gap-6">
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Password *
+                        </label>
+
+                        <input
+                            type="password"
+                            id="doctorPassword"
+                            required
+                            minlength="8"
+                            placeholder="Minimum 8 characters"
+                            class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Confirm Password *
+                        </label>
+
+                        <input
+                            type="password"
+                            id="doctorConfirmPassword"
+                            required
+                            placeholder="Re-enter password"
+                            class="form-input">
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- Verification -->
+            <div class="bg-amber-50 rounded-2xl p-5">
+
+                <div class="flex gap-3">
+
+                    <span class="text-xl">
+                        ⚠️
+                    </span>
+
+                    <div>
+
+                        <h4 class="font-semibold text-slate-800">
+                            Professional Verification
+                        </h4>
+
+                        <p class="text-sm text-slate-600 mt-1">
+                            Your medical registration details may be
+                            verified before you receive access to
+                            patient records.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Consent -->
+            <div>
+
+                <label class="flex gap-3 items-start">
+
+                    <input
+                        type="checkbox"
+                        id="doctorConsent"
+                        required
+                        class="mt-1 w-4 h-4">
+
+                    <span class="text-sm text-slate-600">
+
+                        I confirm that the professional information
+                        provided is accurate and agree to use CareConnect
+                        responsibly for healthcare purposes.
+
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <!-- Buttons -->
+            <div class="flex flex-col md:flex-row gap-4 pt-4">
+
+                <button
+                    type="button"
+                    onclick="window.location.href='doctor-auth.html'"
+                    class="flex-1 py-3 border border-slate-300
+                           rounded-xl font-semibold text-slate-600
+                           hover:bg-slate-50">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="flex-1 py-3 bg-emerald-600 text-white
+                           rounded-xl font-semibold
+                           hover:bg-emerald-700
+                           shadow-lg shadow-emerald-200">
+
+                    Create Doctor Account →
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </main>
+
+
+    <!-- Styling -->
+    <style>
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.75rem;
+            outline: none;
+            transition: 0.2s;
+            background: white;
+        }
+
+        .form-input:focus {
+            border-color: #059669;
+            box-shadow: 0 0 0 2px #a7f3d0;
+        }
+
+    </style>
+
+
+    <!-- JavaScript -->
+    <script>
+
+        const form =
+            document.getElementById(
+                "doctorRegistrationForm"
+            );
+
+
+        form.addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+
+            const password =
+                document.getElementById(
+                    "doctorPassword"
+                ).value;
+
+
+            const confirmPassword =
+                document.getElementById(
+                    "doctorConfirmPassword"
+                ).value;
+
+
+            if (password !== confirmPassword) {
+
+                alert("Passwords do not match.");
+
+                return;
+
+            }
+
+
+            alert(
+                "Doctor registration successful!"
+            );
+
+
+            // Later:
+            // Send doctor information
+            // to your backend/database.
+
+
+            window.location.href =
+                "doctor-login.html";
+
+        });
+
+    </script>
+
+</body>
+
+</html>

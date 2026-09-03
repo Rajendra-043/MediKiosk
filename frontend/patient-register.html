@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Patient Registration | CareConnect</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+
+<body class="bg-slate-50 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm">
+
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+
+            <div class="flex items-center gap-3">
+
+                <div class="w-10 h-10 bg-blue-600 rounded-xl
+                            flex items-center justify-center">
+
+                    <span class="text-white text-xl font-bold">+</span>
+
+                </div>
+
+                <h1 class="text-2xl font-bold text-slate-800">
+                    Care<span class="text-blue-600">Connect</span>
+                </h1>
+
+            </div>
+
+
+            <button
+                onclick="window.location.href='patient-auth.html'"
+                class="text-slate-500 hover:text-blue-600">
+
+                ← Back
+
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <!-- Main -->
+    <main class="max-w-5xl mx-auto px-6 py-10">
+
+        <!-- Heading -->
+        <div class="mb-8">
+
+            <p class="text-blue-600 font-semibold">
+                PATIENT PORTAL
+            </p>
+
+            <h2 class="text-4xl font-bold text-slate-900 mt-2">
+                Create Your Patient Profile
+            </h2>
+
+            <p class="text-slate-500 mt-2">
+                Enter your basic information to create your digital
+                healthcare profile.
+            </p>
+
+        </div>
+
+
+        <!-- Form -->
+        <form
+            id="patientRegistrationForm"
+            class="bg-white rounded-3xl shadow-lg p-8 space-y-10">
+
+
+            <!-- ================= PERSONAL INFORMATION ================= -->
+
+            <section>
+
+                <div class="flex items-center gap-3 mb-6">
+
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl
+                                flex items-center justify-center">
+
+                        👤
+
+                    </div>
+
+                    <div>
+
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Personal Information
+                        </h3>
+
+                        <p class="text-sm text-slate-500">
+                            Basic details about the patient
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid md:grid-cols-2 gap-6">
+
+
+                    <!-- Full Name -->
+                    <div>
+
+                        <label class="form-label">
+                            Full Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="patientName"
+                            required
+                            placeholder="Enter full name"
+                            class="form-input">
+
+                    </div>
+
+
+                    <!-- Date of Birth -->
+                    <div>
+
+                        <label class="form-label">
+                            Date of Birth *
+                        </label>
+
+                        <input
+                            type="date"
+                            id="dob"
+                            required
+                            class="form-input">
+
+                    </div>
+
+
+                    <!-- Gender -->
+                    <div>
+
+                        <label class="form-label">
+                            Gender *
+                        </label>
+
+                        <select
+                            id="gender"
+                            required
+                            class="form-input">
+
+                            <option value="">
+                                Select gender
+                            </option>
+
+                            <option>
+                                Male
+                            </option>
+
+                            <option>
+                                Female
+                            </option>
+
+                            <option>
+                                Other
+                            </option>
+
+                            <option>
+                                Prefer not to say
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Blood Group -->
+                    <div>
+
+                        <label class="form-label">
+                            Blood Group
+                        </label>
+
+                        <select
+                            id="bloodGroup"
+                            class="form-input">
+
+                            <option value="">
+                                Select blood group
+                            </option>
+
+                            <option>A+</option>
+                            <option>A-</option>
+                            <option>B+</option>
+                            <option>B-</option>
+                            <option>AB+</option>
+                            <option>AB-</option>
+                            <option>O+</option>
+                            <option>O-</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= CONTACT INFORMATION ================= -->
+
+            <section>
+
+                <div class="flex items-center gap-3 mb-6">
+
+                    <div class="w-10 h-10 bg-emerald-100 rounded-xl
+                                flex items-center justify-center">
+
+                        📱
+
+                    </div>
+
+                    <div>
+
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Contact Information
+                        </h3>
+
+                        <p class="text-sm text-slate-500">
+                            How we can contact you
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid md:grid-cols-2 gap-6">
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Mobile Number *
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="mobile"
+                            required
+                            placeholder="10-digit mobile number"
+                            pattern="[0-9]{10}"
+                            class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="example@email.com"
+                            class="form-input">
+
+                    </div>
+
+
+                    <div class="md:col-span-2">
+
+                        <label class="form-label">
+                            Address
+                        </label>
+
+                        <textarea
+                            id="address"
+                            rows="3"
+                            placeholder="Enter your complete address"
+                            class="form-input"></textarea>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= EMERGENCY CONTACT ================= -->
+
+            <section>
+
+                <div class="flex items-center gap-3 mb-6">
+
+                    <div class="w-10 h-10 bg-red-100 rounded-xl
+                                flex items-center justify-center">
+
+                        🚨
+
+                    </div>
+
+                    <div>
+
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Emergency Contact
+                        </h3>
+
+                        <p class="text-sm text-slate-500">
+                            Contact person in case of emergency
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid md:grid-cols-2 gap-6">
+
+                    <div>
+
+                        <label class="form-label">
+                            Contact Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="emergencyName"
+                            placeholder="Emergency contact name"
+                            class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Contact Number
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="emergencyPhone"
+                            placeholder="Emergency contact number"
+                            class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Relationship
+                        </label>
+
+                        <select
+                            id="relationship"
+                            class="form-input">
+
+                            <option value="">
+                                Select relationship
+                            </option>
+
+                            <option>Parent</option>
+                            <option>Spouse</option>
+                            <option>Sibling</option>
+                            <option>Child</option>
+                            <option>Friend</option>
+                            <option>Other</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= MEDICAL INFORMATION ================= -->
+
+            <section>
+
+                <div class="flex items-center gap-3 mb-6">
+
+                    <div class="w-10 h-10 bg-purple-100 rounded-xl
+                                flex items-center justify-center">
+
+                        🩺
+
+                    </div>
+
+                    <div>
+
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Basic Medical Information
+                        </h3>
+
+                        <p class="text-sm text-slate-500">
+                            Helps doctors understand your medical background
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="space-y-6">
+
+
+                    <!-- Allergies -->
+                    <div>
+
+                        <label class="form-label">
+                            Known Allergies
+                        </label>
+
+                        <textarea
+                            id="allergies"
+                            rows="3"
+                            placeholder="Example: Penicillin, dust, food allergies..."
+                            class="form-input"></textarea>
+
+                    </div>
+
+
+                    <!-- Conditions -->
+                    <div>
+
+                        <label class="form-label">
+                            Existing Medical Conditions
+                        </label>
+
+                        <textarea
+                            id="conditions"
+                            rows="3"
+                            placeholder="Example: Diabetes, hypertension, asthma..."
+                            class="form-input"></textarea>
+
+                    </div>
+
+
+                    <!-- Current Medication -->
+                    <div>
+
+                        <label class="form-label">
+                            Current Medications
+                        </label>
+
+                        <textarea
+                            id="medications"
+                            rows="3"
+                            placeholder="List medicines you currently take"
+                            class="form-input"></textarea>
+
+                    </div>
+
+
+                    <!-- Previous Surgery -->
+                    <div>
+
+                        <label class="form-label">
+                            Previous Surgeries / Major Procedures
+                        </label>
+
+                        <textarea
+                            id="surgeries"
+                            rows="3"
+                            placeholder="Mention any previous surgeries or major procedures"
+                            class="form-input"></textarea>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= ACCOUNT ================= -->
+
+            <section>
+
+                <div class="flex items-center gap-3 mb-6">
+
+                    <div class="w-10 h-10 bg-slate-100 rounded-xl
+                                flex items-center justify-center">
+
+                        🔐
+
+                    </div>
+
+                    <div>
+
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Account Security
+                        </h3>
+
+                        <p class="text-sm text-slate-500">
+                            Create your login credentials
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid md:grid-cols-2 gap-6">
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Password *
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            required
+                            minlength="8"
+                            placeholder="Minimum 8 characters"
+                            class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Confirm Password *
+                        </label>
+
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            required
+                            placeholder="Re-enter password"
+                            class="form-input">
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- Consent -->
+            <div class="bg-blue-50 rounded-2xl p-5">
+
+                <label class="flex gap-3 items-start">
+
+                    <input
+                        type="checkbox"
+                        id="consent"
+                        required
+                        class="mt-1 w-4 h-4">
+
+                    <span class="text-sm text-slate-600">
+
+                        I understand that the information provided will be
+                        used to create and maintain my digital healthcare
+                        record. I confirm that the information provided is
+                        accurate to the best of my knowledge.
+
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <!-- Buttons -->
+            <div class="flex flex-col md:flex-row gap-4 pt-4">
+
+                <button
+                    type="button"
+                    onclick="window.location.href='patient-auth.html'"
+                    class="flex-1 py-3 border border-slate-300
+                           rounded-xl font-semibold text-slate-600
+                           hover:bg-slate-50">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="flex-1 py-3 bg-blue-600 text-white
+                           rounded-xl font-semibold
+                           hover:bg-blue-700
+                           shadow-lg shadow-blue-200">
+
+                    Create Patient Account →
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </main>
+
+
+    <!-- Styling -->
+    <style>
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.75rem;
+            outline: none;
+            transition: 0.2s;
+            background: white;
+        }
+
+        .form-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px #bfdbfe;
+        }
+
+    </style>
+
+
+    <!-- JavaScript -->
+    <script>
+
+        const form = document.getElementById(
+            "patientRegistrationForm"
+        );
+
+        form.addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const password =
+                document.getElementById("password").value;
+
+            const confirmPassword =
+                document.getElementById("confirmPassword").value;
+
+
+            if (password !== confirmPassword) {
+
+                alert("Passwords do not match.");
+
+                return;
+
+            }
+
+
+            alert(
+                "Patient registration successful!"
+            );
+
+
+            // Later:
+            // Send this data to your backend/database.
+
+
+            window.location.href =
+                "patient-login.html";
+
+        });
+
+    </script>
+
+</body>
+
+</html>
