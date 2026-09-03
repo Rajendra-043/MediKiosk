@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Registration - MediKiosk{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen
+            bg-slate-50
+            py-10 px-5">
+
+    <div class="max-w-3xl mx-auto">
+
+        <div class="text-center mb-8">
+
+            <div class="inline-flex
+                        w-14 h-14
+                        bg-green-600
+                        text-white
+                        rounded-xl
+                        items-center
+                        justify-center
+                        font-bold">
+
+                ⚕
+            </div>
+
+            <h1 class="text-3xl
+                       font-bold mt-4">
+
+                Doctor Registration
+            </h1>
+
+            <p class="text-slate-500 mt-2">
+
+                Create your MediKiosk doctor account
+            </p>
+
+        </div>
+
+
+        <div class="bg-white
+                    rounded-3xl
+                    shadow-lg
+                    border
+                    p-6 md:p-10">
+
+            <form onsubmit="handleDoctorRegistration(event)">
+
+                <h2 class="section-title">
+                    Professional Information
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-5">
+
+                    <div class="md:col-span-2">
+
+                        <label class="form-label">
+                            Full Name
+                        </label>
+
+                        <input type="text"
+                               placeholder="Dr. Full Name"
+                               required
+                               class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Medical Registration Number
+                        </label>
+
+                        <input type="text"
+                               placeholder="Registration number"
+                               required
+                               class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Specialization
+                        </label>
+
+                        <select class="form-input"
+                                required>
+
+                            <option value="">
+                                Select specialization
+                            </option>
+
+                            <option>General Medicine</option>
+                            <option>Ayurveda</option>
+                            <option>Pediatrics</option>
+                            <option>Cardiology</option>
+                            <option>Dermatology</option>
+                            <option>Gynecology</option>
+                            <option>Other</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Qualification
+                        </label>
+
+                        <input type="text"
+                               placeholder="MBBS / BAMS / MD etc."
+                               required
+                               class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Experience
+                        </label>
+
+                        <input type="number"
+                               placeholder="Years"
+                               class="form-input">
+
+                    </div>
+
+                </div>
+
+
+                <h2 class="section-title mt-10">
+                    Contact Information
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-5">
+
+                    <div>
+
+                        <label class="form-label">
+                            Phone Number
+                        </label>
+
+                        <input type="tel"
+                               required
+                               class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        <input type="email"
+                               required
+                               class="form-input">
+
+                    </div>
+
+                </div>
+
+
+                <h2 class="section-title mt-10">
+                    Account Security
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-5">
+
+                    <div>
+
+                        <label class="form-label">
+                            Password
+                        </label>
+
+                        <input type="password"
+                               id="doctorRegisterPassword"
+                               required
+                               class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Confirm Password
+                        </label>
+
+                        <input type="password"
+                               id="doctorConfirmPassword"
+                               required
+                               class="form-input">
+
+                    </div>
+
+                </div>
+
+
+                <label class="flex items-start
+                              gap-3
+                              text-sm
+                              text-slate-600
+                              mt-7">
+
+                    <input type="checkbox"
+                           required
+                           class="mt-1">
+
+                    I confirm that the information
+                    provided is accurate and I agree
+                    to the MediKiosk terms.
+
+                </label>
+
+
+                <button type="submit"
+                        class="w-full
+                               mt-8
+                               bg-green-600
+                               hover:bg-green-700
+                               text-white
+                               py-4
+                               rounded-xl
+                               font-semibold">
+
+                    Create Doctor Account
+
+                </button>
+
+            </form>
+
+
+            <div class="text-center
+                        border-t
+                        mt-7 pt-6">
+
+                <p class="text-sm
+                          text-slate-500">
+
+                    Already registered?
+
+                    <a href="/doctor/login/"
+                       class="text-green-600
+                              font-semibold">
+
+                        Login
+                    </a>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
