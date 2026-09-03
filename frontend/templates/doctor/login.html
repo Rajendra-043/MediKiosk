@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Login - MediKiosk{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen
+            bg-green-50
+            flex items-center
+            justify-center
+            px-5">
+
+    <div class="w-full max-w-md">
+
+        <div class="text-center mb-8">
+
+            <div class="inline-flex
+                        w-14 h-14
+                        rounded-xl
+                        bg-green-600
+                        text-white
+                        items-center
+                        justify-center
+                        text-xl">
+
+                ⚕
+            </div>
+
+            <h1 class="text-3xl
+                       font-bold mt-4">
+
+                Doctor Login
+            </h1>
+
+            <p class="text-slate-500 mt-2">
+                Access your clinical dashboard
+            </p>
+
+        </div>
+
+
+        <div class="bg-white
+                    rounded-3xl
+                    shadow-xl
+                    border
+                    p-8">
+
+            <form onsubmit="handleDoctorLogin(event)">
+
+                <div class="mb-5">
+
+                    <label class="form-label">
+                        Doctor ID / Email
+                    </label>
+
+                    <input type="text"
+                           placeholder="Enter Doctor ID or email"
+                           required
+                           class="form-input">
+
+                </div>
+
+
+                <div class="mb-6">
+
+                    <label class="form-label">
+                        Password
+                    </label>
+
+                    <input type="password"
+                           id="doctorPassword"
+                           placeholder="Enter password"
+                           required
+                           class="form-input">
+
+                </div>
+
+
+                <div class="flex justify-between
+                            items-center mb-6">
+
+                    <label class="text-sm
+                                  text-slate-600">
+
+                        <input type="checkbox">
+                        Remember me
+
+                    </label>
+
+                    <a href="#"
+                       class="text-sm
+                              text-green-600">
+
+                        Forgot password?
+                    </a>
+
+                </div>
+
+
+                <button type="submit"
+                        class="w-full
+                               bg-green-600
+                               hover:bg-green-700
+                               text-white
+                               py-3.5
+                               rounded-xl
+                               font-semibold">
+
+                    Login
+                </button>
+
+            </form>
+
+
+            <div class="border-t
+                        mt-7 pt-6
+                        text-center">
+
+                <p class="text-sm
+                          text-slate-500">
+
+                    New doctor?
+
+                    <a href="/doctor/register/"
+                       class="text-green-600
+                              font-semibold">
+
+                        Register here
+                    </a>
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="text-center mt-6">
+
+            <a href="/doctor/"
+               class="text-sm text-slate-500">
+
+                ← Back
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
