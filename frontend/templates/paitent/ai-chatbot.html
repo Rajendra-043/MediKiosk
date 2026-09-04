@@ -1,70 +1,99 @@
-
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block title %}
+MediKiosk AI Assistant
+{% endblock %}
 
-    <title>MediKiosk AI Assistant</title>
 
-    <link rel="stylesheet" href="{% static 'css/ai-chatbot.css' %}">
-</head>
+{% block extra_css %}
 
-<body>
+<link rel="stylesheet"
+      href="{% static 'css/ai_chatbot.css' %}">
+{% block extra_js %}
+<script src="{% static 'js/ai_chatbot.js' %}"></script>
+{% endblock %}
+{% endblock %}
+
+
+
+{% block content %}
 
 <div class="chat-page">
 
-    <!-- ================= HEADER ================= -->
-    <header class="chat-header">
 
-        <div class="brand">
-            <div class="brand-icon">
-                <span>+</span>
-            </div>
+    <!-- =========================================
+         CHAT HEADER
+    ========================================= -->
 
-            <div>
-                <h2>MediKiosk</h2>
-                <p>AI Health Assistant</p>
-            </div>
+    <section class="chat-title">
+
+        <div class="chat-ai-icon">
+            +
         </div>
 
-        <div class="status">
+        <div>
+
+            <h1>
+                AI Health Assistant
+            </h1>
+
+            <p>
+                Ask questions, upload an image, or speak with the assistant.
+            </p>
+
+        </div>
+
+        <div class="ai-status">
+
             <span class="status-dot"></span>
-            <span>Online</span>
+
+            AI Online
+
         </div>
 
-    </header>
+    </section>
 
 
-    <!-- ================= CHAT AREA ================= -->
+
+    <!-- =========================================
+         CHAT AREA
+    ========================================= -->
 
     <main class="chat-container">
 
-        <!-- Welcome Message -->
 
-        <div class="welcome-section">
+        <!-- WELCOME -->
 
-            <div class="ai-avatar">
-                <span>+</span>
+        <div class="welcome-message"
+             id="welcomeMessage">
+
+            <div class="large-ai-icon">
+                +
             </div>
 
-            <h1>Hello! I'm your AI Health Assistant</h1>
+            <h2>
+                Hello! How can I help you?
+            </h2>
 
             <p>
-                Ask me a health-related question or upload an image
-                for analysis.
+                You can type your health question,
+                upload an image, or use Live Speech.
             </p>
 
         </div>
 
 
-        <!-- Chat Messages -->
 
-        <div class="messages" id="messages">
+        <!-- =====================================
+             MESSAGES
+        ====================================== -->
 
-            <!-- AI message -->
+        <div class="messages"
+             id="messages">
+
+
+            <!-- AI MESSAGE -->
 
             <div class="message ai-message">
 
@@ -74,59 +103,91 @@
 
                 <div class="message-content">
 
-                    <div class="message-name">
+                    <span class="message-name">
                         MediKiosk AI
-                    </div>
+                    </span>
 
                     <div class="message-bubble">
-                        Hello! How can I help you today?
+
+                        Hello! I'm your MediKiosk AI
+                        health assistant. How can I
+                        help you today?
+
                     </div>
 
                 </div>
 
             </div>
 
+
         </div>
 
     </main>
 
 
-    <!-- ================= IMAGE PREVIEW ================= -->
 
-    <div class="attachment-preview" id="attachmentPreview">
+    <!-- =========================================
+         IMAGE PREVIEW
+    ========================================= -->
 
-        <div class="preview-content">
+    <div class="attachment-preview"
+         id="attachmentPreview">
 
-            <img id="previewImage" src="" alt="Selected image">
+        <div class="preview-image-container">
 
-            <div>
-                <p id="fileName">Image selected</p>
-                <button id="removeImage" type="button">
-                    Remove
-                </button>
-            </div>
+            <img
+                id="previewImage"
+                src=""
+                alt="Selected image"
+            >
+
+        </div>
+
+        <div class="preview-details">
+
+            <p id="fileName">
+                Image selected
+            </p>
+
+            <button
+                type="button"
+                id="removeImage"
+            >
+                Remove
+            </button>
 
         </div>
 
     </div>
 
 
-    <!-- ================= CHAT INPUT ================= -->
 
-    <div class="input-area">
+    <!-- =========================================
+         CHAT INPUT
+    ========================================= -->
 
-        <form id="chatForm" enctype="multipart/form-data">
+    <section class="chat-input-section">
+
+        <form
+            id="chatForm"
+            enctype="multipart/form-data"
+        >
 
             {% csrf_token %}
 
-            <div class="input-box">
 
-                <!-- Image Upload -->
+            <div class="chat-input-box">
 
-                <label for="imageInput" class="input-action image-button"
-                       title="Upload image">
 
-                    <span>🖼️</span>
+                <!-- IMAGE -->
+
+                <label
+                    for="imageInput"
+                    class="input-button image-button"
+                    title="Upload image"
+                >
+
+                    🖼️
 
                 </label>
 
@@ -139,38 +200,61 @@
                 >
 
 
-                <!-- Text Input -->
+
+                <!-- TEXT -->
 
                 <textarea
                     id="messageInput"
                     name="message"
-                    placeholder="Type your health question..."
                     rows="1"
+                    placeholder="Type your health question..."
                 ></textarea>
 
 
-                <!-- Voice Button -->
+
+                <!-- MICROPHONE -->
 
                 <button
                     type="button"
                     id="voiceButton"
-                    class="input-action voice-button"
+                    class="input-button voice-button"
                     title="Record voice"
                 >
+
                     🎤
+
                 </button>
 
 
-                <!-- Send Button -->
+
+                <!-- LIVE SPEECH -->
+
+                <button
+                    type="button"
+                    id="liveSpeechButton"
+                    class="input-button live-speech-button"
+                    title="Live Speech"
+                >
+
+                    〽️
+
+                </button>
+
+
+
+                <!-- SEND -->
 
                 <button
                     type="submit"
                     id="sendButton"
                     class="send-button"
-                    title="Send message"
+                    title="Send"
                 >
+
                     ➤
+
                 </button>
+
 
             </div>
 
@@ -178,16 +262,24 @@
 
 
         <p class="disclaimer">
-            MediKiosk AI provides informational assistance and does not
-            replace professional medical advice.
+
+            MediKiosk AI provides informational assistance
+            and does not replace professional medical advice.
+
         </p>
 
-    </div>
+    </section>
 
 
-    <!-- ================= VOICE RECORDING ================= -->
 
-    <div class="recording-popup" id="recordingPopup">
+    <!-- =========================================
+         NORMAL VOICE RECORDING
+    ========================================= -->
+
+    <div
+        class="recording-popup"
+        id="recordingPopup"
+    >
 
         <div class="recording-box">
 
@@ -195,19 +287,28 @@
                 🎤
             </div>
 
-            <h3>Listening...</h3>
+            <h3>
+                Recording...
+            </h3>
 
             <div class="recording-animation">
+
                 <span></span>
                 <span></span>
                 <span></span>
                 <span></span>
                 <span></span>
+
             </div>
 
-            <p>Speak your question</p>
+            <p>
+                Speak your question
+            </p>
 
-            <button id="stopRecording">
+            <button
+                type="button"
+                id="stopRecording"
+            >
                 Stop Recording
             </button>
 
@@ -216,10 +317,130 @@
     </div>
 
 
+
+    <!-- =========================================
+         LIVE SPEECH
+    ========================================= -->
+
+    <div
+        class="live-speech-overlay"
+        id="liveSpeechOverlay"
+    >
+
+        <div class="live-speech-panel">
+
+
+            <!-- TOP -->
+
+            <div class="live-speech-header">
+
+                <div>
+
+                    <span class="live-label">
+                        ● LIVE
+                    </span>
+
+                    <h2>
+                        Live Speech
+                    </h2>
+
+                    <p>
+                        Speak naturally and your
+                        words will appear below.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="closeLiveSpeech"
+                    class="close-live-speech"
+                >
+
+                    ×
+
+                </button>
+
+            </div>
+
+
+
+            <!-- WAVE -->
+
+            <div class="speech-wave"
+                 id="speechWave">
+
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+
+
+            <!-- MICROPHONE -->
+
+            <div class="live-microphone">
+
+                🎙️
+
+            </div>
+
+
+
+            <!-- TRANSCRIPT -->
+
+            <div
+                class="live-transcript"
+                id="liveTranscript"
+            >
+
+                Start speaking...
+
+            </div>
+
+
+
+            <!-- STOP -->
+
+            <button
+                type="button"
+                id="stopLiveSpeech"
+                class="stop-live-button"
+            >
+
+                <span>
+                    ■
+                </span>
+
+                Stop Listening
+
+            </button>
+
+
+        </div>
+
+    </div>
+
+
 </div>
 
+{% endblock %}
+
+
+
+{% block extra_js %}
 
 <script src="{% static 'js/ai_chatbot.js' %}"></script>
 
-</body>
-</html>
+{% endblock %}
+

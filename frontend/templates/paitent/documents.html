@@ -1,0 +1,466 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+MediKiosk - Documents
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/documents.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="documents-page">
+
+    <!-- Page Header -->
+    <section class="documents-header">
+        <div class="documents-header-icon">
+            📄
+        </div>
+
+        <div class="documents-header-text">
+            <h1>My Documents</h1>
+            <p>View and securely upload your medical documents.</p>
+        </div>
+    </section>
+
+
+    <!-- Main Options -->
+    <section class="document-options">
+
+        <!-- View Documents -->
+        <div class="document-card view-card">
+
+            <div class="card-icon">
+                👁️
+            </div>
+
+            <div class="card-content">
+                <h2>View Documents</h2>
+
+                <p>
+                    Access your previously uploaded medical reports,
+                    prescriptions, test results and other documents.
+                </p>
+
+                <button type="button"
+                        class="document-button primary-button"
+                        id="viewDocumentsButton">
+                    View Documents
+                </button>
+            </div>
+
+        </div>
+
+
+        <!-- Upload Document -->
+        <div class="document-card upload-card">
+
+            <div class="card-icon">
+                ⬆️
+            </div>
+
+            <div class="card-content">
+                <h2>Upload New Document</h2>
+
+                <p>
+                    Upload a medical report, prescription, test result
+                    or other healthcare document.
+                </p>
+
+                <label for="documentInput"
+                       class="document-button secondary-button">
+                    Upload Document
+                </label>
+
+                <input
+                    type="file"
+                    id="documentInput"
+                    name="document"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    hidden
+                >
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Existing Documents Section -->
+    <section class="documents-list-section" id="documentsListSection">
+
+        <div class="section-heading">
+            <div>
+                <h2>Uploaded Documents</h2>
+                <p>Your recently uploaded healthcare documents.</p>
+            </div>
+
+            <span class="document-count" id="documentCount">
+                3 Documents
+            </span>
+        </div>
+
+
+        <div class="documents-list" id="documentsList">
+
+            <!-- Document 1 -->
+            <div class="document-item">
+
+                <div class="document-file-icon pdf-icon">
+                    PDF
+                </div>
+
+                <div class="document-info">
+                    <h3>Blood Test Report</h3>
+                    <p>Uploaded on 04 September 2026</p>
+                </div>
+
+                <div class="document-actions">
+
+                    <button type="button"
+                            class="view-document-button">
+                        View
+                    </button>
+
+                    <button type="button"
+                            class="delete-document-button">
+                        Delete
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Document 2 -->
+            <div class="document-item">
+
+                <div class="document-file-icon image-icon">
+                    IMG
+                </div>
+
+                <div class="document-info">
+                    <h3>Prescription</h3>
+                    <p>Uploaded on 02 September 2026</p>
+                </div>
+
+                <div class="document-actions">
+
+                    <button type="button"
+                            class="view-document-button">
+                        View
+                    </button>
+
+                    <button type="button"
+                            class="delete-document-button">
+                        Delete
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Document 3 -->
+            <div class="document-item">
+
+                <div class="document-file-icon pdf-icon">
+                    PDF
+                </div>
+
+                <div class="document-info">
+                    <h3>Health Checkup Report</h3>
+                    <p>Uploaded on 28 August 2026</p>
+                </div>
+
+                <div class="document-actions">
+
+                    <button type="button"
+                            class="view-document-button">
+                        View
+                    </button>
+
+                    <button type="button"
+                            class="delete-document-button">
+                        Delete
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Upload Preview / Status -->
+    <div class="upload-status" id="uploadStatus">
+
+        <div class="upload-status-icon">
+            ✓
+        </div>
+
+        <div>
+            <strong id="uploadedFileName">
+                Document selected
+            </strong>
+
+            <p>
+                Ready to upload.
+            </p>
+        </div>
+
+        <button type="button" id="cancelUpload">
+            ×
+        </button>
+
+    </div>
+
+
+    <!-- Upload Modal -->
+    <div class="upload-modal" id="uploadModal">
+
+        <div class="upload-modal-box">
+
+            <button type="button"
+                    class="close-modal"
+                    id="closeUploadModal">
+                ×
+            </button>
+
+            <div class="modal-icon">
+                📄
+            </div>
+
+            <h2>Upload Document</h2>
+
+            <p>
+                Select a document from your device to upload it
+                securely to MediKiosk.
+            </p>
+
+
+            <form id="documentUploadForm"
+                  method="POST"
+                  enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <div class="upload-area">
+
+                    <div class="upload-area-icon">
+                        ⬆
+                    </div>
+
+                    <h3>Choose a document</h3>
+
+                    <p>
+                        PDF, DOC, DOCX, JPG or PNG
+                    </p>
+
+                    <label for="modalDocumentInput"
+                           class="choose-file-button">
+                        Choose File
+                    </label>
+
+                    <input
+                        type="file"
+                        id="modalDocumentInput"
+                        name="document"
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                        hidden
+                    >
+
+                    <p class="selected-file"
+                       id="selectedFile">
+                        No file selected
+                    </p>
+
+                </div>
+
+
+                <button type="submit"
+                        class="upload-submit-button">
+                    Upload Document
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const viewButton =
+        document.getElementById("viewDocumentsButton");
+
+    const documentsSection =
+        document.getElementById("documentsListSection");
+
+    const documentInput =
+        document.getElementById("documentInput");
+
+    const uploadModal =
+        document.getElementById("uploadModal");
+
+    const closeUploadModal =
+        document.getElementById("closeUploadModal");
+
+    const modalDocumentInput =
+        document.getElementById("modalDocumentInput");
+
+    const selectedFile =
+        document.getElementById("selectedFile");
+
+    const uploadForm =
+        document.getElementById("documentUploadForm");
+
+
+    /* View Documents */
+
+    viewButton.addEventListener("click", function () {
+
+        documentsSection.scrollIntoView({
+            behavior: "smooth"
+        });
+
+    });
+
+
+    /* Open upload modal */
+
+    documentInput.addEventListener("change", function () {
+
+        if (documentInput.files.length > 0) {
+
+            uploadModal.classList.add("active");
+
+            modalDocumentInput.files =
+                documentInput.files;
+
+            selectedFile.textContent =
+                documentInput.files[0].name;
+        }
+
+    });
+
+
+    /* Modal file selection */
+
+    modalDocumentInput.addEventListener("change", function () {
+
+        if (modalDocumentInput.files.length > 0) {
+
+            selectedFile.textContent =
+                modalDocumentInput.files[0].name;
+
+        }
+
+    });
+
+
+    /* Close modal */
+
+    closeUploadModal.addEventListener("click", function () {
+
+        uploadModal.classList.remove("active");
+
+    });
+
+
+    /* Close modal when clicking outside */
+
+    uploadModal.addEventListener("click", function (event) {
+
+        if (event.target === uploadModal) {
+
+            uploadModal.classList.remove("active");
+
+        }
+
+    });
+
+
+    /* Temporary frontend upload */
+
+    uploadForm.addEventListener("submit", function (event) {
+
+        event.preventDefault();
+
+        if (modalDocumentInput.files.length === 0) {
+
+            alert("Please select a document.");
+
+            return;
+
+        }
+
+        alert(
+            "Document selected successfully. " +
+            "Connect this form to your Django upload API."
+        );
+
+        uploadModal.classList.remove("active");
+
+    });
+
+
+    /* View buttons */
+
+    document.querySelectorAll(".view-document-button")
+        .forEach(function (button) {
+
+            button.addEventListener("click", function () {
+
+                alert(
+                    "Document viewer will open here."
+                );
+
+            });
+
+        });
+
+
+    /* Delete buttons */
+
+    document.querySelectorAll(".delete-document-button")
+        .forEach(function (button) {
+
+            button.addEventListener("click", function () {
+
+                const documentItem =
+                    button.closest(".document-item");
+
+                const confirmDelete =
+                    confirm(
+                        "Are you sure you want to delete this document?"
+                    );
+
+                if (confirmDelete) {
+
+                    documentItem.remove();
+
+                }
+
+            });
+
+        });
+
+});
+
+</script>
+
+{% endblock %}
