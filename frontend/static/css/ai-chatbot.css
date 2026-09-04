@@ -1182,3 +1182,389 @@
 
 }
 
+/* =========================================
+   LIVE SPEECH BUTTON
+========================================= */
+
+.voiceButton {
+    position: relative;
+}
+
+.live-speech-button.active {
+    background: #e7f7fa;
+}
+
+
+/* =========================================
+   LIVE SPEECH OVERLAY
+========================================= */
+
+.live-speech-overlay {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 200;
+
+    background: rgba(15, 56, 70, 0.45);
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    backdrop-filter: blur(6px);
+}
+
+
+/* =========================================
+   LIVE SPEECH PANEL
+========================================= */
+
+.live-speech-panel {
+
+    width: min(560px, 95%);
+
+    background: white;
+
+    border-radius: 25px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 70px rgba(0, 0, 0, 0.18);
+
+    animation: speechPanelIn 0.25s ease;
+}
+
+
+@keyframes speechPanelIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: scale(0.94);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: scale(1);
+
+    }
+
+}
+
+
+/* =========================================
+   TOP
+========================================= */
+
+.live-speech-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    text-align: left;
+}
+
+.live-speech-top h2 {
+
+    margin-top: 6px;
+
+    color: #163f50;
+
+    font-size: 23px;
+}
+
+.live-speech-top p {
+
+    margin-top: 5px;
+
+    color: #8199a3;
+
+    font-size: 13px;
+}
+
+
+.live-label {
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    color: #e05252;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================
+   CLOSE BUTTON
+========================================= */
+
+.close-live-speech {
+
+    width: 38px;
+
+    height: 38px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f1f6f8;
+
+    color: #52727e;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+.close-live-speech:hover {
+
+    background: #e7f1f4;
+}
+
+
+/* =========================================
+   SPEECH WAVE
+========================================= */
+
+.speech-wave {
+
+    height: 100px;
+
+    margin: 35px 0 10px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+}
+
+
+.speech-wave span {
+
+    width: 6px;
+
+    height: 18px;
+
+    border-radius: 20px;
+
+    background: #0c8aa6;
+
+    animation:
+        liveWave 0.9s infinite
+        ease-in-out;
+}
+
+
+.speech-wave span:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.speech-wave span:nth-child(2) {
+    animation-delay: 0.12s;
+}
+
+.speech-wave span:nth-child(3) {
+    animation-delay: 0.19s;
+}
+
+.speech-wave span:nth-child(4) {
+    animation-delay: 0.26s;
+}
+
+.speech-wave span:nth-child(5) {
+    animation-delay: 0.33s;
+}
+
+.speech-wave span:nth-child(6) {
+    animation-delay: 0.40s;
+}
+
+.speech-wave span:nth-child(7) {
+    animation-delay: 0.33s;
+}
+
+.speech-wave span:nth-child(8) {
+    animation-delay: 0.26s;
+}
+
+.speech-wave span:nth-child(9) {
+    animation-delay: 0.19s;
+}
+
+.speech-wave span:nth-child(10) {
+    animation-delay: 0.12s;
+}
+
+.speech-wave span:nth-child(11) {
+    animation-delay: 0.05s;
+}
+
+
+@keyframes liveWave {
+
+    0%,
+    100% {
+
+        height: 15px;
+
+        opacity: 0.5;
+
+    }
+
+    50% {
+
+        height: 75px;
+
+        opacity: 1;
+
+    }
+
+}
+
+
+/* =========================================
+   MICROPHONE
+========================================= */
+
+.live-microphone {
+
+    width: 70px;
+
+    height: 70px;
+
+    margin: 5px auto 20px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #e8f7fa;
+
+    font-size: 30px;
+
+    box-shadow:
+        0 0 0 10px #f2fafb;
+}
+
+
+/* =========================================
+   TRANSCRIPT
+========================================= */
+
+.live-transcript {
+
+    min-height: 60px;
+
+    max-height: 130px;
+
+    overflow-y: auto;
+
+    margin: 20px 0;
+
+    padding: 15px;
+
+    border-radius: 13px;
+
+    background: #f5fafb;
+
+    border: 1px solid #deedf2;
+
+    color: #315462;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    text-align: left;
+}
+
+
+/* =========================================
+   STOP BUTTON
+========================================= */
+
+.stop-live-button {
+
+    border: none;
+
+    background: #0c8aa6;
+
+    color: white;
+
+    padding: 13px 24px;
+
+    border-radius: 12px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.stop-live-button:hover {
+
+    background: #086f87;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .live-speech-panel {
+
+        padding: 22px;
+
+        border-radius: 20px;
+
+    }
+
+    .speech-wave {
+
+        gap: 5px;
+
+    }
+
+    .speech-wave span {
+
+        width: 4px;
+
+    }
+
+}
