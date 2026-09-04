@@ -5,6 +5,8 @@
 let speechRecognition = null;
 
 let liveSpeechActive = false;
+const voiceButton = document.getElementById("voiceButton");
+const recordingPopup = document.getElementById("recordingPopup");
 
 
 /*
@@ -33,7 +35,7 @@ if (SpeechRecognition) {
        START LIVE SPEECH
     ===================================== */
 
-    liveSpeechButton.addEventListener(
+    voiceButton.addEventListener(
         "click",
         function () {
 
@@ -285,3 +287,17 @@ closeLiveSpeech.addEventListener(
     "click",
     stopLiveSpeechRecording
 );
+const liveSpeechButton =
+    document.getElementById("liveSpeechButton");
+
+const liveSpeechOverlay =
+    document.getElementById("liveSpeechOverlay");
+
+const closeLiveSpeech =
+    document.getElementById("closeLiveSpeech");
+
+const stopLiveSpeech =
+    document.getElementById("stopLiveSpeech");
+
+const liveTranscript =
+    document.getElementById("liveTranscript");
