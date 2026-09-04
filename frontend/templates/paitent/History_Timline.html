@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History Timeline - MediKiosk</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f7f9fc;
+            color: #1f2937;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 357px;
+            height: 100vh;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 24px 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 18px 20px;
+            margin-bottom: 8px;
+            border-radius: 15px;
+            font-size: 18px;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f1f5f9;
+        }
+
+        .nav-item.active {
+            background: #dceafe;
+            color: #2864d7;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 357px;
+            padding: 38px 40px 60px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 7px;
+        }
+
+        .page-header p {
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        /* ================= SUMMARY ================= */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            border: 1px solid #e1e5ea;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .summary-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e5efff;
+            font-size: 21px;
+            margin-bottom: 14px;
+        }
+
+        .summary-card p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 7px;
+        }
+
+        .summary-card h2 {
+            font-size: 25px;
+        }
+
+        /* ================= TIMELINE CARD ================= */
+
+        .timeline-card {
+            background: white;
+            border: 1px solid #e1e5ea;
+            border-radius: 18px;
+            padding: 30px;
+        }
+
+        .timeline-header {
+            margin-bottom: 35px;
+        }
+
+        .timeline-header h2 {
+            font-size: 23px;
+            margin-bottom: 6px;
+        }
+
+        .timeline-header span {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* ================= TIMELINE ================= */
+
+        .timeline {
+            position: relative;
+            padding-left: 75px;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 22px;
+            top: 5px;
+            bottom: 0;
+            width: 2px;
+            background: #dce3ec;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 35px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 5px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -64px;
+            top: 2px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #e4efff;
+            border: 4px solid white;
+            box-shadow: 0 0 0 2px #c9daf5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 19px;
+            z-index: 2;
+        }
+
+        .timeline-date {
+            color: #2864d7;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        .timeline-content {
+            border: 1px solid #e4e8ed;
+            border-radius: 14px;
+            padding: 20px 22px;
+            background: #ffffff;
+            transition: 0.2s;
+        }
+
+        .timeline-content:hover {
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ================= EVENT ================= */
+
+        .event-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 9px;
+        }
+
+        .event-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .event-type {
+            padding: 6px 11px;
+            border-radius: 20px;
+            background: #edf4ff;
+            color: #2864d7;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .doctor {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 13px;
+        }
+
+        .event-description {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* ================= EVENT DETAILS ================= */
+
+        .event-details {
+            display: flex;
+            gap: 25px;
+            margin-top: 16px;
+            padding-top: 15px;
+            border-top: 1px solid #edf0f3;
+        }
+
+        .detail {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .detail strong {
+            display: block;
+            color: #374151;
+            margin-top: 4px;
+            font-size: 14px;
+        }
+
+        /* ================= AI INSIGHT ================= */
+
+        .ai-insight {
+            margin-top: 15px;
+            padding: 13px 15px;
+            background: #f7f1ff;
+            border-radius: 10px;
+            color: #7042a5;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .ai-label {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        /* ================= VIEW BUTTON ================= */
+
+        .view-btn {
+            margin-top: 15px;
+            border: none;
+            background: transparent;
+            color: #2864d7;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .view-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1100px) {
+
+            .sidebar {
+                width: 250px;
+            }
+
+            .main {
+                margin-left: 250px;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 25px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline {
+                padding-left: 50px;
+            }
+
+            .timeline::before {
+                left: 14px;
+            }
+
+            .timeline-dot {
+                left: -52px;
+            }
+
+            .event-top {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .event-details {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="nav-item">
+            <span class="nav-icon">🏠</span>
+            Dashboard
+        </div>
+
+        <div class="nav-item">
+            <span class="nav-icon">📋</span>
+            Medical History
+        </div>
+
+        <div class="nav-item">
+            <span class="nav-icon">💊</span>
+            Medications
+        </div>
+
+        <div class="nav-item">
+            <span class="nav-icon">📄</span>
+            Documents
+        </div>
+
+        <div class="nav-item">
+            <span class="nav-icon">🤖</span>
+            AI Chatbot
+        </div>
+
+        <div class="nav-item active">
+            <span class="nav-icon">🕘</span>
+            History Timeline
+        </div>
+
+        <div class="nav-item">
+            <span class="nav-icon">👤</span>
+            My Profile
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="main">
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <h1>History Timeline</h1>
+
+            <p>
+                View your complete medical journey in chronological order
+            </p>
+
+        </div>
+
+
+        <!-- ================= SUMMARY CARDS ================= -->
+
+        <div class="summary-grid">
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    🏥
+                </div>
+
+                <p>Total Visits</p>
+
+                <h2>08</h2>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    💊
+                </div>
+
+                <p>Medications</p>
+
+                <h2>04</h2>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    🧪
+                </div>
+
+                <p>Tests & Reports</p>
+
+                <h2>06</h2>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    📄
+                </div>
+
+                <p>Documents</p>
+
+                <h2>12</h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= MEDICAL JOURNEY ================= -->
+
+        <section class="timeline-card">
+
+            <div class="timeline-header">
+
+                <h2>Medical Journey</h2>
+
+                <span>
+                    Latest activity appears first
+                </span>
+
+            </div>
+
+
+            <div class="timeline">
+
+
+                <!-- ================= EVENT 1 ================= -->
+
+                <div class="timeline-item">
+
+                    <div class="timeline-dot">
+                        🏥
+                    </div>
+
+                    <div class="timeline-date">
+                        28 August 2026 • 10:30 AM
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <div class="event-top">
+
+                            <div class="event-title">
+                                Follow-up Consultation
+                            </div>
+
+                            <div class="event-type">
+                                Medical Visit
+                            </div>
+
+                        </div>
+
+
+                        <div class="doctor">
+                            👨‍⚕️ General Medicine • Follow-up
+                        </div>
+
+
+                        <div class="event-description">
+
+                            Patient reported improvement in symptoms.
+                            Follow-up examination completed and current
+                            medications reviewed.
+
+                        </div>
+
+
+                        <div class="event-details">
+
+                            <div class="detail">
+                                Blood Pressure
+                                <strong>122/80 mmHg</strong>
+                            </div>
+
+                            <div class="detail">
+                                Temperature
+                                <strong>98.4°F</strong>
+                            </div>
+
+                            <div class="detail">
+                                Status
+                                <strong>Stable</strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="ai-insight">
+
+                            <span class="ai-label">
+                                🤖 AI Summary:
+                            </span>
+
+                            Recent records show stable follow-up with no
+                            critical alerts detected.
+
+                        </div>
+
+
+                        <button
+                            class="view-btn"
+                            onclick="viewEvent('Follow-up Consultation')">
+
+                            View Visit Details →
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================= EVENT 2 ================= -->
+
+                <div class="timeline-item">
+
+                    <div class="timeline-dot">
+                        💊
+                    </div>
+
+                    <div class="timeline-date">
+                        28 August 2026
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <div class="event-top">
+
+                            <div class="event-title">
+                                Medication Updated
+                            </div>
+
+                            <div class="event-type">
+                                Medication
+                            </div>
+
+                        </div>
+
+
+                        <div class="doctor">
+                            💊 Prescription updated
+                        </div>
+
+
+                        <div class="event-description">
+
+                            Existing medication schedule reviewed during
+                            the follow-up consultation.
+
+                        </div>
+
+
+                        <div class="event-details">
+
+                            <div class="detail">
+                                Medicine
+                                <strong>Paracetamol 500mg</strong>
+                            </div>
+
+                            <div class="detail">
+                                Dosage
+                                <strong>As prescribed</strong>
+                            </div>
+
+                            <div class="detail">
+                                Status
+                                <strong>Active</strong>
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            class="view-btn"
+                            onclick="viewEvent('Medication Updated')">
+
+                            View Medication →
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================= EVENT 3 ================= -->
+
+                <div class="timeline-item">
+
+                    <div class="timeline-dot">
+                        🧪
+                    </div>
+
+                    <div class="timeline-date">
+                        15 August 2026
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <div class="event-top">
+
+                            <div class="event-title">
+                                Blood Test Report Added
+                            </div>
+
+                            <div class="event-type">
+                                Lab Report
+                            </div>
+
+                        </div>
+
+
+                        <div class="doctor">
+                            🧪 Laboratory Investigation
+                        </div>
+
+
+                        <div class="event-description">
+
+                            Blood test report uploaded to the patient's
+                            medical records.
+
+                        </div>
+
+
+                        <div class="event-details">
+
+                            <div class="detail">
+                                Report Type
+                                <strong>CBC</strong>
+                            </div>
+
+                            <div class="detail">
+                                Result
+                                <strong>Within Reference Range</strong>
+                            </div>
+
+                            <div class="detail">
+                                Document
+                                <strong>Available</strong>
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            class="view-btn"
+                            onclick="viewEvent('Blood Test Report')">
+
+                            View Report →
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================= EVENT 4 ================= -->
+
+                <div class="timeline-item">
+
+                    <div class="timeline-dot">
+                        📄
+                    </div>
+
+                    <div class="timeline-date">
+                        05 August 2026
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <div class="event-top">
+
+                            <div class="event-title">
+                                Medical Document Uploaded
+                            </div>
+
+                            <div class="event-type">
+                                Document
+                            </div>
+
+                        </div>
+
+
+                        <div class="doctor">
+                            📄 Patient Record
+                        </div>
+
+
+                        <div class="event-description">
+
+                            A previous prescription document was uploaded
+                            and added to the patient's digital medical record.
+
+                        </div>
+
+
+                        <div class="event-details">
+
+                            <div class="detail">
+                                Document
+                                <strong>Prescription.pdf</strong>
+                            </div>
+
+                            <div class="detail">
+                                Source
+                                <strong>Patient Upload</strong>
+                            </div>
+
+                            <div class="detail">
+                                OCR
+                                <strong>Processed</strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="ai-insight">
+
+                            <span class="ai-label">
+                                🤖 AI Processing:
+                            </span>
+
+                            Medical information was extracted from the
+                            uploaded document and added to the record.
+
+                        </div>
+
+
+                        <button
+                            class="view-btn"
+                            onclick="viewEvent('Medical Document')">
+
+                            View Document →
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================= EVENT 5 ================= -->
+
+                <div class="timeline-item">
+
+                    <div class="timeline-dot">
+                        🏥
+                    </div>
+
+                    <div class="timeline-date">
+                        21 July 2026
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <div class="event-top">
+
+                            <div class="event-title">
+                                Initial Consultation
+                            </div>
+
+                            <div class="event-type">
+                                Medical Visit
+                            </div>
+
+                        </div>
+
+
+                        <div class="doctor">
+                            👨‍⚕️ General Medicine
+                        </div>
+
+
+                        <div class="event-description">
+
+                            Initial consultation recorded. Patient history,
+                            symptoms and relevant medical information were
+                            documented.
+
+                        </div>
+
+
+                        <div class="event-details">
+
+                            <div class="detail">
+                                Visit Type
+                                <strong>Initial</strong>
+                            </div>
+
+                            <div class="detail">
+                                Records Created
+                                <strong>04</strong>
+                            </div>
+
+                            <div class="detail">
+                                Follow-up
+                                <strong>Recommended</strong>
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            class="view-btn"
+                            onclick="viewEvent('Initial Consultation')">
+
+                            View Visit Details →
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        function viewEvent(eventName) {
+
+            alert(
+                "Opening details for: " + eventName
+            );
+
+        }
+
+    </script>
+
+</body>
+</html>
