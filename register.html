@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Registration - MediKiosk{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen
+            bg-slate-50
+            py-10 px-5">
+
+    <div class="max-w-3xl mx-auto">
+
+        <!-- HEADER -->
+        <div class="text-center mb-8">
+
+            <div class="inline-flex
+                        w-14 h-14
+                        bg-blue-600
+                        text-white
+                        rounded-xl
+                        items-center
+                        justify-center
+                        font-bold text-xl">
+
+                M
+            </div>
+
+            <h1 class="text-3xl
+                       font-bold
+                       text-slate-900 mt-4">
+
+                Patient Registration
+            </h1>
+
+            <p class="text-slate-500 mt-2">
+
+                Create your MediKiosk health account
+            </p>
+
+        </div>
+
+
+        <!-- FORM CARD -->
+        <div class="bg-white
+                    rounded-3xl
+                    shadow-lg
+                    border border-slate-200
+                    p-6 md:p-10">
+
+            <form method="POST" action="/patient/register/">
+                {% csrf_token %}
+                <!-- PERSONAL INFORMATION -->
+                <h2 class="section-title">
+                    Personal Information
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-5">
+
+                    <div>
+                        <label class="form-label">
+                            Full Name
+                        </label>
+
+                        <input type="text"
+                               name = "name"
+                               placeholder="Enter full name"
+                               required
+                               class="form-input">
+                    </div>
+
+
+                    <div>
+                        <label class="form-label">
+                            Date of Birth
+                        </label>
+
+                        <input type="date"
+                               name = "date_of_birth"
+                               required
+                               class="form-input">
+                    </div>
+
+
+                    <div>
+                        <label class="form-label">
+                            Gender
+                        </label>
+
+                        <select name = "gender" required
+                                class="form-input">
+
+                            <option value="">
+                                Select gender
+                            </option>
+
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+
+                        </select>
+                    </div>
+
+
+                    <div>
+                        <label class="form-label">
+                            Blood Group
+                        </label>
+
+                        <select name = "blood_group" class="form-input">
+
+                            <option value="">
+                                Select blood group
+                            </option>
+
+                            <option>A+</option>
+                            <option>A-</option>
+                            <option>B+</option>
+                            <option>B-</option>
+                            <option>AB+</option>
+                            <option>AB-</option>
+                            <option>O+</option>
+                            <option>O-</option>
+
+                        </select>
+                    </div>
+
+                </div>
+
+
+                <!-- CONTACT -->
+                <h2 class="section-title mt-10">
+                    Contact Information
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-5">
+
+                    <div>
+                        <label class="form-label">
+                            Phone Number
+                        </label>
+
+                        <input type="tel"
+                               name = "phone"
+                               placeholder="+91 XXXXX XXXXX"
+                               required
+                               class="form-input">
+                    </div>
+
+
+                    <div>
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        <input type="email"
+                                name = "email"
+                               placeholder="example@email.com"
+                               required
+                               class="form-input">
+                    </div>
+
+
+                    <div class="md:col-span-2">
+
+                        <label class="form-label">
+                            Address
+                        </label>
+
+                        <textarea name = "address"
+                                  rows="3"
+                                  placeholder="Enter your address"
+                                  class="form-input"></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACCOUNT -->
+                <h2 class="section-title mt-10">
+                    Account Security
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-5">
+
+                    <div>
+
+                        <label class="form-label">
+                            Password
+                        </label>
+
+                        <input type="password"
+                               name = "password"
+                               id="registerPassword"
+                               placeholder="Create password"
+                               required
+                               class="form-input">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Confirm Password
+                        </label>
+
+                        <input type="password"
+                               name = "confirm_password"
+                               id="confirmPassword"
+                               placeholder="Confirm password"
+                               required
+                               class="form-input">
+
+                    </div>
+
+                </div>
+
+
+                <!-- CONSENT -->
+                <div class="mt-7">
+
+                    <label class="flex items-start gap-3
+                                  text-sm
+                                  text-slate-600">
+
+                        <input type="checkbox"
+                               required
+                               class="mt-1">
+
+                        <span>
+                            I agree to the MediKiosk
+                            terms of service and privacy
+                            policy.
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- SUBMIT -->
+                <button type="submit"
+                        class="w-full
+                               mt-8
+                               bg-blue-600
+                               hover:bg-blue-700
+                               text-white
+                               py-4
+                               rounded-xl
+                               font-semibold
+                               transition">
+
+                    Create Patient Account
+                </button>
+
+            </form>
+
+
+            <div class="text-center
+                        border-t
+                        mt-7 pt-6">
+
+                <p class="text-sm text-slate-500">
+
+                    Already have an account?
+
+                    <a href="/patient/login/"
+                       class="text-blue-600
+                              font-semibold">
+
+                        Login
+                    </a>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

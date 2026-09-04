@@ -1,0 +1,617 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Dashboard - MediKiosk{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen bg-slate-50">
+
+    <!-- MOBILE HEADER -->
+    <header class="lg:hidden
+                   bg-white
+                   border-b
+                   px-5 py-4
+                   flex items-center
+                   justify-between">
+
+        <div class="font-bold
+                    text-xl
+                    text-blue-600">
+
+            MediKiosk
+        </div>
+
+        <button onclick="toggleSidebar()"
+                class="text-2xl">
+
+            ☰
+
+        </button>
+
+    </header>
+
+
+    <div class="flex">
+
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar"
+               class="sidebar
+                      fixed lg:static
+                      inset-y-0 left-0
+                      z-50
+                      w-72
+                      bg-white
+                      border-r
+                      transform
+                      -translate-x-full
+                      lg:translate-x-0
+                      transition-transform">
+
+            <!-- LOGO -->
+            <div class="p-6
+                        border-b">
+
+                <div class="flex items-center gap-3">
+
+                    <div class="w-11 h-11
+                                bg-blue-600
+                                rounded-xl
+                                text-white
+                                flex items-center
+                                justify-center
+                                font-bold">
+
+                        M
+                    </div>
+
+                    <div>
+
+                        <h1 class="font-bold
+                                   text-lg">
+
+                            MediKiosk
+                        </h1>
+
+                        <p class="text-xs
+                                  text-slate-500">
+
+                            Patient Portal
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+            <nav class="p-4 space-y-2">
+
+                <button class="sidebar-link active">
+                    🏠
+                    <span>Dashboard</span>
+                </button>
+
+                <button class="sidebar-link">
+                    📋
+                    <span>Medical History</span>
+                </button>
+
+                <button class="sidebar-link">
+                    💊
+                    <span>Medications</span>
+                </button>
+
+                <button class="sidebar-link">
+                    📄
+                    <span>Documents</span>
+                </button>
+
+                <button class="sidebar-link">
+                    🤖
+                    <span>AI Chatbot</span>
+                </button>
+
+                <button class="sidebar-link">
+                    🕒
+                    <span>History Timeline</span>
+                </button>
+
+                <button class="sidebar-link">
+                    👤
+                    <span>My Profile</span>
+                </button>
+
+            </nav>
+
+
+            <!-- LOGOUT -->
+            <div class="absolute
+                        bottom-0
+                        left-0
+                        right-0
+                        p-4
+                        border-t">
+
+                <button onclick="logout()"
+                        class="sidebar-link
+                               text-red-600">
+
+                    🚪
+                    <span>Logout</span>
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN -->
+        <main class="flex-1
+                     min-w-0
+                     p-5 md:p-8">
+
+            <!-- TOP -->
+            <div class="flex flex-col
+                        md:flex-row
+                        md:items-center
+                        md:justify-between
+                        gap-4 mb-8">
+
+                <div>
+
+                    <p class="text-sm
+                              text-slate-500">
+
+                        Patient Dashboard
+                    </p>
+
+                    <h2 class="text-3xl
+                               font-bold
+                               text-slate-900">
+
+                        Welcome back 👋
+                    </h2>
+
+                </div>
+
+
+                <div class="flex items-center gap-3">
+
+                    <button class="notification-button">
+                        🔔
+                    </button>
+
+                    <div class="flex items-center
+                                gap-3
+                                bg-white
+                                px-4 py-2
+                                rounded-xl
+                                border">
+
+                        <div class="w-9 h-9
+                                    bg-blue-100
+                                    rounded-full
+                                    flex items-center
+                                    justify-center">
+
+                            👤
+                        </div>
+
+                        <div class="hidden sm:block">
+
+                            <p class="text-sm
+                                      font-semibold">
+
+                                Patient
+                            </p>
+
+                            <p class="text-xs
+                                      text-slate-500">
+
+                                MKP-2026-00001
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PATIENT ID -->
+            <div class="bg-gradient-to-r
+                        from-blue-600
+                        to-blue-700
+                        rounded-2xl
+                        p-6
+                        text-white
+                        mb-8">
+
+                <div class="flex flex-col
+                            sm:flex-row
+                            sm:items-center
+                            sm:justify-between
+                            gap-4">
+
+                    <div>
+
+                        <p class="text-blue-100
+                                  text-sm">
+
+                            Your Unique Patient ID
+                        </p>
+
+                        <h3 class="text-3xl
+                                   font-bold
+                                   mt-1">
+
+                            MKP-2026-00001
+                        </h3>
+
+                    </div>
+
+                    <button onclick="copyPatientId()"
+                            class="bg-white/20
+                                   hover:bg-white/30
+                                   px-5 py-3
+                                   rounded-xl
+                                   font-semibold">
+
+                        Copy ID
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- SUMMARY CARDS -->
+            <div class="grid
+                        grid-cols-2
+                        lg:grid-cols-4
+                        gap-4
+                        mb-8">
+
+                <div class="dashboard-card">
+
+                    <div class="card-icon bg-blue-100">
+                        📋
+                    </div>
+
+                    <p class="card-label">
+                        Medical Visits
+                    </p>
+
+                    <p class="card-number">
+                        08
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <div class="card-icon bg-green-100">
+                        💊
+                    </div>
+
+                    <p class="card-label">
+                        Medications
+                    </p>
+
+                    <p class="card-number">
+                        04
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <div class="card-icon bg-purple-100">
+                        📄
+                    </div>
+
+                    <p class="card-label">
+                        Documents
+                    </p>
+
+                    <p class="card-number">
+                        12
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <div class="card-icon bg-orange-100">
+                        ⚠️
+                    </div>
+
+                    <p class="card-label">
+                        Alerts
+                    </p>
+
+                    <p class="card-number">
+                        02
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONTENT GRID -->
+            <div class="grid
+                        lg:grid-cols-3
+                        gap-6">
+
+
+                <!-- AI SUMMARY -->
+                <div class="lg:col-span-2
+                            bg-white
+                            rounded-2xl
+                            border
+                            shadow-sm
+                            p-6">
+
+                    <div class="flex
+                                items-center
+                                justify-between
+                                mb-5">
+
+                        <div>
+
+                            <h3 class="text-xl
+                                       font-bold">
+
+                                AI Health Summary
+                            </h3>
+
+                            <p class="text-sm
+                                      text-slate-500">
+
+                                Generated from your medical records
+                            </p>
+
+                        </div>
+
+                        <span class="px-3 py-1
+                                     bg-purple-100
+                                     text-purple-700
+                                     rounded-full
+                                     text-xs
+                                     font-semibold">
+
+                            AI Generated
+                        </span>
+
+                    </div>
+
+
+                    <div class="bg-slate-50
+                                rounded-xl
+                                p-5">
+
+                        <p class="text-slate-600
+                                  leading-relaxed">
+
+                            Your recent medical records indicate
+                            regular follow-up visits. Your current
+                            medication list contains 4 active
+                            medications. No critical alerts have
+                            been detected in your recent records.
+
+                        </p>
+
+                    </div>
+
+
+                    <button class="mt-5
+                                   text-blue-600
+                                   font-semibold
+                                   hover:underline">
+
+                        View Complete Summary →
+                    </button>
+
+                </div>
+
+
+                <!-- QUICK ACTIONS -->
+                <div class="bg-white
+                            rounded-2xl
+                            border
+                            shadow-sm
+                            p-6">
+
+                    <h3 class="text-xl
+                               font-bold mb-5">
+
+                        Quick Actions
+                    </h3>
+
+
+                    <div class="space-y-3">
+
+                        <button class="quick-action">
+                            <span>🤖</span>
+                            Ask AI Assistant
+                        </button>
+
+                        <button class="quick-action">
+                            <span>📄</span>
+                            Upload Document
+                        </button>
+
+                        <button class="quick-action">
+                            <span>📋</span>
+                            View Medical History
+                        </button>
+
+                        <button class="quick-action">
+                            <span>💊</span>
+                            View Medications
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECENT ACTIVITY -->
+            <div class="bg-white
+                        rounded-2xl
+                        border
+                        shadow-sm
+                        p-6
+                        mt-6">
+
+                <div class="flex
+                            justify-between
+                            items-center
+                            mb-6">
+
+                    <div>
+
+                        <h3 class="text-xl
+                                   font-bold">
+
+                            Recent Activity
+                        </h3>
+
+                        <p class="text-sm
+                                  text-slate-500">
+
+                            Your latest health records
+                        </p>
+
+                    </div>
+
+                    <button class="text-blue-600
+                                   text-sm
+                                   font-semibold">
+
+                        View All
+                    </button>
+
+                </div>
+
+
+                <div class="space-y-5">
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-dot
+                                    bg-blue-100">
+
+                            📋
+                        </div>
+
+                        <div>
+
+                            <p class="font-semibold">
+                                Medical record updated
+                            </p>
+
+                            <p class="text-sm
+                                      text-slate-500">
+
+                                Doctor added new consultation notes
+                            </p>
+
+                            <p class="text-xs
+                                      text-slate-400
+                                      mt-1">
+
+                                2 days ago
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-dot
+                                    bg-green-100">
+
+                            📄
+                        </div>
+
+                        <div>
+
+                            <p class="font-semibold">
+                                Blood report uploaded
+                            </p>
+
+                            <p class="text-sm
+                                      text-slate-500">
+
+                                CBC report added to documents
+                            </p>
+
+                            <p class="text-xs
+                                      text-slate-400
+                                      mt-1">
+
+                                5 days ago
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-dot
+                                    bg-purple-100">
+
+                            🤖
+                        </div>
+
+                        <div>
+
+                            <p class="font-semibold">
+                                AI summary generated
+                            </p>
+
+                            <p class="text-sm
+                                      text-slate-500">
+
+                                Medical history summary updated
+                            </p>
+
+                            <p class="text-xs
+                                      text-slate-400
+                                      mt-1">
+
+                                1 week ago
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+{% endblock %}
