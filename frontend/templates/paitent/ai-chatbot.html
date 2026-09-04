@@ -1,0 +1,225 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MediKiosk AI Assistant</title>
+
+    <link rel="stylesheet" href="{% static 'css/ai-chatbot.css' %}">
+</head>
+
+<body>
+
+<div class="chat-page">
+
+    <!-- ================= HEADER ================= -->
+    <header class="chat-header">
+
+        <div class="brand">
+            <div class="brand-icon">
+                <span>+</span>
+            </div>
+
+            <div>
+                <h2>MediKiosk</h2>
+                <p>AI Health Assistant</p>
+            </div>
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            <span>Online</span>
+        </div>
+
+    </header>
+
+
+    <!-- ================= CHAT AREA ================= -->
+
+    <main class="chat-container">
+
+        <!-- Welcome Message -->
+
+        <div class="welcome-section">
+
+            <div class="ai-avatar">
+                <span>+</span>
+            </div>
+
+            <h1>Hello! I'm your AI Health Assistant</h1>
+
+            <p>
+                Ask me a health-related question or upload an image
+                for analysis.
+            </p>
+
+        </div>
+
+
+        <!-- Chat Messages -->
+
+        <div class="messages" id="messages">
+
+            <!-- AI message -->
+
+            <div class="message ai-message">
+
+                <div class="message-avatar">
+                    +
+                </div>
+
+                <div class="message-content">
+
+                    <div class="message-name">
+                        MediKiosk AI
+                    </div>
+
+                    <div class="message-bubble">
+                        Hello! How can I help you today?
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= IMAGE PREVIEW ================= -->
+
+    <div class="attachment-preview" id="attachmentPreview">
+
+        <div class="preview-content">
+
+            <img id="previewImage" src="" alt="Selected image">
+
+            <div>
+                <p id="fileName">Image selected</p>
+                <button id="removeImage" type="button">
+                    Remove
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= CHAT INPUT ================= -->
+
+    <div class="input-area">
+
+        <form id="chatForm" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <div class="input-box">
+
+                <!-- Image Upload -->
+
+                <label for="imageInput" class="input-action image-button"
+                       title="Upload image">
+
+                    <span>🖼️</span>
+
+                </label>
+
+                <input
+                    type="file"
+                    id="imageInput"
+                    name="image"
+                    accept="image/*"
+                    hidden
+                >
+
+
+                <!-- Text Input -->
+
+                <textarea
+                    id="messageInput"
+                    name="message"
+                    placeholder="Type your health question..."
+                    rows="1"
+                ></textarea>
+
+
+                <!-- Voice Button -->
+
+                <button
+                    type="button"
+                    id="voiceButton"
+                    class="input-action voice-button"
+                    title="Record voice"
+                >
+                    🎤
+                </button>
+
+
+                <!-- Send Button -->
+
+                <button
+                    type="submit"
+                    id="sendButton"
+                    class="send-button"
+                    title="Send message"
+                >
+                    ➤
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <p class="disclaimer">
+            MediKiosk AI provides informational assistance and does not
+            replace professional medical advice.
+        </p>
+
+    </div>
+
+
+    <!-- ================= VOICE RECORDING ================= -->
+
+    <div class="recording-popup" id="recordingPopup">
+
+        <div class="recording-box">
+
+            <div class="recording-icon">
+                🎤
+            </div>
+
+            <h3>Listening...</h3>
+
+            <div class="recording-animation">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <p>Speak your question</p>
+
+            <button id="stopRecording">
+                Stop Recording
+            </button>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script src="{% static 'js/ai_chatbot.js' %}"></script>
+
+</body>
+</html>
