@@ -1,0 +1,488 @@
+/* =========================================================
+   HISTORY TIMELINE
+   ========================================================= */
+
+.timeline-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 50px;
+}
+
+
+/* ================= PAGE HEADER ================= */
+
+.timeline-header {
+    margin-bottom: 28px;
+}
+
+.timeline-header h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.timeline-header p {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+
+/* ================= PATIENT CARD ================= */
+
+.timeline-patient-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 28px;
+    padding: 24px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.timeline-patient-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.timeline-patient-avatar {
+    width: 56px;
+    height: 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #dbeafe;
+    color: #2563eb;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.timeline-patient-info h2 {
+    margin: 0;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    color: #0f172a;
+}
+
+.timeline-patient-info p {
+    margin-top: 5px;
+
+    font-size: 14px;
+
+    color: #64748b;
+}
+
+.timeline-patient-info strong {
+    color: #334155;
+}
+
+
+/* ================= EVENT COUNT ================= */
+
+.timeline-event-count {
+    min-width: 130px;
+
+    padding: 12px 18px;
+
+    border-radius: 12px;
+
+    background: #eff6ff;
+}
+
+.timeline-event-count span {
+    display: block;
+
+    font-size: 12px;
+
+    color: #3b82f6;
+}
+
+.timeline-event-count strong {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 22px;
+
+    color: #1d4ed8;
+}
+
+
+/* ================= TIMELINE SECTION ================= */
+
+.timeline-section {
+    padding: 30px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.timeline-section h2 {
+    margin: 0;
+
+    font-size: 21px;
+    font-weight: 700;
+
+    color: #0f172a;
+}
+
+.timeline-section-description {
+    margin-top: 6px;
+
+    font-size: 14px;
+
+    color: #64748b;
+}
+
+
+/* ================= TIMELINE ================= */
+
+.medical-timeline {
+    position: relative;
+
+    margin-top: 32px;
+}
+
+
+/* Vertical Line */
+
+.medical-timeline::before {
+    content: "";
+
+    position: absolute;
+
+    left: 20px;
+
+    top: 8px;
+    bottom: 8px;
+
+    width: 2px;
+
+    background: #e2e8f0;
+}
+
+
+/* ================= EVENT ================= */
+
+.timeline-event {
+    position: relative;
+
+    display: flex;
+
+    margin-bottom: 30px;
+}
+
+.timeline-event:last-child {
+    margin-bottom: 0;
+}
+
+
+/* ================= ICON ================= */
+
+.timeline-icon {
+    position: relative;
+
+    z-index: 2;
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: 4px solid #ffffff;
+
+    border-radius: 50%;
+
+    font-size: 17px;
+}
+
+
+/* Icon Colors */
+
+.timeline-icon-visit {
+    background: #dbeafe;
+}
+
+.timeline-icon-diagnosis {
+    background: #fef3c7;
+}
+
+.timeline-icon-medication {
+    background: #f3e8ff;
+}
+
+.timeline-icon-document {
+    background: #d1fae5;
+}
+
+.timeline-icon-default {
+    background: #f1f5f9;
+}
+
+
+/* ================= EVENT CARD ================= */
+
+.timeline-event-card {
+    flex: 1;
+
+    margin-left: 22px;
+
+    padding: 20px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    transition: all 0.2s ease;
+}
+
+.timeline-event-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #cbd5e1;
+
+    box-shadow:
+        0 5px 15px rgba(15, 23, 42, 0.06);
+}
+
+
+/* ================= EVENT TOP ================= */
+
+.timeline-event-top {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.timeline-date {
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #2563eb;
+}
+
+.timeline-type {
+    padding: 5px 12px;
+
+    border-radius: 999px;
+
+    background: #ffffff;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    color: #64748b;
+}
+
+
+/* ================= EVENT CONTENT ================= */
+
+.timeline-event-card h3 {
+    margin-top: 12px;
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    color: #0f172a;
+}
+
+.timeline-description {
+    margin-top: 8px;
+
+    font-size: 14px;
+
+    line-height: 1.65;
+
+    color: #475569;
+}
+
+
+/* ================= DOCTOR / HOSPITAL ================= */
+
+.timeline-meta {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin-top: 14px;
+
+    font-size: 13px;
+
+    color: #64748b;
+}
+
+
+/* ================= EMPTY STATE ================= */
+
+.timeline-empty {
+    padding: 50px 20px;
+
+    text-align: center;
+
+    border: 1px dashed #cbd5e1;
+
+    border-radius: 12px;
+}
+
+.timeline-empty div {
+    font-size: 38px;
+}
+
+.timeline-empty h3 {
+    margin-top: 12px;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    color: #334155;
+}
+
+.timeline-empty p {
+    margin-top: 6px;
+
+    font-size: 14px;
+
+    color: #64748b;
+}
+
+
+/* ================= AI BOX ================= */
+
+.timeline-ai-box {
+    display: flex;
+
+    gap: 15px;
+
+    margin-top: 24px;
+
+    padding: 22px;
+
+    background: #faf5ff;
+
+    border: 1px solid #e9d5ff;
+
+    border-radius: 16px;
+}
+
+.timeline-ai-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: #ffffff;
+
+    border-radius: 10px;
+
+    font-size: 19px;
+}
+
+.timeline-ai-box h3 {
+    margin: 0;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: #6b21a8;
+}
+
+.timeline-ai-box p {
+    margin-top: 6px;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+    color: #7e22ce;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 640px) {
+
+    .timeline-page {
+        padding: 24px 16px 40px;
+    }
+
+    .timeline-patient-card {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .timeline-event-count {
+        width: 100%;
+    }
+
+    .timeline-section {
+        padding: 20px 16px;
+    }
+
+    .timeline-event-top {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .timeline-event-card {
+        margin-left: 14px;
+
+        padding: 16px;
+    }
+
+    .timeline-event-card h3 {
+        font-size: 16px;
+    }
+
+    .timeline-description {
+        font-size: 13px;
+    }
+
+    .timeline-ai-box {
+        padding: 18px;
+    }
+}
