@@ -1,0 +1,193 @@
+/* ================================
+   MEDIKIOSK GLOBAL CSS
+================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+
+/* ================================
+   FORM ELEMENTS
+================================ */
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.form-input {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    outline: none;
+    background: white;
+    color: #0f172a;
+    transition: 0.2s;
+}
+
+.form-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+textarea.form-input {
+    resize: vertical;
+}
+
+
+/* ================================
+   SECTION HEADINGS
+================================ */
+
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 20px;
+}
+
+
+/* ================================
+   SIDEBAR
+================================ */
+
+.sidebar-link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.sidebar-link:hover {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.sidebar-link.active {
+    background: #dbeafe;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+
+/* ================================
+   DASHBOARD CARDS
+================================ */
+
+.dashboard-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.card-label {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.card-number {
+    color: #0f172a;
+    font-size: 25px;
+    font-weight: 700;
+    margin-top: 3px;
+}
+
+
+/* ================================
+   QUICK ACTIONS
+================================ */
+
+.quick-action {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    border-radius: 12px;
+    background: #f8fafc;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.quick-action:hover {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+
+/* ================================
+   TIMELINE
+================================ */
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.timeline-dot {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ================================
+   NOTIFICATION
+================================ */
+
+.notification-button {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: white;
+    border: 1px solid #e2e8f0;
+}
+
+
+/* ================================
+   MOBILE SIDEBAR
+================================ */
+
+@media (max-width: 1023px) {
+
+    .sidebar {
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.08);
+    }
+
+}

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor - MediKiosk{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen
+            bg-gradient-to-br
+            from-green-50
+            via-white
+            to-green-100
+            flex items-center
+            justify-center
+            px-5 py-10">
+                    
+    <div class="w-full max-w-5xl">
+
+        <div class="text-center mb-10">
+
+            <div class="inline-flex
+                        items-center justify-center
+                        w-16 h-16
+                        rounded-2xl
+                        bg-green-600
+                        text-white
+                        text-2xl
+                        mb-5">
+
+                ⚕
+            </div>
+
+            <h1 class="text-4xl
+                       font-bold
+                       text-slate-900">
+
+                Doctor Portal
+            </h1>
+
+            <p class="mt-3 text-slate-600">
+
+                Efficiently manage patient records
+                and consultations.
+            </p>
+
+        </div>
+
+
+        <div class="grid md:grid-cols-2 gap-6">
+
+            <!-- LOGIN -->
+            <a href="/doctor/login/"
+               class="bg-white
+                      rounded-3xl
+                      p-8
+                      border border-slate-200
+                      shadow-lg
+                      hover:shadow-xl
+                      hover:-translate-y-1
+                      transition">
+
+                <div class="w-14 h-14
+                            bg-green-100
+                            rounded-xl
+                            flex items-center
+                            justify-center
+                            text-2xl
+                            mb-6">
+
+                    🔐
+                </div>
+
+                <h2 class="text-2xl
+                           font-bold">
+
+                    Existing Doctor
+                </h2>
+
+                <p class="mt-3
+                          text-slate-500">
+
+                    Login to access patient records,
+                    appointments and clinical tools.
+                </p>
+
+                <div class="mt-7
+                            text-green-600
+                            font-semibold">
+
+                    Doctor Login →
+                </div>
+
+            </a>
+
+
+            <!-- REGISTER -->
+            <a href="/doctor/register/"
+               class="bg-green-600
+                      rounded-3xl
+                      p-8
+                      text-white
+                      shadow-lg
+                      hover:shadow-xl
+                      hover:-translate-y-1
+                      transition">
+
+                <div class="w-14 h-14
+                            bg-white/20
+                            rounded-xl
+                            flex items-center
+                            justify-center
+                            text-2xl
+                            mb-6">
+
+                    📝
+                </div>
+
+                <h2 class="text-2xl
+                           font-bold">
+
+                    New Doctor
+                </h2>
+
+                <p class="mt-3
+                          text-green-100">
+
+                    Register as a doctor to access
+                    MediKiosk clinical tools.
+                </p>
+
+                <div class="mt-7
+                            font-semibold">
+
+                    Register →
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <div class="text-center mt-8">
+
+            <a href="/"
+               class="text-sm
+                      text-slate-500
+                      hover:text-green-600">
+
+                ← Back to MediKiosk
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
