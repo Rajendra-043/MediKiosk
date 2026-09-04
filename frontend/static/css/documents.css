@@ -1,0 +1,760 @@
+/* =========================================
+   MEDIKIOSK DOCUMENTS PAGE
+   ========================================= */
+
+.documents-page {
+    min-height: calc(100vh - 75px);
+    background: #f4f9fc;
+    padding: 40px 20px 100px;
+    color: #163f50;
+}
+
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.documents-header {
+    max-width: 1000px;
+    margin: 0 auto 35px;
+
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.documents-header-icon {
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e2f5fa;
+    color: #0c8aa6;
+
+    border-radius: 16px;
+
+    font-size: 27px;
+
+    border: 1px solid #cdeaf1;
+}
+
+.documents-header-text h1 {
+    margin: 0 0 5px;
+
+    font-size: 30px;
+    font-weight: 700;
+
+    color: #123f50;
+}
+
+.documents-header-text p {
+    margin: 0;
+
+    font-size: 15px;
+    color: #66818c;
+}
+
+
+/* =========================================
+   MAIN OPTION CARDS
+   ========================================= */
+
+.document-options {
+    max-width: 1000px;
+    margin: 0 auto 40px;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 22px;
+}
+
+.document-card {
+    background: #ffffff;
+
+    border: 1px solid #dcecf2;
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 22px;
+
+    box-shadow: 0 8px 25px rgba(30, 90, 110, 0.06);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.document-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 12px 30px rgba(30, 90, 110, 0.10);
+}
+
+
+/* Card Icon */
+
+.card-icon {
+    width: 55px;
+    height: 55px;
+
+    min-width: 55px;
+
+    border-radius: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e5f6fa;
+
+    font-size: 25px;
+}
+
+
+/* Card Content */
+
+.card-content h2 {
+    margin: 0 0 10px;
+
+    font-size: 21px;
+
+    color: #123f50;
+}
+
+.card-content p {
+    margin: 0 0 22px;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+    color: #6b858f;
+}
+
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+
+.document-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 150px;
+
+    padding: 11px 20px;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.primary-button {
+    border: none;
+
+    background: #0c8aa6;
+
+    color: white;
+}
+
+.primary-button:hover {
+    background: #086f87;
+}
+
+.secondary-button {
+    border: 1px solid #0c8aa6;
+
+    background: white;
+
+    color: #0c8aa6;
+}
+
+.secondary-button:hover {
+    background: #e9f8fb;
+}
+
+
+/* =========================================
+   DOCUMENT LIST
+   ========================================= */
+
+.documents-list-section {
+    max-width: 1000px;
+
+    margin: 0 auto;
+
+    background: white;
+
+    border: 1px solid #dcecf2;
+
+    border-radius: 18px;
+
+    padding: 28px;
+
+    box-shadow: 0 8px 25px rgba(30, 90, 110, 0.05);
+}
+
+
+/* Section heading */
+
+.section-heading {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 22px;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid #e5f0f3;
+}
+
+.section-heading h2 {
+    margin: 0 0 5px;
+
+    font-size: 21px;
+
+    color: #123f50;
+}
+
+.section-heading p {
+    margin: 0;
+
+    font-size: 13px;
+
+    color: #78909a;
+}
+
+.document-count {
+    background: #e8f7fa;
+
+    color: #0c8aa6;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================
+   DOCUMENT ITEM
+   ========================================= */
+
+.documents-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.document-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 15px;
+
+    border: 1px solid #e3eef2;
+
+    border-radius: 12px;
+
+    transition: 0.2s ease;
+}
+
+.document-item:hover {
+    background: #f8fcfd;
+
+    border-color: #cfe7ed;
+}
+
+
+/* File Icon */
+
+.document-file-icon {
+    width: 48px;
+    height: 48px;
+
+    min-width: 48px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.pdf-icon {
+    background: #eaf6fa;
+
+    color: #0c8aa6;
+}
+
+.image-icon {
+    background: #eef8f5;
+
+    color: #27816c;
+}
+
+
+/* Document Information */
+
+.document-info {
+    flex: 1;
+}
+
+.document-info h3 {
+    margin: 0 0 5px;
+
+    font-size: 15px;
+
+    color: #204d5d;
+}
+
+.document-info p {
+    margin: 0;
+
+    font-size: 12px;
+
+    color: #8499a1;
+}
+
+
+/* =========================================
+   DOCUMENT ACTIONS
+   ========================================= */
+
+.document-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.view-document-button,
+.delete-document-button {
+    border-radius: 7px;
+
+    padding: 8px 13px;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.view-document-button {
+    background: #e8f7fa;
+
+    border: 1px solid #cceaf0;
+
+    color: #0c8aa6;
+}
+
+.view-document-button:hover {
+    background: #d9f2f6;
+}
+
+.delete-document-button {
+    background: white;
+
+    border: 1px solid #e1dada;
+
+    color: #b35d5d;
+}
+
+.delete-document-button:hover {
+    background: #fff5f5;
+}
+
+
+/* =========================================
+   UPLOAD STATUS
+   ========================================= */
+
+.upload-status {
+    position: fixed;
+
+    right: 25px;
+    bottom: 25px;
+
+    display: none;
+
+    align-items: center;
+
+    gap: 12px;
+
+    background: white;
+
+    border: 1px solid #dcecf2;
+
+    border-radius: 12px;
+
+    padding: 14px 16px;
+
+    box-shadow: 0 10px 30px rgba(30, 90, 110, 0.12);
+
+    z-index: 1000;
+}
+
+.upload-status-icon {
+    width: 35px;
+    height: 35px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e5f6ef;
+
+    color: #258064;
+}
+
+.upload-status p {
+    margin: 3px 0 0;
+
+    font-size: 12px;
+
+    color: #82969e;
+}
+
+.upload-status button {
+    border: none;
+
+    background: transparent;
+
+    font-size: 20px;
+
+    color: #78909a;
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   UPLOAD MODAL
+   ========================================= */
+
+.upload-modal {
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(13, 52, 65, 0.45);
+
+    backdrop-filter: blur(5px);
+
+    z-index: 2000;
+}
+
+.upload-modal.active {
+    display: flex;
+}
+
+.upload-modal-box {
+    position: relative;
+
+    width: 100%;
+
+    max-width: 500px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 35px;
+
+    text-align: center;
+
+    box-shadow:
+        0 25px 70px rgba(20, 70, 85, 0.20);
+}
+
+
+/* Close */
+
+.close-modal {
+    position: absolute;
+
+    right: 18px;
+    top: 15px;
+
+    width: 34px;
+    height: 34px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f2f7f9;
+
+    color: #66818c;
+
+    font-size: 21px;
+
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    background: #e5f1f4;
+}
+
+
+/* Modal Icon */
+
+.modal-icon {
+    width: 60px;
+    height: 60px;
+
+    margin: 0 auto 18px;
+
+    border-radius: 16px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #e5f6fa;
+
+    font-size: 28px;
+}
+
+.upload-modal-box h2 {
+    margin: 0 0 8px;
+
+    color: #123f50;
+}
+
+.upload-modal-box > p {
+    margin: 0 auto 25px;
+
+    max-width: 400px;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+    color: #718993;
+}
+
+
+/* =========================================
+   UPLOAD AREA
+   ========================================= */
+
+.upload-area {
+    border: 2px dashed #c9e4eb;
+
+    border-radius: 14px;
+
+    padding: 28px 20px;
+
+    background: #f8fcfd;
+
+    margin-bottom: 20px;
+}
+
+.upload-area-icon {
+    width: 48px;
+    height: 48px;
+
+    margin: 0 auto 12px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #e3f5f9;
+
+    color: #0c8aa6;
+
+    font-size: 24px;
+}
+
+.upload-area h3 {
+    margin: 0 0 5px;
+
+    font-size: 16px;
+
+    color: #244f5e;
+}
+
+.upload-area p {
+    margin: 0 0 15px;
+
+    font-size: 12px;
+
+    color: #8aa0a8;
+}
+
+.choose-file-button {
+    display: inline-block;
+
+    padding: 9px 17px;
+
+    border-radius: 8px;
+
+    background: #0c8aa6;
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.choose-file-button:hover {
+    background: #086f87;
+}
+
+.selected-file {
+    margin-top: 14px !important;
+
+    color: #0c8aa6 !important;
+
+    font-weight: 600;
+}
+
+
+/* Upload button */
+
+.upload-submit-button {
+    width: 100%;
+
+    border: none;
+
+    border-radius: 9px;
+
+    padding: 13px;
+
+    background: #0c8aa6;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.upload-submit-button:hover {
+    background: #086f87;
+}
+
+
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
+
+@media (max-width: 800px) {
+
+    .document-options {
+        grid-template-columns: 1fr;
+    }
+
+    .documents-page {
+        padding: 30px 15px 90px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .documents-header {
+        align-items: flex-start;
+    }
+
+    .documents-header-text h1 {
+        font-size: 25px;
+    }
+
+    .document-card {
+        padding: 22px;
+
+        flex-direction: column;
+    }
+
+    .documents-list-section {
+        padding: 20px;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+
+        gap: 10px;
+
+        flex-direction: column;
+    }
+
+    .document-item {
+        align-items: flex-start;
+
+        flex-wrap: wrap;
+    }
+
+    .document-actions {
+        width: 100%;
+
+        margin-left: 63px;
+    }
+
+    .document-actions button {
+        flex: 1;
+    }
+
+    .upload-modal-box {
+        padding: 28px 20px;
+    }
+
+}

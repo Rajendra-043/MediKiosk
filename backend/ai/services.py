@@ -1,108 +1,349 @@
+"""
+MediKiosk AI Services
+
+Primary AI  : Ollama / llama3.2:1b
+Fallback AI : Gemini
+
+Ollama is preferred because it runs locally and can be very fast.
+Gemini is used only when Ollama is unavailable.
+"""
+
 import os
+import re
+import time
 
-from dotenv import load_dotenv
+from ollama import chat
 from google import genai
-from google.genai import types
 
 
-# -------------------------
-# LOAD ENVIRONMENT
-# -------------------------
+# =========================================================
+# CONFIG
+# =========================================================
 
-BASE_DIR = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+OLLAMA_MODEL = "llama3.2:1b"
 
-ENV_PATH = os.path.join(BASE_DIR, ".env")
+GEMINI_MODEL = "gemini-3.6-flash"
 
-load_dotenv(ENV_PATH)
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
-
-# -------------------------
-# API KEY
-# -------------------------
-
-API_KEY = os.getenv("GEMINI_API_KEY")
-
-if not API_KEY:
-    raise ValueError(
-        "GEMINI_API_KEY not found. Check your .env file."
-    )
+# Keep this short so a failed Ollama request does not freeze
+# the voice assistant for a long time.
+OLLAMA_TIMEOUT = 5
 
 
-# -------------------------
-# GEMINI CLIENT
-# -------------------------
-
-client = genai.Client(
-    api_key=API_KEY,
-    http_options={
-        "timeout": 10000
-    }
-)
-
-MODEL_NAME = "gemini-3.5-flash-lite"
-
-
-# -------------------------
-# MEDIKIOSK SYSTEM PROMPT
-# -------------------------
+# =========================================================
+# AI BEHAVIOR
+# =========================================================
 
 SYSTEM_PROMPT = """
-You are MediKiosk, an AI patient assistance system.
+You are MediKiosk, a voice assistant in a healthcare clinic.
 
-Your purpose is to help collect and organize basic information
-from patients before they meet a healthcare professional.
-
-You are NOT a doctor and must not claim to diagnose diseases.
+Speak naturally like a calm clinic assistant.
 
 Rules:
-
-1. Ask short, clear questions.
-2. Ask only one or two questions at a time.
-3. Remember information the patient already provided.
-4. Do not repeatedly ask for information you already know.
-5. Ask relevant follow-up questions based on the symptoms.
-6. Do not prescribe medication.
-7. Do not provide a definitive diagnosis.
-8. If symptoms could indicate an emergency, clearly advise
-   the patient to seek immediate medical attention.
-9. Keep responses concise because the responses may be spoken
-   through a voice interface.
-10. Be calm, respectful, and easy for a patient to understand.
-
-The goal is patient information collection and assistance,
-not medical diagnosis.
+- Keep every response to ONE short sentence.
+- Ask only ONE question at a time.
+- Use simple spoken English.
+- Do not use markdown, bullets, symbols, or emojis.
+- Do not diagnose diseases.
+- Do not prescribe medicines.
+- Collect basic patient information such as symptoms,
+  duration, severity, location, and relevant details.
+- If the patient's statement is unclear, ask them to repeat it.
+- Stay focused on the patient's clinic visit.
 """
 
 
-# -------------------------
-# CREATE CHAT SESSION
-# -------------------------
+# =========================================================
+# GEMINI CLIENT
+# =========================================================
 
-def create_chat():
-    return client.chats.create(
-        model=MODEL_NAME,
-        config=types.GenerateContentConfig(
-            system_instruction=SYSTEM_PROMPT,
-            temperature=0.4,
-            max_output_tokens=150,
-        ),
+gemini_client = None
+
+if GEMINI_API_KEY:
+    try:
+        gemini_client = genai.Client(
+            api_key=GEMINI_API_KEY
+        )
+    except Exception as error:
+        print("Gemini initialization error:", error)
+
+
+# =========================================================
+# CONVERSATION MEMORY
+# =========================================================
+
+conversation_history = []
+
+MAX_HISTORY = 8
+
+
+def reset_conversation():
+    """Clear memory for a new patient."""
+    conversation_history.clear()
+
+
+def add_to_history(role, text):
+
+    conversation_history.append({
+        "role": role,
+        "content": text
+    })
+
+    if len(conversation_history) > MAX_HISTORY:
+        del conversation_history[:-MAX_HISTORY]
+
+
+# =========================================================
+# RESPONSE CLEANUP
+# =========================================================
+
+def clean_response(text):
+
+    if not text:
+        return ""
+
+    text = str(text)
+
+    # Remove code blocks
+    text = re.sub(
+        r"```.*?```",
+        "",
+        text,
+        flags=re.DOTALL
     )
 
+    # Remove markdown characters
+    text = re.sub(
+        r"[*_#>`~]+",
+        "",
+        text
+    )
 
-chat = create_chat()
+    # Remove bullets
+    text = re.sub(
+        r"^\s*[-•]\s*",
+        "",
+        text,
+        flags=re.MULTILINE
+    )
+
+    # Remove numbered lists
+    text = re.sub(
+        r"^\s*\d+[.)]\s*",
+        "",
+        text,
+        flags=re.MULTILINE
+    )
+
+    # Remove excessive whitespace
+    text = re.sub(
+        r"\s+",
+        " ",
+        text
+    )
+
+    return text.strip()
 
 
-def reset_chat():
-    global chat
-    chat = create_chat()
+# =========================================================
+# OLLAMA
+# =========================================================
 
-# -------------------------
-# ASK AI
-# -------------------------
+def ask_ollama(text):
 
-def ask_ai(question):
-    response = chat.send_message(question)
+    messages = [
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT
+        }
+    ]
 
-    return response.text.strip()
+    messages.extend(conversation_history)
+
+    messages.append({
+        "role": "user",
+        "content": text
+    })
+
+    response = chat(
+        model=OLLAMA_MODEL,
+        messages=messages,
+        options={
+            "temperature": 0.1,
+
+            # Short output = faster response
+            "num_predict": 21,
+
+            # Smaller context = faster processing
+            "num_ctx": 2048,
+
+            # Keep model loaded in memory
+        },
+        keep_alive="10m"
+    )
+
+    answer = response.message.content
+
+    return clean_response(answer)
+
+
+# =========================================================
+# GEMINI
+# =========================================================
+
+def ask_gemini(text):
+
+    if gemini_client is None:
+        raise RuntimeError(
+            "Gemini API key not available"
+        )
+
+    history_text = ""
+
+    for message in conversation_history:
+
+        if message["role"] == "user":
+
+            history_text += (
+                f"Patient: {message['content']}\n"
+            )
+
+        elif message["role"] == "assistant":
+
+            history_text += (
+                f"MediKiosk: {message['content']}\n"
+            )
+
+    prompt = f"""
+{SYSTEM_PROMPT}
+
+Previous conversation:
+{history_text}
+
+Patient:
+{text}
+
+MediKiosk:
+"""
+
+    response = gemini_client.models.generate_content(
+        model=GEMINI_MODEL,
+        contents=prompt
+    )
+
+    answer = response.text
+
+    return clean_response(answer)
+
+
+# =========================================================
+# MAIN AI FUNCTION
+# =========================================================
+
+def ask_ai(text):
+
+    if not text:
+        return "Could you please repeat that?"
+
+    text = text.strip()
+
+    if not text:
+        return "Could you please repeat that?"
+
+
+    # =====================================================
+    # OLLAMA FIRST
+    # =====================================================
+
+    try:
+
+        start = time.time()
+
+        answer = ask_ollama(text)
+
+        elapsed = time.time() - start
+
+        if answer:
+
+            print(
+                f"Ollama AI time: {elapsed:.2f}s"
+            )
+
+            print(
+                "AI provider: Ollama"
+            )
+
+            add_to_history(
+                "user",
+                text
+            )
+
+            add_to_history(
+                "assistant",
+                answer
+            )
+
+            return answer
+
+    except Exception as error:
+
+        elapsed = time.time() - start
+
+        print(
+            f"Ollama unavailable after "
+            f"{elapsed:.2f}s:",
+            error
+        )
+
+
+    # =====================================================
+    # GEMINI FALLBACK
+    # =====================================================
+
+    try:
+
+        start = time.time()
+
+        answer = ask_gemini(text)
+
+        elapsed = time.time() - start
+
+        if answer:
+
+            print(
+                f"Gemini AI time: {elapsed:.2f}s"
+            )
+
+            print(
+                "AI provider: Gemini"
+            )
+
+            add_to_history(
+                "user",
+                text
+            )
+
+            add_to_history(
+                "assistant",
+                answer
+            )
+
+            return answer
+
+    except Exception as error:
+
+        print(
+            "Gemini unavailable:",
+            error
+        )
+
+
+    # =====================================================
+    # BOTH FAILED
+    # =====================================================
+
+    return (
+        "I'm having trouble responding right now. "
+        "Could you please repeat that?"
+    )

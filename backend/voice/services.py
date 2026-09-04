@@ -1,230 +1,183 @@
-import os
-import time
+"""
+MediKiosk Voice Services
 
-import sounddevice as sd
-import speech_recognition as sr
-import pyttsx3
-from google import genai
+Microphone     -> SpeechRecognition
+Whisper        -> Speech to Text
+Ollama/Gemini  -> AI response
+pyttsx3        -> Text to Speech
 
-
-# =========================================================
-# AUDIO SETTINGS
-# =========================================================
-
-SAMPLE_RATE = 16000
-CHANNELS = 1
-
-# Your tested microphone
-MIC_DEVICE = 1
-
-# Maximum recording duration
-MAX_RECORDING_TIME = 5
-
-# Silence required after speech
-SILENCE_DURATION = 0.45
-
-# Microphone sensitivity
-ENERGY_THRESHOLD = 350
-
-
-# =========================================================
-# GEMINI
-# =========================================================
-
-API_KEY = os.environ.get("GEMINI_API_KEY")
-
-if not API_KEY:
-    raise RuntimeError(
-        "GEMINI_API_KEY is not set. "
-        "Set your Gemini API key before running the program."
-    )
-
-client = genai.Client(api_key=API_KEY)
-
-MODEL = "gemini-3.6-flash"
-
-
-SYSTEM_PROMPT = """
-You are MediKiosk, a voice assistant in a healthcare clinic.
-
-Your job is to collect basic information from the patient before
-they see a healthcare professional.
-
-Rules:
-- Speak naturally and clearly.
-- Keep responses short, usually 1 or 2 sentences.
-- Ask one useful question at a time.
-- Do not diagnose diseases.
-- Do not prescribe medication.
-- Gather symptoms, duration, severity, and other basic information.
-- If the patient gives incomplete information, politely ask them
-  to continue.
-- Your response will be spoken aloud, so use plain sentences.
+Designed for continuous voice conversation.
 """
 
+import time
+import numpy as np
+import speech_recognition as sr
+import pyttsx3
+
+from faster_whisper import WhisperModel
+from ai.services import ask_ai
+
 
 # =========================================================
-# CONVERSATION MEMORY
+# SETTINGS
 # =========================================================
 
-conversation = []
+PHRASE_TIME_LIMIT = 10
+LISTEN_TIMEOUT = 5
+
+ENERGY_THRESHOLD = 180
+PAUSE_THRESHOLD = 0.8
+NON_SPEAKING_DURATION = 0.3
+
+TTS_RATE = 175
+TTS_VOLUME = 1.0
+
+WHISPER_MODEL = "base"
 
 
-def reset_conversation():
-    conversation.clear()
+# =========================================================
+# WHISPER
+# =========================================================
+
+print("Loading Whisper STT...")
+
+whisper_model = WhisperModel(
+    WHISPER_MODEL,
+    device="cpu",
+    compute_type="int8"
+)
+
+print("Whisper ready.")
+
+
+# =========================================================
+# SPEECH RECOGNITION
+# =========================================================
+
+recognizer = sr.Recognizer()
+
+recognizer.energy_threshold = ENERGY_THRESHOLD
+recognizer.dynamic_energy_threshold = False
+
+recognizer.pause_threshold = PAUSE_THRESHOLD
+recognizer.non_speaking_duration = NON_SPEAKING_DURATION
+
+
+# =========================================================
+# MICROPHONE CALIBRATION
+# =========================================================
+
+def calibrate_microphone():
+
+    print("\nCalibrating microphone...")
+    print("Please remain quiet for 1 second.")
+
+    try:
+
+        with sr.Microphone() as source:
+
+            recognizer.adjust_for_ambient_noise(
+                source,
+                duration=1
+            )
+
+        print(
+            f"Microphone calibrated. "
+            f"Energy threshold: {recognizer.energy_threshold:.0f}"
+        )
+
+        return True
+
+    except Exception as error:
+
+        print(
+            "Microphone calibration error:",
+            error
+        )
+
+        return False
 
 
 # =========================================================
 # TEXT TO SPEECH
 # =========================================================
 
-class SpeechEngine:
+def speak(text):
 
-    def __init__(self):
+    if not text:
+        return
 
-        self.engine = pyttsx3.init()
+    print("AI speaking...")
 
-        self.engine.setProperty(
+    engine = None
+
+    try:
+
+        engine = pyttsx3.init()
+
+        engine.setProperty(
             "rate",
-            190
+            TTS_RATE
         )
 
-    def speak(self, text):
+        engine.setProperty(
+            "volume",
+            TTS_VOLUME
+        )
 
-        try:
+        engine.say(str(text))
 
-            self.engine.say(text)
+        engine.runAndWait()
 
-            self.engine.runAndWait()
+    except Exception as error:
 
-        except Exception as error:
+        print(
+            "TTS error:",
+            error
+        )
 
-            print(
-                "TTS error:",
-                error
-            )
+    finally:
 
+        if engine is not None:
 
-speech_engine = SpeechEngine()
+            try:
+                engine.stop()
+            except Exception:
+                pass
 
-
-# =========================================================
-# AUDIO LEVEL
-# =========================================================
-
-def audio_is_loud(data):
-
-    if data.size == 0:
-        return False
-
-    level = abs(data).mean()
-
-    return level > ENERGY_THRESHOLD
+            del engine
 
 
 # =========================================================
-# LISTEN AND RECORD PATIENT
+# SPEECH TO TEXT
 # =========================================================
 
 def listen_for_speech():
 
     print("\nListening...")
-
-    recognizer = sr.Recognizer()
-
-    audio_chunks = []
-
-    started_speaking = False
-
-    silence_start = None
+    print("Ready for patient input.")
 
     start_time = time.time()
 
-    block_duration = 0.1
-
-    block_size = int(
-        SAMPLE_RATE * block_duration
-    )
-
     try:
 
-        with sd.InputStream(
-            samplerate=SAMPLE_RATE,
-            channels=CHANNELS,
-            dtype="int16",
-            device=MIC_DEVICE,
-            blocksize=block_size
-        ) as stream:
+        with sr.Microphone() as source:
 
-            while True:
+            audio = recognizer.listen(
+                source,
+                timeout=LISTEN_TIMEOUT,
+                phrase_time_limit=PHRASE_TIME_LIMIT
+            )
 
-                data, overflowed = stream.read(
-                    block_size
-                )
+    except sr.WaitTimeoutError:
 
-                data = data.copy()
+        print("No speech detected.")
 
-                audio_chunks.append(data)
-
-                speaking = audio_is_loud(data)
-
-                # -------------------------------
-                # SPEECH STARTED
-                # -------------------------------
-
-                if speaking:
-
-                    if not started_speaking:
-
-                        print(
-                            "Speech detected..."
-                        )
-
-                    started_speaking = True
-
-                    silence_start = None
-
-                # -------------------------------
-                # SPEECH ENDED
-                # -------------------------------
-
-                elif started_speaking:
-
-                    if silence_start is None:
-
-                        silence_start = time.time()
-
-                    elif (
-                        time.time() - silence_start
-                        >= SILENCE_DURATION
-                    ):
-
-                        print(
-                            "Speech ended."
-                        )
-
-                        break
-
-                # -------------------------------
-                # MAX TIME
-                # -------------------------------
-
-                if (
-                    time.time() - start_time
-                    >= MAX_RECORDING_TIME
-                ):
-
-                    print(
-                        "Maximum recording time reached."
-                    )
-
-                    break
+        return None
 
     except KeyboardInterrupt:
 
-        print(
-            "\nListening stopped."
-        )
+        print("\nListening stopped.")
 
         return None
 
@@ -237,55 +190,88 @@ def listen_for_speech():
 
         return None
 
-    # =====================================================
-    # NO SPEECH
-    # =====================================================
 
-    if not started_speaking:
+    recording_time = time.time() - start_time
 
-        print(
-            "No speech detected."
-        )
-
-        return None
-
-    # =====================================================
-    # COMBINE AUDIO
-    # =====================================================
-
-    import numpy as np
-
-    recording = np.concatenate(
-        audio_chunks,
-        axis=0
+    print(
+        f"Recording time: {recording_time:.2f}s"
     )
 
-    audio = sr.AudioData(
-        recording.tobytes(),
-        SAMPLE_RATE,
-        2
-    )
 
     # =====================================================
-    # GOOGLE SPEECH TO TEXT
+    # CONVERT AUDIO
     # =====================================================
 
     try:
 
-        start = time.time()
-
-        text = recognizer.recognize_google(
-            audio
+        raw_audio = audio.get_raw_data(
+            convert_rate=16000,
+            convert_width=2
         )
+
+        audio_array = (
+            np.frombuffer(
+                raw_audio,
+                dtype=np.int16
+            )
+            .astype(np.float32)
+            / 32768.0
+        )
+
+    except Exception as error:
 
         print(
-            f"STT time: "
-            f"{time.time() - start:.2f} seconds"
+            "Audio conversion error:",
+            error
         )
 
-        return text.strip()
+        return None
 
-    except sr.UnknownValueError:
+
+    # =====================================================
+    # WHISPER STT
+    # =====================================================
+
+    try:
+
+        print("Transcribing...")
+
+        stt_start = time.time()
+
+        segments, info = whisper_model.transcribe(
+            audio_array,
+            beam_size=1,
+            best_of=1,
+            temperature=0,
+            vad_filter=True
+        )
+
+        text = " ".join(
+            segment.text.strip()
+            for segment in segments
+        ).strip()
+
+        stt_time = time.time() - stt_start
+
+        print(
+            f"Whisper STT time: {stt_time:.2f}s"
+        )
+
+    except Exception as error:
+
+        print(
+            "Whisper STT error:",
+            error
+        )
+
+        return None
+
+
+    # =====================================================
+    # EMPTY RESULT
+    # =====================================================
+
+    if not text:
 
         print(
             "I could not understand the audio."
@@ -293,84 +279,19 @@ def listen_for_speech():
 
         return None
 
-    except sr.RequestError as error:
 
-        print(
-            "Speech recognition error:",
-            error
-        )
-
-        return None
-
-
-# =========================================================
-# GEMINI AI
-# =========================================================
-
-def ask_ai(patient_text):
-
-    conversation.append(
-        {
-            "role": "user",
-            "content": patient_text
-        }
+    print(
+        "You:",
+        text
     )
 
-    # Keep conversation small
-    if len(conversation) > 12:
-
-        del conversation[:-12]
-
-    prompt = SYSTEM_PROMPT + "\n\n"
-
-    for message in conversation:
-
-        prompt += (
-            message["role"]
-            + ": "
-            + message["content"]
-            + "\n"
-        )
-
-    prompt += "\nassistant:"
-
-    try:
-
-        start = time.time()
-
-        response = client.models.generate_content(
-            model=MODEL,
-            contents=prompt
-        )
+    if hasattr(info, "language"):
 
         print(
-            f"AI time: "
-            f"{time.time() - start:.2f} seconds"
+            f"Detected language: {info.language}"
         )
 
-        answer = response.text.strip()
-
-        conversation.append(
-            {
-                "role": "assistant",
-                "content": answer
-            }
-        )
-
-        return answer
-
-    except Exception as error:
-
-        print(
-            "AI error:",
-            error
-        )
-
-        return (
-            "I'm sorry, I had trouble "
-            "understanding that. Could you "
-            "please repeat it?"
-        )
+    return text
 
 
 # =========================================================
@@ -380,82 +301,122 @@ def ask_ai(patient_text):
 def listen_and_ask():
 
     print(
-        "\n================================="
+        """
+=================================
+       MediKiosk Voice Mode
+=================================
+"""
     )
 
-    print(
-        "       MediKiosk Voice Mode"
-    )
 
-    print(
-        "================================="
-    )
+    # =====================================================
+    # CALIBRATE MICROPHONE
+    # =====================================================
 
-    reset_conversation()
+    if not calibrate_microphone():
+
+        print(
+            "Unable to initialize microphone."
+        )
+
+        return
+
+
+    # =====================================================
+    # CONVERSATION LOOP
+    # =====================================================
 
     while True:
 
-        # -----------------------------------------
-        # PATIENT SPEAKS
-        # -----------------------------------------
-
-        start = time.time()
-
         text = listen_for_speech()
-
-        print(
-            f"Recording/STT total: "
-            f"{time.time() - start:.2f} seconds"
-        )
 
         if not text:
 
             continue
 
-        print(
-            "You:",
-            text
-        )
 
-        # -----------------------------------------
-        # STOP COMMAND
-        # -----------------------------------------
+        # =================================================
+        # EXIT COMMAND
+        # =================================================
 
-        if text.lower().strip() in [
-            "stop",
+        command = text.lower().strip()
+
+        exit_commands = {
             "exit",
-            "quit"
-        ]:
+            "quit",
+            "stop",
+            "goodbye",
+            "end session"
+        }
+
+        if command in exit_commands:
+
+            speak(
+                "Thank you. "
+                "Your session has ended. "
+                "Goodbye."
+            )
 
             print(
-                "Conversation ended."
+                "\nConversation ended."
             )
 
             break
 
-        # -----------------------------------------
-        # GEMINI
-        # -----------------------------------------
 
-        answer = ask_ai(text)
+        # =================================================
+        # AI PROCESSING
+        # =================================================
+
+        print("\nAI processing...")
+
+        ai_start = time.time()
+
+        try:
+
+            answer = ask_ai(text)
+
+        except Exception as error:
+
+            print(
+                "AI error:",
+                error
+            )
+
+            answer = (
+                "I'm sorry, I'm having trouble "
+                "responding right now. "
+                "Could you please repeat that?"
+            )
+
+
+        ai_time = time.time() - ai_start
+
+        print(
+            f"AI time: {ai_time:.2f}s"
+        )
 
         print(
             "AI:",
             answer
         )
 
-        # -----------------------------------------
+
+        # =================================================
         # SPEAK AI RESPONSE
-        # -----------------------------------------
+        # =================================================
+
+        speak(answer)
 
         print(
-            "AI speaking..."
+            "\nReady for patient input."
         )
 
-        speech_engine.speak(
-            answer
-        )
 
-        print(
-            "Ready for patient input."
-        )
+# =========================================================
+# START
+# =========================================================
+
+if __name__ == "__main__":
+
+    listen_and_ask()
