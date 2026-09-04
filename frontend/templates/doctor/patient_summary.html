@@ -1,0 +1,220 @@
+{% extends "doctor/base.html" %}
+{% load static %}
+
+{% block title %}
+AI Summary | {{ patient.name }}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/patient_summary.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="summary-page">
+
+    <!-- BACK -->
+
+    <a href="{% url 'patient_detail' patient.id %}"
+       class="back-button">
+
+        ← Back to Patient
+
+    </a>
+
+
+    <!-- HEADER -->
+
+    <section class="summary-header">
+
+        <div class="summary-heading">
+
+            <div class="ai-icon">
+                ✨
+            </div>
+
+            <div>
+
+                <span class="page-label">
+                    MEDIKIOSK AI
+                </span>
+
+                <h1>
+                    Patient Summary
+                </h1>
+
+                <p>
+                    AI-assisted summary of
+                    {{ patient.name }}'s medical records.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="patient-mini">
+
+            <div class="patient-avatar">
+
+                {{ patient.name|first|upper }}
+
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ patient.name }}
+                </strong>
+
+                <span>
+                    {{ patient.patient_id }}
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- AI SUMMARY -->
+
+    <section class="summary-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Clinical Summary
+                </h2>
+
+                <p>
+                    Generated from authorized patient records
+                </p>
+
+            </div>
+
+
+            {% if ai_summary %}
+
+            <span class="generated">
+                Generated
+            </span>
+
+            {% endif %}
+
+        </div>
+
+
+        {% if ai_summary %}
+
+        <div class="summary-content">
+
+            {{ ai_summary|linebreaks }}
+
+        </div>
+
+
+        {% else %}
+
+        <!-- NO SUMMARY -->
+
+        <div class="empty-summary">
+
+            <div class="empty-icon">
+                ✨
+            </div>
+
+            <h3>
+                AI Summary Not Generated
+            </h3>
+
+            <p>
+                Generate an AI-assisted summary from
+                this patient's available medical records.
+            </p>
+
+
+            <button
+                type="button"
+                id="generateSummary"
+                class="generate-button">
+
+                ✨ Generate Summary
+
+            </button>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- WARNING -->
+
+    <div class="ai-warning">
+
+        <span class="warning-icon">
+            ⚠
+        </span>
+
+        <div>
+
+            <strong>
+                AI-generated information
+            </strong>
+
+            <p>
+                This summary is intended to assist clinical
+                review. Always verify the information against
+                the original patient records before making
+                clinical decisions.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ACTIONS -->
+
+    <div class="summary-actions">
+
+        <a href="{% url 'patient_detail' patient.id %}"
+           class="secondary-button">
+
+            View Medical History
+
+        </a>
+
+
+        {% if ai_summary %}
+
+        <button
+            type="button"
+            class="secondary-button"
+            onclick="window.print()">
+
+            Print Summary
+
+        </button>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="{% static 'js/patient_summary.js' %}"></script>
+
+{% endblock %}
