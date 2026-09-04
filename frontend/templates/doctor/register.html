@@ -44,7 +44,8 @@
                     border
                     p-6 md:p-10">
 
-            <form onsubmit="handleDoctorRegistration(event)">
+            <form method="POST" action="/doctor/register/">
+                {% csrf_token %}
 
                 <h2 class="section-title">
                     Professional Information
@@ -59,6 +60,7 @@
                         </label>
 
                         <input type="text"
+                                name = "full_name"
                                placeholder="Dr. Full Name"
                                required
                                class="form-input">
@@ -73,6 +75,7 @@
                         </label>
 
                         <input type="text"
+                               name="medical_registration_number"
                                placeholder="Registration number"
                                required
                                class="form-input">
@@ -86,7 +89,8 @@
                             Specialization
                         </label>
 
-                        <select class="form-input"
+                        <select name="specialization"
+                                class="form-input"
                                 required>
 
                             <option value="">
@@ -113,6 +117,7 @@
                         </label>
 
                         <input type="text"
+                               name="qualification"
                                placeholder="MBBS / BAMS / MD etc."
                                required
                                class="form-input">
@@ -127,6 +132,7 @@
                         </label>
 
                         <input type="number"
+                               name="experience"
                                placeholder="Years"
                                class="form-input">
 
@@ -148,6 +154,7 @@
                         </label>
 
                         <input type="tel"
+                               name="phone"
                                required
                                class="form-input">
 
@@ -161,6 +168,7 @@
                         </label>
 
                         <input type="email"
+                               name="email"
                                required
                                class="form-input">
 
@@ -182,6 +190,7 @@
                         </label>
 
                         <input type="password"
+                               name="password"
                                id="doctorRegisterPassword"
                                required
                                class="form-input">
@@ -196,6 +205,7 @@
                         </label>
 
                         <input type="password"
+                               name="confirm_password"
                                id="doctorConfirmPassword"
                                required
                                class="form-input">
