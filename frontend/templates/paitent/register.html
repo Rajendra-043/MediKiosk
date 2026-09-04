@@ -47,8 +47,8 @@
                     border border-slate-200
                     p-6 md:p-10">
 
-            <form onsubmit="handleRegistration(event)">
-
+            <form method="POST" action="/patient/register/">
+                {% csrf_token %}
                 <!-- PERSONAL INFORMATION -->
                 <h2 class="section-title">
                     Personal Information
@@ -62,6 +62,7 @@
                         </label>
 
                         <input type="text"
+                               name = "name"
                                placeholder="Enter full name"
                                required
                                class="form-input">
@@ -74,6 +75,7 @@
                         </label>
 
                         <input type="date"
+                               name = "date_of_birth"
                                required
                                class="form-input">
                     </div>
@@ -84,7 +86,7 @@
                             Gender
                         </label>
 
-                        <select required
+                        <select name = "gender" required
                                 class="form-input">
 
                             <option value="">
@@ -104,7 +106,7 @@
                             Blood Group
                         </label>
 
-                        <select class="form-input">
+                        <select name = "blood_group" class="form-input">
 
                             <option value="">
                                 Select blood group
@@ -138,6 +140,7 @@
                         </label>
 
                         <input type="tel"
+                               name = "phone"
                                placeholder="+91 XXXXX XXXXX"
                                required
                                class="form-input">
@@ -150,6 +153,7 @@
                         </label>
 
                         <input type="email"
+                                name = "email"
                                placeholder="example@email.com"
                                required
                                class="form-input">
@@ -162,7 +166,8 @@
                             Address
                         </label>
 
-                        <textarea rows="3"
+                        <textarea name = "address"
+                                  rows="3"
                                   placeholder="Enter your address"
                                   class="form-input"></textarea>
 
@@ -185,6 +190,7 @@
                         </label>
 
                         <input type="password"
+                               name = "password"
                                id="registerPassword"
                                placeholder="Create password"
                                required
@@ -200,6 +206,7 @@
                         </label>
 
                         <input type="password"
+                               name = "confirm_password"
                                id="confirmPassword"
                                placeholder="Confirm password"
                                required
