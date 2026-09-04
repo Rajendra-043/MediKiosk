@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Medical History | MediKiosk{% endblock %}
+
+{% block content %}
+<link rel="stylesheet"
+      href="{%static 'css/medical_history.css.css' %}">
+
+<div class="medical-history-page">
+
+    <!-- PAGE HEADER -->
+    <div class="medical-history-header">
+
+        <div>
+            <h1>Medical History</h1>
+
+            <p>
+                View and manage your complete medical information
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- PATIENT SUMMARY -->
+    <section class="medical-history-patient-card">
+
+        <div class="medical-history-patient-info">
+
+            <div class="medical-history-avatar">
+                {{ patient.name|first|upper }}
+            </div>
+
+            <div>
+
+                <h2>
+                    {{ patient.name }}
+                </h2>
+
+                <p>
+                    Patient ID:
+                    <strong>{{ patient.patient_id }}</strong>
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MEDICAL HISTORY CONTENT -->
+    <section class="medical-history-section">
+
+        <div class="medical-history-section-header">
+
+            <div>
+                <h2>Medical Records</h2>
+
+                <p>
+                    Important medical conditions, procedures,
+                    allergies and health information.
+                </p>
+            </div>
+
+            <div class="medical-history-count">
+                {{ medical_history|length }} Records
+            </div>
+
+        </div>
+
+
+        <!-- RECORDS -->
+
+        <div class="medical-history-list">
+
+            {% for record in medical_history %}
+
+            <div class="medical-history-record">
+
+
+                <!-- RECORD HEADER -->
+
+                <div class="medical-record-header">
+
+                    <div class="medical-record-icon
+                        {% if record.category == 'condition' %}
+                            medical-icon-condition
+                        {% elif record.category == 'allergy' %}
+                            medical-icon-allergy
+                        {% elif record.category == 'surgery' %}
+                            medical-icon-surgery
+                        {% elif record.category == 'procedure' %}
+                            medical-icon-procedure
+                        {% else %}
+                            medical-icon-default
+                        {% endif %}
+                    ">
+
+                        {% if record.category == "condition" %}
+                            🩺
+                        {% elif record.category == "allergy" %}
+                            ⚠️
+                        {% elif record.category == "surgery" %}
+                            🏥
+                        {% elif record.category == "procedure" %}
+                            🔬
+                        {% else %}
+                            📋
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="medical-record-heading">
+
+                        <h3>
+                            {{ record.title }}
+                        </h3>
+
+                        <span>
+                            {{ record.category|title }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="medical-record-date">
+
+                        <span>Date</span>
+
+                        <strong>
+                            {{ record.date }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RECORD DETAILS -->
+
+                <div class="medical-record-details">
+
+                    {% if record.description %}
+
+                    <div class="medical-record-detail">
+
+                        <span class="detail-label">
+                            Description
+                        </span>
+
+                        <p>
+                            {{ record.description }}
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if record.doctor %}
+
+                    <div class="medical-record-detail">
+
+                        <span class="detail-label">
+                            Doctor
+                        </span>
+
+                        <p>
+                            👨‍⚕️ {{ record.doctor }}
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if record.hospital %}
+
+                    <div class="medical-record-detail">
+
+                        <span class="detail-label">
+                            Hospital / Clinic
+                        </span>
+
+                        <p>
+                            🏥 {{ record.hospital }}
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if record.status %}
+
+                    <div class="medical-record-detail">
+
+                        <span class="detail-label">
+                            Status
+                        </span>
+
+                        <p>
+                            {{ record.status }}
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            {% empty %}
+
+            <!-- EMPTY STATE -->
+
+            <div class="medical-history-empty">
+
+                <div class="medical-history-empty-icon">
+                    📋
+                </div>
+
+                <h3>
+                    No Medical History
+                </h3>
+
+                <p>
+                    No medical records have been added
+                    to this patient's profile yet.
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- IMPORTANT INFORMATION -->
+
+    <section class="medical-history-info-box">
+
+        <div class="medical-history-info-icon">
+            ℹ️
+        </div>
+
+        <div>
+
+            <h3>
+                Medical Information
+            </h3>
+
+            <p>
+                This information is compiled from the patient's
+                available medical records. Always verify important
+                medical information against the original clinical
+                records.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}History Timeline | MediKiosk{% endblock %}
+
+{% block content %}
+<link rel="stylesheet"
+      href="{%static 'css/history_Timeline.css' %}">
+<div class="timeline-page">
+
+    <!-- Page Header -->
+    <div class="timeline-header">
+        <h1>History Timeline</h1>
+        <p>View your medical journey and important health events</p>
+    </div>
+
+
+    <!-- Patient Summary -->
+    <section class="timeline-patient-card">
+
+        <div class="timeline-patient-info">
+
+            <div class="timeline-patient-avatar">
+                {{ patient.name|first|upper }}
+            </div>
+
+            <div>
+                <h2>{{ patient.name }}</h2>
+
+                <p>
+                    Patient ID:
+                    <strong>{{ patient.patient_id }}</strong>
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="timeline-event-count">
+
+            <span>Total Medical Events</span>
+
+            <strong>{{ timeline|length }}</strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- Timeline -->
+    <section class="timeline-section">
+
+        <h2>Medical History</h2>
+
+        <p class="timeline-section-description">
+            Chronological record of important medical events.
+        </p>
+
+
+        <div class="medical-timeline">
+
+            {% for event in timeline %}
+
+            <div class="timeline-event">
+
+
+                <!-- Timeline Icon -->
+
+                <div class="timeline-icon
+                    {% if event.type == 'visit' %}
+                        timeline-icon-visit
+                    {% elif event.type == 'diagnosis' %}
+                        timeline-icon-diagnosis
+                    {% elif event.type == 'medication' %}
+                        timeline-icon-medication
+                    {% elif event.type == 'document' %}
+                        timeline-icon-document
+                    {% else %}
+                        timeline-icon-default
+                    {% endif %}
+                ">
+
+                    {% if event.type == "visit" %}
+                        🏥
+                    {% elif event.type == "diagnosis" %}
+                        🩺
+                    {% elif event.type == "medication" %}
+                        💊
+                    {% elif event.type == "document" %}
+                        📄
+                    {% else %}
+                        📌
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Event Card -->
+
+                <div class="timeline-event-card">
+
+                    <div class="timeline-event-top">
+
+                        <span class="timeline-date">
+                            {{ event.date }}
+                        </span>
+
+                        <span class="timeline-type">
+                            {{ event.type|title }}
+                        </span>
+
+                    </div>
+
+
+                    <h3>
+                        {{ event.title }}
+                    </h3>
+
+
+                    <p class="timeline-description">
+                        {{ event.description }}
+                    </p>
+
+
+                    {% if event.doctor %}
+
+                    <div class="timeline-meta">
+                        <span>👨‍⚕️</span>
+                        <span>{{ event.doctor }}</span>
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if event.hospital %}
+
+                    <div class="timeline-meta">
+                        <span>🏥</span>
+                        <span>{{ event.hospital }}</span>
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="timeline-empty">
+
+                <div>📋</div>
+
+                <h3>No Medical History</h3>
+
+                <p>
+                    No medical events have been added to the
+                    patient's record yet.
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- AI Information -->
+
+    <section class="timeline-ai-box">
+
+        <div class="timeline-ai-icon">
+            🤖
+        </div>
+
+        <div>
+
+            <h3>AI-Assisted Timeline</h3>
+
+            <p>
+                Medical events may be organized from information
+                available in the patient's digital medical records.
+                AI-generated summaries should be verified against
+                the original records when required.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

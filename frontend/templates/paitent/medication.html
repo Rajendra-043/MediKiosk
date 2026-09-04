@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Medications | MediKiosk{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{%static 'css/medication.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="medication-page">
+
+    <!-- PAGE HEADER -->
+    <div class="medication-header">
+        <div>
+            <h1>Medications</h1>
+            <p>
+                View the patient's prescribed and recorded medications
+            </p>
+        </div>
+    </div>
+
+
+    <!-- PATIENT SUMMARY -->
+    <section class="medication-patient-card">
+
+        <div class="medication-patient-info">
+
+            <div class="medication-avatar">
+                {{ patient.name|first|upper }}
+            </div>
+
+            <div>
+                <h2>{{ patient.name }}</h2>
+
+                <p>
+                    Patient ID:
+                    <strong>{{ patient.patient_id }}</strong>
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MEDICATION SECTION -->
+    <section class="medication-section">
+
+        <div class="medication-section-header">
+
+            <div>
+                <h2>Current & Recorded Medications</h2>
+
+                <p>
+                    Medication information recorded in the
+                    patient's medical records.
+                </p>
+            </div>
+
+            <div class="medication-count">
+                {{ medications|length }} Medications
+            </div>
+
+        </div>
+
+
+        <!-- MEDICATION LIST -->
+        <div class="medication-list">
+
+            {% for medication in medications %}
+
+            <div class="medication-card">
+
+                <!-- CARD HEADER -->
+                <div class="medication-card-header">
+
+                    <div class="medication-icon">
+                        💊
+                    </div>
+
+                    <div class="medication-heading">
+
+                        <h3>
+                            {{ medication.name }}
+                        </h3>
+
+                        {% if medication.generic_name %}
+                        <p>
+                            {{ medication.generic_name }}
+                        </p>
+                        {% endif %}
+
+                    </div>
+
+                    <span class="medication-prescription">
+                        Prescribed
+                    </span>
+
+                </div>
+
+
+                <!-- DETAILS -->
+                <div class="medication-details">
+
+                    {% if medication.dosage %}
+                    <div class="medication-detail">
+                        <span class="medication-detail-label">
+                            Dosage
+                        </span>
+
+                        <span class="medication-detail-value">
+                            {{ medication.dosage }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+
+                    {% if medication.frequency %}
+                    <div class="medication-detail">
+                        <span class="medication-detail-label">
+                            Frequency
+                        </span>
+
+                        <span class="medication-detail-value">
+                            {{ medication.frequency }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+
+                    {% if medication.route %}
+                    <div class="medication-detail">
+                        <span class="medication-detail-label">
+                            Route
+                        </span>
+
+                        <span class="medication-detail-value">
+                            {{ medication.route }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+
+                    {% if medication.start_date %}
+                    <div class="medication-detail">
+                        <span class="medication-detail-label">
+                            Start Date
+                        </span>
+
+                        <span class="medication-detail-value">
+                            {{ medication.start_date }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+
+                    {% if medication.end_date %}
+                    <div class="medication-detail">
+                        <span class="medication-detail-label">
+                            End Date
+                        </span>
+
+                        <span class="medication-detail-value">
+                            {{ medication.end_date }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+
+                    {% if medication.instructions %}
+                    <div class="medication-detail">
+                        <span class="medication-detail-label">
+                            Instructions
+                        </span>
+
+                        <span class="medication-detail-value">
+                            {{ medication.instructions }}
+                        </span>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- DOCTOR -->
+                {% if medication.doctor %}
+
+                <div class="medication-doctor">
+
+                    <span>👨‍⚕️</span>
+
+                    <span>
+                        Prescribed by
+                        <strong>
+                            {{ medication.doctor }}
+                        </strong>
+                    </span>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            {% empty %}
+
+            <!-- EMPTY STATE -->
+            <div class="medication-empty">
+
+                <div class="medication-empty-icon">
+                    💊
+                </div>
+
+                <h3>
+                    No Medication Records
+                </h3>
+
+                <p>
+                    No medications have been recorded
+                    for this patient yet.
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- INFORMATION BOX -->
+    <section class="medication-info-box">
+
+        <div class="medication-info-icon">
+            ℹ️
+        </div>
+
+        <div>
+
+            <h3>
+                Medication Information
+            </h3>
+
+            <p>
+                Medication details are displayed from available
+                medical records. The system does not determine
+                whether a patient has completed or taken a
+                prescribed medication.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
