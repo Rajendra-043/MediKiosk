@@ -282,3 +282,151 @@ closeLiveSpeech.addEventListener(
     "click",
     stopLiveSpeechRecording
 );
+
+/* =========================================
+   AI CHAT FORM
+========================================= */
+
+const chatForm = document.getElementById("chatForm");
+const messages = document.getElementById("messages");
+const welcomeMessage = document.getElementById("welcomeMessage");
+
+
+chatForm.addEventListener("submit", async function (event) {
+
+    event.preventDefault();
+
+    const question = messageInput.value.trim();
+
+    if (!question) {
+        return;
+    }
+
+
+    /* =====================================
+       SHOW PATIENT MESSAGE
+    ===================================== */
+
+    const patientMessage = document.createElement("div");
+
+    patientMessage.className =
+        "message user-message";
+
+    patientMessage.innerHTML = `
+        <div class="message-content">
+            <span class="message-name">
+                You
+            </span>
+
+            <div class="message-bubble">
+                ${question}
+            </div>
+        </div>
+    `;
+
+    messages.appendChild(patientMessage);
+
+
+    /* Hide welcome message */
+
+    if (welcomeMessage) {
+        welcomeMessage.style.display = "none";
+    }
+
+
+    /* Clear input */
+
+    messageInput.value = "";
+
+    messageInput.style.height = "auto";
+
+
+    /* =====================================
+       SEND TO DJANGO
+    ===================================== */
+
+    try {
+
+        const response = await fetch(
+            "/api/ai/chat/",
+            {
+                method: "POST",
+
+                headers: {
+                    "X-CSRFToken":
+                        document.querySelector(
+                            "[name=csrfmiddlewaretoken]"
+                        ).value
+                },
+
+                body: new URLSearchParams({
+                    question: question
+                })
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        /* =================================
+           SHOW AI RESPONSE
+        ================================= */
+
+        if (data.answer) {
+
+            const aiMessage =
+                document.createElement("div");
+
+            aiMessage.className =
+                "message ai-message";
+
+            aiMessage.innerHTML = `
+                <div class="message-avatar">
+                    +
+                </div>
+
+                <div class="message-content">
+
+                    <span class="message-name">
+                        MediKiosk AI
+                    </span>
+
+                    <div class="message-bubble">
+                        ${data.answer}
+                    </div>
+
+                </div>
+            `;
+
+            messages.appendChild(aiMessage);
+
+        }
+
+        else {
+
+            console.error(
+                "AI error:",
+                data.error
+            );
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Connection error:",
+            error
+        );
+
+    }
+
+
+    /* Scroll to latest message */
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+});
+
