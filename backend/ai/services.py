@@ -16,6 +16,11 @@ from ollama import chat
 from google import genai
 
 
+from database.patient_service import (
+    create_patient,
+    update_patient,
+)
+
 # =========================================================
 # CONFIG
 # =========================================================
@@ -72,10 +77,21 @@ if GEMINI_API_KEY:
 # =========================================================
 # CONVERSATION MEMORY
 # =========================================================
-
 conversation_history = []
 
 MAX_HISTORY = 8
+
+
+# =========================================================
+# CURRENT PATIENT STORAGE
+# =========================================================
+
+current_patient_id = None
+
+
+def reset_patient():
+    global current_patient_id
+    current_patient_id = None
 
 
 def reset_conversation():
@@ -92,7 +108,6 @@ def add_to_history(role, text):
 
     if len(conversation_history) > MAX_HISTORY:
         del conversation_history[:-MAX_HISTORY]
-
 
 # =========================================================
 # RESPONSE CLEANUP
@@ -237,6 +252,189 @@ MediKiosk:
     return clean_response(answer)
 
 
+
+# =========================================================
+# PATIENT DATA EXTRACTION
+# =========================================================
+
+def extract_patient_data(text):
+    """
+    Extract simple patient information from spoken/text input.
+
+    This does not replace the AI model.
+    It only converts obvious information into
+    fields supported by database.models.Patient.
+    """
+
+    data = {}
+
+    text_lower = text.lower().strip()
+
+
+    # -------------------------
+    # NAME
+    # -------------------------
+
+    name_match = re.search(
+        r"(?:my name is|i am|i'm|name is)\s+([a-zA-Z ]{2,50})",
+        text,
+        re.IGNORECASE
+    )
+
+    if name_match:
+        name = name_match.group(1).strip()
+
+        # Remove common trailing phrases
+        name = re.split(
+            r"\b(?:and|i have|with|my age|i am)\b",
+            name,
+            flags=re.IGNORECASE
+        )[0].strip()
+
+        if name:
+            data["name"] = name
+
+
+    # -------------------------
+    # AGE
+    # -------------------------
+
+    age_match = re.search(
+        r"(?:i am|i'm|age is|my age is)\s*(\d{1,3})\s*(?:years?|yrs?)?",
+        text,
+        re.IGNORECASE
+    )
+
+    if age_match:
+        data["age"] = int(age_match.group(1))
+
+
+    # -------------------------
+    # GENDER
+    # -------------------------
+
+    if re.search(r"\b(male|man|boy)\b", text_lower):
+        data["gender"] = "Male"
+
+    elif re.search(r"\b(female|woman|girl)\b", text_lower):
+        data["gender"] = "Female"
+
+
+    # -------------------------
+    # DURATION
+    # -------------------------
+
+    duration_match = re.search(
+        r"\b(?:for|since)\s+(\d+)\s*(day|days|week|weeks|month|months|year|years)\b",
+        text,
+        re.IGNORECASE
+    )
+
+    if duration_match:
+        data["duration"] = (
+            f"{duration_match.group(1)} "
+            f"{duration_match.group(2)}"
+        )
+
+
+    # -------------------------
+    # SEVERITY
+    # -------------------------
+
+    severity_words = [
+        "mild",
+        "moderate",
+        "severe",
+        "very severe",
+        "slight"
+    ]
+
+    for severity in severity_words:
+        if severity in text_lower:
+            data["severity"] = severity.title()
+            break
+
+
+    # -------------------------
+    # SYMPTOMS
+    # -------------------------
+
+    symptom_match = re.search(
+        r"(?:i have|i'm having|i am having|suffering from|symptoms? (?:are|is))\s+(.+)",
+        text,
+        re.IGNORECASE
+    )
+
+    if symptom_match:
+        symptoms = symptom_match.group(1).strip()
+
+        # Don't store an entire long conversation as symptoms
+        if len(symptoms) <= 200:
+            data["symptoms"] = symptoms
+
+
+    return data
+
+# =========================================================
+# SAVE PATIENT DATA
+# =========================================================
+
+def save_patient_data(text):
+    """
+    Save information extracted from AI/voice input
+    using the existing SQLAlchemy storage system.
+    """
+
+    global current_patient_id
+
+    data = extract_patient_data(text)
+
+    if not data:
+        return None
+
+
+    # =====================================================
+    # CREATE NEW PATIENT
+    # =====================================================
+
+    if current_patient_id is None:
+
+        patient = create_patient(
+            name=data.get("name"),
+            age=data.get("age"),
+            gender=data.get("gender"),
+            symptoms=data.get("symptoms"),
+            duration=data.get("duration"),
+            severity=data.get("severity"),
+        )
+
+        current_patient_id = patient.patient_id
+
+        print(
+            f"Patient data saved. "
+            f"Patient ID: {current_patient_id}"
+        )
+
+        return patient
+
+
+    # =====================================================
+    # UPDATE EXISTING PATIENT
+    # =====================================================
+
+    patient = update_patient(
+        current_patient_id,
+        **data
+    )
+
+    if patient:
+        print(
+            f"Patient data updated. "
+            f"Patient ID: {current_patient_id}"
+        )
+
+    return patient
+
 # =========================================================
 # MAIN AI FUNCTION
 # =========================================================
@@ -251,6 +449,16 @@ def ask_ai(text):
     if not text:
         return "Could you please repeat that?"
 
+
+        # Save structured patient information
+    # using the existing database storage system.
+    try:
+        save_patient_data(text)
+    except Exception as error:
+        print(
+            "Patient storage error:",
+            error
+        )
 
     # =====================================================
     # OLLAMA FIRST

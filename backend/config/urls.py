@@ -40,6 +40,12 @@ urlpatterns = [
     "api/patients/",
     include("patients.urls")
     ),
+
+    path(
+    "api/ai/",
+    include("ai.urls")
+    ),
+
     
     path(
         "patient/",
