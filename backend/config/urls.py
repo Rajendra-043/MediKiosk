@@ -16,9 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
-
 
 urlpatterns = [
 
@@ -49,6 +49,13 @@ urlpatterns = [
         name="patient_login"
     ),
 
+    # --- LOGOUT YAHAN ADD HUA HAI ---
+    path(
+        "patient/logout/",
+        views.patient_logout,
+        name="patient_logout"
+    ),
+
     path(
         "patient/register/",
         views.patient_register,
@@ -59,6 +66,31 @@ urlpatterns = [
         "patient/dashboard/",
         views.patient_dashboard,
         name="patient_dashboard"
+    ),
+
+    path(
+        "patient/medical-history/",
+        views.medical_history,
+        name="medical_history"
+    ),
+
+    path(
+        "patient/medications/",
+        views.medications,
+        name="medications"
+    ),
+
+    path(
+        "patient/documents/",
+        views.documents,
+        name="documents"
+    ),
+
+    # --- DELETE DOCUMENT YAHAN PATIENT MEIN SHIFT KIYA ---
+    path(
+        "patient/documents/<int:doc_id>/delete/",
+        views.delete_document,
+        name="delete_document"
     ),
 
 
@@ -94,3 +126,6 @@ urlpatterns = [
         admin.site.urls
     ),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
