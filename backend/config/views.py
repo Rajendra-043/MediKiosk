@@ -82,6 +82,23 @@ def patient_dashboard(request):
     return render(request, "paitent/dashboard.html", {"patient": patient})
 
 
+def patient_chatbot(request):
+    patient_id = request.session.get("patient_id")
+
+    if not patient_id:
+        return redirect("/patient/login/")
+
+    patient = get_object_or_404(Patient, id=patient_id)
+
+    return render(
+        request,
+        "paitent/ai-chatbot.html",
+        {
+            "patient": patient,
+        }
+    )
+
+
 def patient_logout(request):
     request.session.flush()
     return redirect("/patient/login/")

@@ -208,59 +208,45 @@ else {
 /* =========================================
    STOP LIVE SPEECH
 ========================================= */
-
 function stopLiveSpeechRecording() {
 
     liveSpeechActive = false;
 
-
     if (speechRecognition) {
-
         try {
-
             speechRecognition.stop();
-
         } catch (error) {
-
-            console.log(error);
-
+            console.log("Speech stop error:", error);
         }
-
     }
-
 
     liveSpeechButton.classList.remove("active");
 
-
-    /* Put speech into chat input */
-
     const spokenText =
-        liveTranscript.textContent;
+        liveTranscript.textContent.trim();
 
+    /* Close the Live Speech window */
+    liveSpeechOverlay.style.display = "none";
 
+    /* Ignore empty or error messages */
     if (
-        spokenText &&
-        spokenText !== "Listening..." &&
-        !spokenText.includes("Microphone permission was denied")
+        !spokenText ||
+        spokenText === "Listening..." ||
+        spokenText.includes("Microphone permission was denied") ||
+        spokenText.includes("No speech detected")
     ) {
-
-        messageInput.value =
-            spokenText.trim();
-
-
-        messageInput.style.height =
-            "auto";
-
-
-        messageInput.style.height =
-            messageInput.scrollHeight + "px";
-
+        return;
     }
 
+    /* Put speech text into chat input */
+    messageInput.value = spokenText;
 
-    liveSpeechOverlay.style.display =
-        "none";
+    messageInput.style.height = "auto";
+    messageInput.style.height =
+        messageInput.scrollHeight + "px";
 
+    /* Automatically send to AI */
+    chatForm.requestSubmit();
 }
 
 
