@@ -4,8 +4,23 @@ MediKiosk AI Services
 Primary AI  : Ollama / llama3.2:1b
 Fallback AI : Gemini
 
-Ollama is preferred because it runs locally and can be very fast.
-Gemini is used only when Ollama is unavailable.
+Conversation flow:
+
+1. Patient describes the problem.
+2. AI asks relevant questions naturally.
+3. After enough assessment information:
+   AI offers general medication information.
+4. If patient says YES:
+   Give general medication information.
+5. If patient says NO:
+   Continue the conversation normally.
+6. After a longer conversation:
+   Ask whether the patient wants to quit.
+7. YES -> end conversation.
+8. NO -> continue conversation.
+
+Important:
+The AI does not diagnose or prescribe medication.
 """
 
 import os
@@ -15,11 +30,11 @@ import time
 from ollama import chat
 from google import genai
 
-
 from database.patient_service import (
     create_patient,
     update_patient,
 )
+
 
 # =========================================================
 # CONFIG
@@ -31,9 +46,15 @@ GEMINI_MODEL = "gemini-3.6-flash"
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
-# Keep this short so a failed Ollama request does not freeze
-# the voice assistant for a long time.
 OLLAMA_TIMEOUT = 5
+
+MAX_HISTORY = 8
+
+# Number of user turns before offering to end a long conversation.
+MAX_CONVERSATION_TURNS = 15
+
+# Number of assessment questions before offering medication information.
+MAX_QUESTIONS = 4
 
 
 # =========================================================
@@ -47,21 +68,23 @@ Speak naturally like a calm clinic assistant.
 
 Rules:
 
-- Keep every response to ONE short sentence.
+- Keep normal responses to ONE short sentence.
 - Ask only ONE question at a time.
 - Ask only questions that are relevant to the patient's problem.
-- Collect only the basic information needed to understand the patient's complaint.
-- Important information may include symptoms, duration, severity, location, and relevant associated symptoms.
-- Do not ask unnecessary or repetitive questions.
-- Ask a maximum of FOUR questions during one patient assessment.
-- If you already have enough information before four questions, STOP asking questions.
-- After you have enough information, give the patient a short helpful final response instead of asking another question.
-- The final response should briefly summarize what the patient told you and provide appropriate general guidance.
+- Use the previous conversation to understand what the patient already told you.
+- Do not repeat questions that have already been answered.
+- Collect useful basic information such as symptoms, duration, severity, location, and related symptoms.
+- Ask relevant questions naturally instead of following a rigid script.
 - Do not diagnose diseases.
 - Do not prescribe medicines.
-- Do not use markdown, bullets, symbols, or emojis.
+- Do not provide medication dosages.
+- If medication information is requested, provide general educational information only.
+- Do not claim that a particular medicine is definitely suitable for the patient.
+- If the patient's statement is unclear, ask them to clarify it.
 - Use simple spoken English.
-- If the patient's statement is unclear, ask them to repeat or clarify it.
+- Do not use markdown.
+- Do not use bullets.
+- Do not use emojis.
 - Stay focused on the patient's clinic visit.
 """
 
@@ -78,20 +101,28 @@ if GEMINI_API_KEY:
             api_key=GEMINI_API_KEY
         )
     except Exception as error:
-        print("Gemini initialization error:", error)
+        print(
+            "Gemini initialization error:",
+            error
+        )
 
 
 # =========================================================
 # CONVERSATION MEMORY
 # =========================================================
+
 conversation_history = []
-
-MAX_HISTORY = 8
-
-MAX_QUESTIONS = 4
 
 question_count = 0
 assessment_complete = False
+
+medication_offer_pending = False
+medication_discussion = False
+
+conversation_turns = 0
+
+exit_offer_pending = False
+conversation_finished = False
 
 
 # =========================================================
@@ -101,22 +132,51 @@ assessment_complete = False
 current_patient_id = None
 
 
+# =========================================================
+# RESET PATIENT
+# =========================================================
+
 def reset_patient():
+
     global current_patient_id
+
     current_patient_id = None
 
 
+# =========================================================
+# RESET CONVERSATION
+# =========================================================
+
 def reset_conversation():
-    """Clear memory for a new patient."""
+    """
+    Clear all conversation state for a new patient.
+    """
 
     global question_count
     global assessment_complete
+    global medication_offer_pending
+    global medication_discussion
+    global conversation_turns
+    global exit_offer_pending
+    global conversation_finished
 
     conversation_history.clear()
 
     question_count = 0
     assessment_complete = False
 
+    medication_offer_pending = False
+    medication_discussion = False
+
+    conversation_turns = 0
+
+    exit_offer_pending = False
+    conversation_finished = False
+
+
+# =========================================================
+# HISTORY
+# =========================================================
 
 def add_to_history(role, text):
 
@@ -130,38 +190,187 @@ def add_to_history(role, text):
 
 
 # =========================================================
-# ASSESSMENT CONTROL
+# YES / NO DETECTION
 # =========================================================
 
-def get_assessment_instruction():
-    global question_count
+def is_yes(text):
 
-    if question_count >= MAX_QUESTIONS:
-        return """
-This is the end of the patient assessment.
-Do NOT ask another question.
-Give a short final response based on the information collected.
-Summarize the patient's main complaint and give appropriate general guidance.
-Do not diagnose or prescribe.
-"""
+    text = text.lower().strip()
 
-    remaining = MAX_QUESTIONS - question_count
+    yes_patterns = [
+        r"^yes$",
+        r"^yeah$",
+        r"^yep$",
+        r"^sure$",
+        r"^okay$",
+        r"^ok$",
+        r"^please$",
+        r"^yes please$",
+        r"^yeah please$",
+        r"^sure please$",
+        r"^i want it$",
+        r"^i do$",
+    ]
 
-    return f"""
-You may ask ONE more relevant question.
-This is question {question_count + 1} of {MAX_QUESTIONS}.
-After asking this question, do not ask additional questions unless another turn is allowed.
-Keep the question short and relevant.
-"""
+    return any(
+        re.search(pattern, text)
+        for pattern in yes_patterns
+    )
 
+
+def is_no(text):
+
+    text = text.lower().strip()
+
+    no_patterns = [
+        r"^no$",
+        r"^nope$",
+        r"^nah$",
+        r"^not now$",
+        r"^no thanks$",
+        r"^no thank you$",
+        r"^i don't$",
+        r"^i do not$",
+    ]
+
+    return any(
+        re.search(pattern, text)
+        for pattern in no_patterns
+    )
+
+
+# =========================================================
+# EXIT DETECTION
+# =========================================================
+
+def wants_to_exit(text):
+
+    text = text.lower().strip()
+
+    exit_patterns = [
+        "quit",
+        "exit",
+        "end conversation",
+        "end the conversation",
+        "stop conversation",
+        "stop chatting",
+        "i want to leave",
+        "i want to stop",
+        "that's all",
+        "that is all",
+        "i'm done",
+        "im done",
+        "done",
+        "goodbye",
+        "bye",
+    ]
+
+    return any(
+        phrase in text
+        for phrase in exit_patterns
+    )
+
+
+# =========================================================
+# RESPONSE QUESTION CHECK
+# =========================================================
 
 def response_is_question(text):
-    """Check whether the AI response is asking the patient a question."""
 
     if not text:
         return False
 
     return "?" in text.strip()
+
+
+# =========================================================
+# CONVERSATION INSTRUCTION
+# =========================================================
+
+def get_conversation_instruction():
+
+    if conversation_finished:
+
+        return """
+The conversation has ended.
+
+Do not continue the medical conversation.
+Give only a short polite closing.
+"""
+
+
+    if exit_offer_pending:
+
+        return """
+The patient has been asked whether they want to end the conversation.
+
+If the patient wants to end:
+give a short polite closing.
+
+If the patient wants to continue:
+continue the conversation naturally.
+
+Do not repeat the exit question.
+"""
+
+
+    if medication_offer_pending:
+
+        return """
+The patient has been asked whether they want general medication information.
+
+If the patient says YES:
+provide brief general educational information about medication options that may commonly be used for the symptoms discussed.
+
+Do not prescribe.
+Do not give a dosage.
+Do not say the patient definitely needs a medicine.
+
+If the patient says NO:
+continue the conversation naturally.
+
+Do not repeat the medication question.
+"""
+
+
+    if medication_discussion:
+
+        return """
+The patient is currently discussing medication information.
+
+Provide general educational information only.
+
+Do not diagnose.
+Do not prescribe.
+Do not give a specific dosage.
+Do not claim that a medication is definitely appropriate.
+
+After answering, continue naturally if the patient asks something else.
+"""
+
+
+    if assessment_complete:
+
+        return """
+The basic assessment has been completed.
+
+Do not ask another medical assessment question.
+
+Ask the patient whether they would like general information about medication options.
+
+Ask only that one question.
+"""
+
+
+    return """
+Continue the patient's clinic conversation naturally.
+
+Ask one relevant question if more information is useful.
+
+Do not repeat information already provided by the patient.
+
+If enough basic information has been collected, the assessment can be considered complete.
+"""
 
 
 # =========================================================
@@ -225,7 +434,11 @@ def ask_ollama(text):
     messages = [
         {
             "role": "system",
-            "content": SYSTEM_PROMPT + get_assessment_instruction()
+            "content": (
+                SYSTEM_PROMPT
+                + "\n"
+                + get_conversation_instruction()
+            )
         }
     ]
 
@@ -242,13 +455,11 @@ def ask_ollama(text):
         options={
             "temperature": 0.1,
 
-            # Short output = faster response
-            "num_predict": 21,
+            # Short responses keep the assistant fast.
+            "num_predict": 50,
 
-            # Smaller context = faster processing
+            # Context size.
             "num_ctx": 2048,
-
-            # Keep model loaded in memory
         },
         keep_alive="10m"
     )
@@ -265,6 +476,7 @@ def ask_ollama(text):
 def ask_gemini(text):
 
     if gemini_client is None:
+
         raise RuntimeError(
             "Gemini API key not available"
         )
@@ -288,6 +500,9 @@ def ask_gemini(text):
     prompt = f"""
 {SYSTEM_PROMPT}
 
+Conversation control:
+{get_conversation_instruction()}
+
 Previous conversation:
 {history_text}
 
@@ -305,7 +520,6 @@ MediKiosk:
     answer = response.text
 
     return clean_response(answer)
-
 
 
 # =========================================================
@@ -337,9 +551,9 @@ def extract_patient_data(text):
     )
 
     if name_match:
+
         name = name_match.group(1).strip()
 
-        # Remove common trailing phrases
         name = re.split(
             r"\b(?:and|i have|with|my age|i am)\b",
             name,
@@ -347,6 +561,7 @@ def extract_patient_data(text):
         )[0].strip()
 
         if name:
+
             data["name"] = name
 
 
@@ -361,17 +576,28 @@ def extract_patient_data(text):
     )
 
     if age_match:
-        data["age"] = int(age_match.group(1))
+
+        data["age"] = int(
+            age_match.group(1)
+        )
 
 
     # -------------------------
     # GENDER
     # -------------------------
 
-    if re.search(r"\b(male|man|boy)\b", text_lower):
+    if re.search(
+        r"\b(male|man|boy)\b",
+        text_lower
+    ):
+
         data["gender"] = "Male"
 
-    elif re.search(r"\b(female|woman|girl)\b", text_lower):
+    elif re.search(
+        r"\b(female|woman|girl)\b",
+        text_lower
+    ):
+
         data["gender"] = "Female"
 
 
@@ -386,6 +612,7 @@ def extract_patient_data(text):
     )
 
     if duration_match:
+
         data["duration"] = (
             f"{duration_match.group(1)} "
             f"{duration_match.group(2)}"
@@ -397,16 +624,19 @@ def extract_patient_data(text):
     # -------------------------
 
     severity_words = [
-        "mild",
-        "moderate",
-        "severe",
         "very severe",
+        "severe",
+        "moderate",
+        "mild",
         "slight"
     ]
 
     for severity in severity_words:
+
         if severity in text_lower:
+
             data["severity"] = severity.title()
+
             break
 
 
@@ -421,14 +651,16 @@ def extract_patient_data(text):
     )
 
     if symptom_match:
+
         symptoms = symptom_match.group(1).strip()
 
-        # Don't store an entire long conversation as symptoms
         if len(symptoms) <= 200:
+
             data["symptoms"] = symptoms
 
 
     return data
+
 
 # =========================================================
 # SAVE PATIENT DATA
@@ -483,12 +715,77 @@ def save_patient_data(text):
     )
 
     if patient:
+
         print(
             f"Patient data updated. "
             f"Patient ID: {current_patient_id}"
         )
 
     return patient
+
+
+# =========================================================
+# HANDLE MEDICATION RESPONSE
+# =========================================================
+
+def handle_medication_response(text):
+
+    global medication_offer_pending
+    global medication_discussion
+    global assessment_complete
+
+    if is_yes(text):
+
+        medication_offer_pending = False
+        medication_discussion = True
+
+        return (
+            "I can give you general information about medication options "
+            "that are commonly used for symptoms like these."
+        )
+
+    if is_no(text):
+
+        medication_offer_pending = False
+        medication_discussion = False
+
+        assessment_complete = False
+
+        return (
+            "Okay, we can continue discussing your concerns."
+        )
+
+    return None
+
+
+# =========================================================
+# HANDLE EXIT RESPONSE
+# =========================================================
+
+def handle_exit_response(text):
+
+    global exit_offer_pending
+    global conversation_finished
+
+    if is_yes(text):
+
+        exit_offer_pending = False
+        conversation_finished = True
+
+        return (
+            "Thank you for speaking with MediKiosk, and please follow up with the clinic for further care."
+        )
+
+    if is_no(text):
+
+        exit_offer_pending = False
+
+        return (
+            "Okay, we can continue."
+        )
+
+    return None
+
 
 # =========================================================
 # MAIN AI FUNCTION
@@ -498,29 +795,184 @@ def ask_ai(text):
 
     global question_count
     global assessment_complete
+    global medication_offer_pending
+    global medication_discussion
+    global conversation_turns
+    global exit_offer_pending
+    global conversation_finished
+
+
+    # =====================================================
+    # EMPTY INPUT
+    # =====================================================
 
     if not text:
+
         return "Could you please repeat that?"
+
 
     text = text.strip()
 
+
     if not text:
+
         return "Could you please repeat that?"
 
 
-    if assessment_complete:
-        return "Thank you. I have collected enough information. Please wait while the clinic reviews your information."
+    # =====================================================
+    # CONVERSATION ALREADY FINISHED
+    # =====================================================
+
+    if conversation_finished:
+
+        return (
+            "The conversation has ended, so please start a new chat if you need further help."
+        )
 
 
-        # Save structured patient information
-    # using the existing database storage system.
+    # =====================================================
+    # COUNT USER TURN
+    # =====================================================
+
+    conversation_turns += 1
+
+    print(
+        f"Conversation turn: "
+        f"{conversation_turns}/{MAX_CONVERSATION_TURNS}"
+    )
+
+
+    # =====================================================
+    # SAVE PATIENT INFORMATION
+    # =====================================================
+
     try:
+
         save_patient_data(text)
+
     except Exception as error:
+
         print(
             "Patient storage error:",
             error
         )
+
+
+    # =====================================================
+    # EXIT OFFER RESPONSE
+    # =====================================================
+
+    if exit_offer_pending:
+
+        exit_response = handle_exit_response(text)
+
+        if exit_response:
+
+            add_to_history(
+                "user",
+                text
+            )
+
+            add_to_history(
+                "assistant",
+                exit_response
+            )
+
+            return exit_response
+
+
+    # =====================================================
+    # MEDICATION OFFER RESPONSE
+    # =====================================================
+
+    if medication_offer_pending:
+
+        medication_response = handle_medication_response(text)
+
+        if medication_response:
+
+            add_to_history(
+                "user",
+                text
+            )
+
+            add_to_history(
+                "assistant",
+                medication_response
+            )
+
+            return medication_response
+
+
+    # =====================================================
+    # IF MEDICATION DISCUSSION IS ACTIVE
+    # =====================================================
+
+    if medication_discussion:
+
+        # Allow the patient to continue asking questions.
+        # The AI receives the medication-discussion instruction.
+
+        pass
+
+
+    # =====================================================
+    # LONG CONVERSATION CHECK
+    # =====================================================
+
+    if (
+        conversation_turns >= MAX_CONVERSATION_TURNS
+        and not exit_offer_pending
+        and not medication_offer_pending
+    ):
+
+        exit_offer_pending = True
+
+        answer = (
+            "We have discussed quite a bit, would you like to end the conversation?"
+        )
+
+        add_to_history(
+            "user",
+            text
+        )
+
+        add_to_history(
+            "assistant",
+            answer
+        )
+
+        return answer
+
+
+    # =====================================================
+    # MEDICATION OFFER
+    # =====================================================
+
+    if (
+        assessment_complete
+        and not medication_offer_pending
+        and not medication_discussion
+    ):
+
+        medication_offer_pending = True
+
+        answer = (
+            "I have enough information about your symptoms, would you like general information about medication options?"
+        )
+
+        add_to_history(
+            "user",
+            text
+        )
+
+        add_to_history(
+            "assistant",
+            answer
+        )
+
+        return answer
+
 
     # =====================================================
     # OLLAMA FIRST
@@ -555,8 +1007,12 @@ def ask_ai(text):
             )
 
 
+            # ---------------------------------------------
+            # QUESTION COUNT
+            # ---------------------------------------------
+
             if response_is_question(answer):
-                question_count
+
                 question_count += 1
 
                 print(
@@ -564,12 +1020,22 @@ def ask_ai(text):
                     f"{question_count}/{MAX_QUESTIONS}"
                 )
 
-            if question_count >= MAX_QUESTIONS:
-                assessment_complete = True    
 
+            # ---------------------------------------------
+            # ASSESSMENT COMPLETE
+            # ---------------------------------------------
+
+            if question_count >= MAX_QUESTIONS:
+
+                assessment_complete = True
+
+                print(
+                    "Assessment complete."
+                )
 
 
             return answer
+
 
     except Exception as error:
 
@@ -614,8 +1080,13 @@ def ask_ai(text):
                 answer
             )
 
+
+            # ---------------------------------------------
+            # QUESTION COUNT
+            # ---------------------------------------------
+
             if response_is_question(answer):
-                question_count
+
                 question_count += 1
 
                 print(
@@ -624,11 +1095,21 @@ def ask_ai(text):
                 )
 
 
+            # ---------------------------------------------
+            # ASSESSMENT COMPLETE
+            # ---------------------------------------------
+
             if question_count >= MAX_QUESTIONS:
+
                 assessment_complete = True
+
+                print(
+                    "Assessment complete."
+                )
 
 
             return answer
+
 
     except Exception as error:
 
