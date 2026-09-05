@@ -1,0 +1,416 @@
+{% extends "doctor/base.html" %}
+{% load static %}
+
+{% block title %}
+{{ patient.name }} | Medical History
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/patient_detail.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="patient-page">
+
+    <!-- BACK -->
+
+    <a href="{% url 'doctor_dashboard' %}"
+       class="back-button">
+
+        ← Back to Patients
+
+    </a>
+
+
+    <!-- PATIENT HEADER -->
+
+    <section class="patient-header">
+
+        <div class="patient-heading">
+
+            <div class="patient-avatar">
+
+                {{ patient.name|first|upper }}
+
+            </div>
+
+
+            <div>
+
+                <span class="page-label">
+                    PATIENT MEDICAL HISTORY
+                </span>
+
+                <h1>
+                    {{ patient.name }}
+                </h1>
+
+                <p>
+                    Patient ID:
+                    <strong>
+                        {{ patient.patient_id }}
+                    </strong>
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- AI BUTTON -->
+
+        <a href="{% url 'patient_summary' patient.id %}"
+           class="ai-button">
+
+            ✨ Ask AI About Patient
+
+        </a>
+
+    </section>
+
+
+    <!-- BASIC INFORMATION -->
+
+    <section class="basic-info">
+
+        <div class="info-box">
+
+            <span>Age</span>
+
+            <strong>
+                {{ patient.age }}
+            </strong>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <span>Gender</span>
+
+            <strong>
+                {{ patient.gender }}
+            </strong>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <span>Last Visit</span>
+
+            <strong>
+                {{ patient.last_visit|date:"d M Y" }}
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- PATIENT OVERVIEW -->
+
+    <section class="medical-card">
+
+        <div class="card-header">
+
+            <h2>
+                Patient Overview
+            </h2>
+
+            <p>
+                Current medical information
+            </p>
+
+        </div>
+
+
+        <div class="overview-grid">
+
+
+            <!-- CONDITIONS -->
+
+            <div class="overview-item">
+
+                <span class="item-title">
+                    Medical Conditions
+                </span>
+
+
+                {% for condition in patient.conditions %}
+
+                    <p>
+                        • {{ condition }}
+                    </p>
+
+                {% empty %}
+
+                    <p class="empty-text">
+                        No recorded conditions
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- ALLERGIES -->
+
+            <div class="overview-item">
+
+                <span class="item-title">
+                    Allergies
+                </span>
+
+
+                {% for allergy in patient.allergies %}
+
+                    <p>
+                        • {{ allergy }}
+                    </p>
+
+                {% empty %}
+
+                    <p class="empty-text">
+                        No recorded allergies
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- MEDICATIONS -->
+
+            <div class="overview-item">
+
+                <span class="item-title">
+                    Current Medications
+                </span>
+
+
+                {% for medication in patient.medications %}
+
+                    <p>
+                        • {{ medication }}
+                    </p>
+
+                {% empty %}
+
+                    <p class="empty-text">
+                        No current medications
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MEDICAL HISTORY -->
+
+    <section class="medical-card">
+
+        <div class="card-header">
+
+            <h2>
+                Medical History
+            </h2>
+
+            <p>
+                Previous consultations and clinical records
+            </p>
+
+        </div>
+
+
+        <div class="timeline">
+
+            {% for consultation in consultations %}
+
+            <div class="timeline-item">
+
+
+                <div class="timeline-date">
+
+                    <strong>
+                        {{ consultation.date|date:"d" }}
+                    </strong>
+
+                    <span>
+                        {{ consultation.date|date:"M Y" }}
+                    </span>
+
+                </div>
+
+
+                <div class="timeline-line">
+
+                    <div class="timeline-dot"></div>
+
+                </div>
+
+
+                <div class="consultation">
+
+                    <div class="consultation-header">
+
+                        <h3>
+                            {{ consultation.title }}
+                        </h3>
+
+                        <span>
+                            {{ consultation.date|date:"d M Y" }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="consultation-details">
+
+                        <div>
+
+                            <label>
+                                Symptoms
+                            </label>
+
+                            <p>
+                                {{ consultation.symptoms }}
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <label>
+                                Diagnosis
+                            </label>
+
+                            <p>
+                                {{ consultation.diagnosis }}
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <label>
+                                Doctor Notes
+                            </label>
+
+                            <p>
+                                {{ consultation.notes }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {% empty %}
+
+            <div class="empty-history">
+
+                <h3>
+                    No medical history available
+                </h3>
+
+                <p>
+                    Previous consultations will appear here.
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- REPORTS -->
+
+    <section class="medical-card">
+
+        <div class="card-header">
+
+            <h2>
+                Reports & Records
+            </h2>
+
+            <p>
+                Medical reports associated with this patient
+            </p>
+
+        </div>
+
+
+        <div class="reports-list">
+
+            {% for report in reports %}
+
+            <div class="report-row">
+
+                <div class="report-icon">
+                    📄
+                </div>
+
+
+                <div class="report-info">
+
+                    <strong>
+                        {{ report.name }}
+                    </strong>
+
+                    <span>
+                        {{ report.date|date:"d M Y" }}
+                    </span>
+
+                </div>
+
+
+                <a href="{{ report.file.url }}"
+                   target="_blank"
+                   class="view-report">
+
+                    View
+
+                </a>
+
+            </div>
+
+
+            {% empty %}
+
+            <p class="empty-text">
+                No reports available.
+            </p>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="{% static 'js/patient_detail.js' %}"></script>
+
+{% endblock %}

@@ -1,7 +1,10 @@
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 from .services import ask_ai
 
 
+@csrf_exempt
 def ai_chat(request):
 
     if request.method != "POST":
@@ -24,4 +27,3 @@ def ai_chat(request):
         "question": question,
         "answer": answer
     })
-# Create your views here.

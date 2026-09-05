@@ -1,0 +1,175 @@
+{% extends "doctor/base.html" %}
+{% load static %}
+
+{% block title %}Doctor Dashboard | MediKiosk{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/doctor_dashboard.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="dashboard">
+
+    <!-- HEADER -->
+
+    <div class="dashboard-header">
+
+        <p class="welcome">
+            Good Morning, Dr. {{ request.user.last_name }}
+        </p>
+
+        <h1>
+            Doctor Dashboard
+        </h1>
+
+        <p class="subtitle">
+            Here are the patients you have attended.
+        </p>
+
+    </div>
+
+
+    <!-- PATIENTS -->
+
+    <div class="patients-card">
+
+        <div class="patients-top">
+
+            <div>
+
+                <h2>
+                    Patients
+                </h2>
+
+                <p>
+                    Patients attended by you
+                </p>
+
+            </div>
+
+
+            <div class="search-container">
+
+                <input
+                    type="text"
+                    id="patientSearch"
+                    placeholder="Search patient or ID..."
+                >
+
+                <span>⌕</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- TABLE HEADER -->
+
+        <div class="patient-table-header">
+
+            <div>Patient</div>
+
+            <div>Patient ID</div>
+
+            <div>Age</div>
+
+            <div>Last Visit</div>
+
+            <div>Status</div>
+
+        </div>
+
+
+        <!-- PATIENT LIST -->
+
+        <div id="patientList">
+
+            {% for patient in patients %}
+
+            <a
+                href="{% url 'patient_detail' patient.id %}"
+                class="patient-row"
+            >
+
+                <div class="patient-info">
+
+                    <div class="patient-avatar">
+
+                        {{ patient.name|first|upper }}
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ patient.name }}
+                        </strong>
+
+                        <small>
+                            {{ patient.gender }}
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div>
+                    {{ patient.patient_id }}
+                </div>
+
+
+                <div>
+                    {{ patient.age }}
+                </div>
+
+
+                <div>
+                    {{ patient.last_visit|date:"d M Y" }}
+                </div>
+
+
+                <div>
+
+                    <span class="status completed">
+                        Completed
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            {% empty %}
+
+            <div class="empty-patients">
+
+                <h3>
+                    No patients found
+                </h3>
+
+                <p>
+                    Patients attended by you will appear here.
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="{% static 'js/doctor_dashboard.js' %}"></script>
+
+{% endblock %}
