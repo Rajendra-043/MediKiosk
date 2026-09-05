@@ -46,15 +46,22 @@ You are MediKiosk, a voice assistant in a healthcare clinic.
 Speak naturally like a calm clinic assistant.
 
 Rules:
+
 - Keep every response to ONE short sentence.
 - Ask only ONE question at a time.
-- Use simple spoken English.
-- Do not use markdown, bullets, symbols, or emojis.
+- Ask only questions that are relevant to the patient's problem.
+- Collect only the basic information needed to understand the patient's complaint.
+- Important information may include symptoms, duration, severity, location, and relevant associated symptoms.
+- Do not ask unnecessary or repetitive questions.
+- Ask a maximum of FOUR questions during one patient assessment.
+- If you already have enough information before four questions, STOP asking questions.
+- After you have enough information, give the patient a short helpful final response instead of asking another question.
+- The final response should briefly summarize what the patient told you and provide appropriate general guidance.
 - Do not diagnose diseases.
 - Do not prescribe medicines.
-- Collect basic patient information such as symptoms,
-  duration, severity, location, and relevant details.
-- If the patient's statement is unclear, ask them to repeat it.
+- Do not use markdown, bullets, symbols, or emojis.
+- Use simple spoken English.
+- If the patient's statement is unclear, ask them to repeat or clarify it.
 - Stay focused on the patient's clinic visit.
 """
 
@@ -81,6 +88,11 @@ conversation_history = []
 
 MAX_HISTORY = 8
 
+MAX_QUESTIONS = 4
+
+question_count = 0
+assessment_complete = False
+
 
 # =========================================================
 # CURRENT PATIENT STORAGE
@@ -96,7 +108,14 @@ def reset_patient():
 
 def reset_conversation():
     """Clear memory for a new patient."""
+
+    global question_count
+    global assessment_complete
+
     conversation_history.clear()
+
+    question_count = 0
+    assessment_complete = False
 
 
 def add_to_history(role, text):
@@ -108,6 +127,42 @@ def add_to_history(role, text):
 
     if len(conversation_history) > MAX_HISTORY:
         del conversation_history[:-MAX_HISTORY]
+
+
+# =========================================================
+# ASSESSMENT CONTROL
+# =========================================================
+
+def get_assessment_instruction():
+    global question_count
+
+    if question_count >= MAX_QUESTIONS:
+        return """
+This is the end of the patient assessment.
+Do NOT ask another question.
+Give a short final response based on the information collected.
+Summarize the patient's main complaint and give appropriate general guidance.
+Do not diagnose or prescribe.
+"""
+
+    remaining = MAX_QUESTIONS - question_count
+
+    return f"""
+You may ask ONE more relevant question.
+This is question {question_count + 1} of {MAX_QUESTIONS}.
+After asking this question, do not ask additional questions unless another turn is allowed.
+Keep the question short and relevant.
+"""
+
+
+def response_is_question(text):
+    """Check whether the AI response is asking the patient a question."""
+
+    if not text:
+        return False
+
+    return "?" in text.strip()
+
 
 # =========================================================
 # RESPONSE CLEANUP
@@ -170,7 +225,7 @@ def ask_ollama(text):
     messages = [
         {
             "role": "system",
-            "content": SYSTEM_PROMPT
+            "content": SYSTEM_PROMPT + get_assessment_instruction()
         }
     ]
 
@@ -441,6 +496,9 @@ def save_patient_data(text):
 
 def ask_ai(text):
 
+    global question_count
+    global assessment_complete
+
     if not text:
         return "Could you please repeat that?"
 
@@ -448,6 +506,10 @@ def ask_ai(text):
 
     if not text:
         return "Could you please repeat that?"
+
+
+    if assessment_complete:
+        return "Thank you. I have collected enough information. Please wait while the clinic reviews your information."
 
 
         # Save structured patient information
@@ -491,6 +553,21 @@ def ask_ai(text):
                 "assistant",
                 answer
             )
+
+
+            if response_is_question(answer):
+                question_count
+                question_count += 1
+
+                print(
+                    f"Assessment question count: "
+                    f"{question_count}/{MAX_QUESTIONS}"
+                )
+
+            if question_count >= MAX_QUESTIONS:
+                assessment_complete = True    
+
+
 
             return answer
 
@@ -536,6 +613,20 @@ def ask_ai(text):
                 "assistant",
                 answer
             )
+
+            if response_is_question(answer):
+                question_count
+                question_count += 1
+
+                print(
+                    f"Assessment question count: "
+                    f"{question_count}/{MAX_QUESTIONS}"
+                )
+
+
+            if question_count >= MAX_QUESTIONS:
+                assessment_complete = True
+
 
             return answer
 
