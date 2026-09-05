@@ -181,3 +181,4 @@ def patient_detail_api(request, patient_id):
         "success": False,
         "error": "Method not allowed"
     }, status=405)
+

@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -88,6 +88,10 @@ urlpatterns = [
         name="patient_dashboard"
     ),
 
+    path("patient/profile/",
+        views.profile, 
+        name="profile"),
+
     path(
         "patient/medical-history/",
         views.medical_history,
@@ -112,6 +116,10 @@ urlpatterns = [
         views.delete_document,
         name="delete_document"
     ),
+
+    path('patient/timeline/',
+        views.timeline,
+        name='timeline'),
 
 
     # -------------------------

@@ -69,18 +69,12 @@ MediKiosk - Documents
                     or other healthcare document.
                 </p>
 
-                <label for="documentInput"
-                       class="document-button secondary-button">
-                    Upload Document
-                </label>
-
-                <input
-                    type="file"
-                    id="documentInput"
-                    name="document"
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                    hidden
-                >
+                <button
+    type="button"
+    class="document-button secondary-button"
+    id="openUploadModal">
+    Upload Document
+</button>
             </div>
 
         </div>
@@ -161,29 +155,6 @@ MediKiosk - Documents
     </section>
 
 
-    <!-- Upload Preview / Status -->
-    <div class="upload-status" id="uploadStatus">
-
-        <div class="upload-status-icon">
-            ✓
-        </div>
-
-        <div>
-            <strong id="uploadedFileName">
-                Document selected
-            </strong>
-
-            <p>
-                Ready to upload.
-            </p>
-        </div>
-
-        <button type="button" id="cancelUpload">
-            ×
-        </button>
-
-    </div>
-
 
     <!-- Upload Modal -->
     <div class="upload-modal" id="uploadModal">
@@ -208,12 +179,26 @@ MediKiosk - Documents
             </p>
 
 
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" id="documentUploadForm">
     {% csrf_token %}
 
-    <input type="text" name="document_name">
+    <input
+        type="text"
+        name="document_name"
+        placeholder="Document name (optional)"
+    >
 
-    <input type="file" name="file">
+    <input
+        type="file"
+        name="file"
+        id="modalDocumentInput"
+        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+        required
+    >
+
+    <p id="selectedFile">
+        No file selected
+    </p>
 
     <button type="submit">
         Upload Document
@@ -229,6 +214,8 @@ MediKiosk - Documents
 {% endblock %}
 
 
+
+
 {% block extra_js %}
 
 <script>
@@ -241,8 +228,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const documentsSection =
         document.getElementById("documentsListSection");
 
-    const documentInput =
-        document.getElementById("documentInput");
+    const openUploadModal =
+        document.getElementById("openUploadModal");
 
     const uploadModal =
         document.getElementById("uploadModal");
@@ -256,116 +243,96 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectedFile =
         document.getElementById("selectedFile");
 
-    const uploadForm =
-        document.getElementById("documentUploadForm");
 
+    /* -------------------------
+       View Documents
+    ------------------------- */
 
-    /* View Documents */
+    if (viewButton && documentsSection) {
 
-    viewButton.addEventListener("click", function () {
+        viewButton.addEventListener("click", function () {
 
-        documentsSection.scrollIntoView({
-            behavior: "smooth"
-        });
-
-    });
-
-
-    /* Open upload modal */
-
-    documentInput.addEventListener("change", function () {
-
-        if (documentInput.files.length > 0) {
-
-            uploadModal.classList.add("active");
-
-            modalDocumentInput.files =
-                documentInput.files;
-
-            selectedFile.textContent =
-                documentInput.files[0].name;
-        }
-
-    });
-
-
-    /* Modal file selection */
-
-    modalDocumentInput.addEventListener("change", function () {
-
-        if (modalDocumentInput.files.length > 0) {
-
-            selectedFile.textContent =
-                modalDocumentInput.files[0].name;
-
-        }
-
-    });
-
-
-    /* Close modal */
-
-    closeUploadModal.addEventListener("click", function () {
-
-        uploadModal.classList.remove("active");
-
-    });
-
-
-    /* Close modal when clicking outside */
-
-    uploadModal.addEventListener("click", function (event) {
-
-        if (event.target === uploadModal) {
-
-            uploadModal.classList.remove("active");
-
-        }
-
-    });
-
-
-    /* Temporary frontend upload */
-
-    uploadForm.addEventListener("submit", function (event) {
-
-        event.preventDefault();
-
-        if (modalDocumentInput.files.length === 0) {
-
-            alert("Please select a document.");
-
-            return;
-
-        }
-
-        alert(
-            "Document selected successfully. " +
-            "Connect this form to your Django upload API."
-        );
-
-        uploadModal.classList.remove("active");
-
-    });
-
-
-    /* View buttons */
-
-    document.querySelectorAll(".view-document-button")
-        .forEach(function (button) {
-
-            button.addEventListener("click", function () {
-
-                alert(
-                    "Document viewer will open here."
-                );
-
+            documentsSection.scrollIntoView({
+                behavior: "smooth"
             });
 
         });
 
+    }
 
-    
+
+    /* -------------------------
+       Open Upload Modal
+    ------------------------- */
+
+    if (openUploadModal && uploadModal) {
+
+        openUploadModal.addEventListener("click", function () {
+
+            uploadModal.classList.add("active");
+
+        });
+
+    }
+
+
+    /* -------------------------
+       Show Selected File
+    ------------------------- */
+
+    if (modalDocumentInput && selectedFile) {
+
+        modalDocumentInput.addEventListener("change", function () {
+
+            if (modalDocumentInput.files.length > 0) {
+
+                selectedFile.textContent =
+                    modalDocumentInput.files[0].name;
+
+            } else {
+
+                selectedFile.textContent =
+                    "No file selected";
+
+            }
+
+        });
+
+    }
+
+
+    /* -------------------------
+       Close Upload Modal
+    ------------------------- */
+
+    if (closeUploadModal && uploadModal) {
+
+        closeUploadModal.addEventListener("click", function () {
+
+            uploadModal.classList.remove("active");
+
+        });
+
+    }
+
+
+    /* -------------------------
+       Close Modal Outside
+    ------------------------- */
+
+    if (uploadModal) {
+
+        uploadModal.addEventListener("click", function (event) {
+
+            if (event.target === uploadModal) {
+
+                uploadModal.classList.remove("active");
+
+            }
+
+        });
+
+    }
 
 });
 

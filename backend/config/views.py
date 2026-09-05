@@ -1,9 +1,10 @@
+from pathlib import Path
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
 
 from patients.models import Patient, MedicalHistory, Medication, MedicalDocument
 from doctor.models import Doctor
-
+from django.views.decorators.http import require_POST
 
 def home(request):
     return render(request, "landing/index.html")
@@ -22,7 +23,7 @@ def patient_login(request):
         identifier = request.POST.get("patient_id")
         password = request.POST.get("password")
 
-        # Patient ID ya Email se match karo
+       
         try:
             if "@" in identifier:
                 patient = Patient.objects.get(email=identifier)
@@ -147,6 +148,20 @@ def doctor_register(request):
 
     return render(request, "doctor/register.html")
 
+# PROFILE
+def profile(request):
+    patient_id = request.session.get("patient_id")
+
+    if not patient_id:
+        return redirect("/patient/login/")
+
+    patient = get_object_or_404(Patient, id=patient_id)
+
+    return render(request, "paitent/profile.html", {
+        "patient": patient,
+    })
+
+
 
 # -------------------------
 # MEDICAL HISTORY
@@ -216,27 +231,77 @@ def medications(request):
 
 def documents(request):
     patient_id = request.session.get("patient_id")
+
     if not patient_id:
         return redirect("/patient/login/")
 
     patient = get_object_or_404(Patient, id=patient_id)
 
-    if request.method == "POST":
-        uploaded_file = request.FILES.get("file")
-        document_name = request.POST.get("document_name", "")
-
-        if uploaded_file:
-            MedicalDocument.objects.create(
-                patient=patient,
-                document_name=document_name or uploaded_file.name,
-                file=uploaded_file,
-                document_type=uploaded_file.content_type,
-            )
-        return redirect("/patient/documents/")
-
     document_records = MedicalDocument.objects.filter(
         patient=patient
     ).order_by("-uploaded_at")
+
+    if request.method == "POST":
+        uploaded_file = request.FILES.get("file")
+        document_name = request.POST.get("document_name", "").strip()
+
+        if not uploaded_file:
+            return render(
+                request,
+                "paitent/documents.html",
+                {
+                    "patient": patient,
+                    "documents": document_records,
+                    "error": "Please select a document."
+                }
+            )
+
+        # Allowed file types
+        allowed_extensions = {
+            ".pdf",
+            ".doc",
+            ".docx",
+            ".jpg",
+            ".jpeg",
+            ".png",
+        }
+
+        file_extension = Path(uploaded_file.name).suffix.lower()
+
+        if file_extension not in allowed_extensions:
+            return render(
+                request,
+                "paitent/documents.html",
+                {
+                    "patient": patient,
+                    "documents": document_records,
+                    "error": "Only PDF, DOC, DOCX, JPG, JPEG and PNG files are allowed."
+                }
+            )
+
+        # Maximum file size = 5 MB
+        max_file_size = 5 * 1024 * 1024
+
+        if uploaded_file.size > max_file_size:
+            return render(
+                request,
+                "paitent/documents.html",
+                {
+                    "patient": patient,
+                    "documents": document_records,
+                    "error": "File size must be 5 MB or less."
+                }
+            )
+
+        # Save document
+        MedicalDocument.objects.create(
+            patient=patient,
+            document_name=document_name or uploaded_file.name,
+            file=uploaded_file,
+            document_type=uploaded_file.content_type,
+        )
+
+        return redirect("/patient/documents/")
 
     return render(
         request,
@@ -247,11 +312,47 @@ def documents(request):
         }
     )
 
+# -------------------------
+# DELETE DOCUMENT
+# -------------------------
 
+@require_POST
 def delete_document(request, doc_id):
-    if request.method == "POST":
-        document = get_object_or_404(MedicalDocument, id=doc_id)
-        if document.file:
-            document.file.delete(save=False)
-        document.delete()
-    return redirect('documents')
+    patient_id = request.session.get("patient_id")
+
+    if not patient_id:
+        return redirect("/patient/login/")
+
+    document = get_object_or_404(
+        MedicalDocument,
+        id=doc_id,
+        patient_id=patient_id
+    )
+
+    if document.file:
+        document.file.delete(save=False)
+
+    document.delete()
+
+    return redirect("/patient/documents/")
+
+# ------------------------
+# HISTORY TIMELINE
+# ------------------------
+
+def timeline(request):
+    patient_id = request.session.get("patient_id")
+    if not patient_id:
+        return redirect("/patient/login/")
+        
+    patient = get_object_or_404(Patient, id=patient_id)
+    
+    # Testing ke liye sample dummy data
+    timeline_events = [
+        
+    ]
+    
+    return render(request, "paitent/History_Timline.html", {
+        "patient": patient,
+        "timeline": timeline_events,
+    })
