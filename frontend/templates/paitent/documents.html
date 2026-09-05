@@ -98,100 +98,65 @@ MediKiosk - Documents
             </div>
 
             <span class="document-count" id="documentCount">
-                3 Documents
-            </span>
+    {{ documents|length }} Document{{ documents|length|pluralize }}
+</span>
         </div>
 
 
         <div class="documents-list" id="documentsList">
 
-            <!-- Document 1 -->
+    {% if documents %}
+
+        {% for document in documents %}
+
             <div class="document-item">
 
-                <div class="document-file-icon pdf-icon">
-                    PDF
+                <div class="document-file-icon">
+                    FILE
                 </div>
 
                 <div class="document-info">
-                    <h3>Blood Test Report</h3>
-                    <p>Uploaded on 04 September 2026</p>
+                    <h3>{{ document.document_name }}</h3>
+
+                    <p>
+                        Uploaded on {{ document.uploaded_at|date:"d F Y" }}
+                    </p>
                 </div>
 
                 <div class="document-actions">
 
-                    <button type="button"
-                            class="view-document-button">
+                    <a href="{{ document.file.url }}"
+                       target="_blank"
+                       class="view-document-button">
                         View
-                    </button>
+                    </a>
 
-                    <button type="button"
-                            class="delete-document-button">
-                        Delete
-                    </button>
+                    <form action="{% url 'delete_document' document.id %}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this document?');">
+    {% csrf_token %}
+    <button type="submit" 
+    class="delete-document-button">
+        Delete
+    </button>
+</form>
 
                 </div>
 
             </div>
 
+        {% endfor %}
 
-            <!-- Document 2 -->
-            <div class="document-item">
+    {% else %}
 
-                <div class="document-file-icon image-icon">
-                    IMG
-                </div>
-
-                <div class="document-info">
-                    <h3>Prescription</h3>
-                    <p>Uploaded on 02 September 2026</p>
-                </div>
-
-                <div class="document-actions">
-
-                    <button type="button"
-                            class="view-document-button">
-                        View
-                    </button>
-
-                    <button type="button"
-                            class="delete-document-button">
-                        Delete
-                    </button>
-
-                </div>
-
+        <div class="document-item">
+            <div class="document-info">
+                <h3>No documents uploaded</h3>
+                <p>Your uploaded documents will appear here.</p>
             </div>
-
-
-            <!-- Document 3 -->
-            <div class="document-item">
-
-                <div class="document-file-icon pdf-icon">
-                    PDF
-                </div>
-
-                <div class="document-info">
-                    <h3>Health Checkup Report</h3>
-                    <p>Uploaded on 28 August 2026</p>
-                </div>
-
-                <div class="document-actions">
-
-                    <button type="button"
-                            class="view-document-button">
-                        View
-                    </button>
-
-                    <button type="button"
-                            class="delete-document-button">
-                        Delete
-                    </button>
-
-                </div>
-
-            </div>
-
         </div>
+
+    {% endif %}
+
+</div>
 
     </section>
 
@@ -243,51 +208,17 @@ MediKiosk - Documents
             </p>
 
 
-            <form id="documentUploadForm"
-                  method="POST"
-                  enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
 
-                {% csrf_token %}
+    <input type="text" name="document_name">
 
-                <div class="upload-area">
+    <input type="file" name="file">
 
-                    <div class="upload-area-icon">
-                        ⬆
-                    </div>
-
-                    <h3>Choose a document</h3>
-
-                    <p>
-                        PDF, DOC, DOCX, JPG or PNG
-                    </p>
-
-                    <label for="modalDocumentInput"
-                           class="choose-file-button">
-                        Choose File
-                    </label>
-
-                    <input
-                        type="file"
-                        id="modalDocumentInput"
-                        name="document"
-                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                        hidden
-                    >
-
-                    <p class="selected-file"
-                       id="selectedFile">
-                        No file selected
-                    </p>
-
-                </div>
-
-
-                <button type="submit"
-                        class="upload-submit-button">
-                    Upload Document
-                </button>
-
-            </form>
+    <button type="submit">
+        Upload Document
+    </button>
+</form>
 
         </div>
 
@@ -434,30 +365,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
 
-    /* Delete buttons */
-
-    document.querySelectorAll(".delete-document-button")
-        .forEach(function (button) {
-
-            button.addEventListener("click", function () {
-
-                const documentItem =
-                    button.closest(".document-item");
-
-                const confirmDelete =
-                    confirm(
-                        "Are you sure you want to delete this document?"
-                    );
-
-                if (confirmDelete) {
-
-                    documentItem.remove();
-
-                }
-
-            });
-
-        });
+    
 
 });
 

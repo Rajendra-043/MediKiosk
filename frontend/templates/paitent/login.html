@@ -4,33 +4,18 @@
 
 {% block content %}
 
-<div class="min-h-screen
-            bg-blue-50
-            flex items-center
-            justify-center
-            px-5 py-10">
+<div class="min-h-screen bg-blue-50 flex items-center justify-center px-5 py-10">
 
     <div class="w-full max-w-md">
 
         <!-- LOGO -->
         <div class="text-center mb-8">
 
-            <div class="inline-flex
-                        w-14 h-14
-                        rounded-xl
-                        bg-blue-600
-                        text-white
-                        items-center
-                        justify-center
-                        font-bold text-xl">
-
+            <div class="inline-flex w-14 h-14 rounded-xl bg-blue-600 text-white items-center justify-center font-bold text-xl">
                 M
             </div>
 
-            <h1 class="text-3xl
-                       font-bold
-                       text-slate-900 mt-4">
-
+            <h1 class="text-3xl font-bold text-slate-900 mt-4">
                 Patient Login
             </h1>
 
@@ -40,63 +25,54 @@
 
         </div>
 
-
         <!-- CARD -->
-        <div class="bg-white
-                    rounded-3xl
-                    shadow-xl
-                    border border-slate-200
-                    p-8">
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-8">
 
-            <form id="patientLoginForm"
-                  onsubmit="handleLogin(event)">
+            <!-- ERROR ALERT -->
+            {% if error %}
+            <div class="mb-5 p-3.5 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl font-medium text-center">
+                {{ error }}
+            </div>
+            {% endif %}
 
-                <!-- PATIENT ID -->
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- PATIENT ID / EMAIL -->
                 <div class="mb-5">
 
-                    <label class="block
-                                  text-sm
-                                  font-semibold
-                                  text-slate-700
-                                  mb-2">
-
-                        Patient ID
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Patient ID or Email
                     </label>
 
                     <input type="text"
+                           name="patient_id"
                            id="patientId"
-                           placeholder="Enter your Patient ID"
+                           placeholder="e.g. PAT0001 or name@email.com"
                            required
-                           class="form-input">
+                           class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600">
 
                 </div>
-
 
                 <!-- PASSWORD -->
                 <div class="mb-5">
 
-                    <label class="block
-                                  text-sm
-                                  font-semibold
-                                  text-slate-700
-                                  mb-2">
-
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
                         Password
                     </label>
 
                     <div class="relative">
 
                         <input type="password"
+                               name="password"
                                id="patientPassword"
                                placeholder="Enter your password"
                                required
-                               class="form-input pr-12">
+                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 pr-12">
 
                         <button type="button"
-                                onclick="togglePassword('patientPassword')"
-                                class="absolute right-4 top-3
-                                       text-slate-400">
-
+                                onclick="togglePassword()"
+                                class="absolute right-4 top-3.5 text-slate-400 hover:text-slate-600">
                             👁
                         </button>
 
@@ -104,89 +80,59 @@
 
                 </div>
 
-
                 <!-- REMEMBER -->
-                <div class="flex items-center
-                            justify-between
-                            mb-6">
+                <div class="flex items-center justify-between mb-6">
 
-                    <label class="flex items-center gap-2
-                                  text-sm text-slate-600">
-
-                        <input type="checkbox"
-                               class="rounded">
-
+                    <label class="flex items-center gap-2 text-sm text-slate-600">
+                        <input type="checkbox" class="rounded">
                         Remember me
                     </label>
 
-                    <a href="#"
-                       class="text-sm
-                              text-blue-600
-                              hover:underline">
-
+                    <a href="#" class="text-sm text-blue-600 hover:underline">
                         Forgot password?
                     </a>
 
                 </div>
 
-
                 <!-- LOGIN BUTTON -->
                 <button type="submit"
-                        class="w-full
-                               bg-blue-600
-                               hover:bg-blue-700
-                               text-white
-                               py-3.5
-                               rounded-xl
-                               font-semibold
-                               transition">
-
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-semibold transition cursor-pointer shadow-lg shadow-blue-500/20">
                     Login
                 </button>
 
             </form>
 
-
             <!-- REGISTER -->
-            <div class="text-center
-                        border-t
-                        border-slate-200
-                        mt-7 pt-6">
+            <div class="text-center border-t border-slate-200 mt-7 pt-6">
 
-                <p class="text-sm
-                          text-slate-500">
-
+                <p class="text-sm text-slate-500">
                     New to MediKiosk?
-
                     <a href="/patient/register/"
-                       class="text-blue-600
-                              font-semibold
-                              hover:underline">
-
+                       class="text-blue-600 font-semibold hover:underline">
                         Create an account
                     </a>
-
                 </p>
 
             </div>
 
         </div>
 
-
         <div class="text-center mt-6">
-
             <a href="/patient/"
-               class="text-sm
-                      text-slate-500
-                      hover:text-blue-600">
-
+               class="text-sm text-slate-500 hover:text-blue-600">
                 ← Back
             </a>
-
         </div>
 
     </div>
 
 </div>
+
+<script>
+function togglePassword() {
+    const input = document.getElementById("patientPassword");
+    input.type = input.type === "password" ? "text" : "password";
+}
+</script>
 
 {% endblock %}
