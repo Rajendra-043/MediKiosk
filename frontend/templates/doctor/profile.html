@@ -1,0 +1,314 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MediKiosk - Doctor Profile{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/doctor_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-name">MediKiosk</div>
+            <div class="brand-sub">Doctor Portal</div>
+        </div>
+
+        <nav class="nav">
+
+            <div class="nav-label">Menu</div>
+
+            <!-- Dashboard -->
+            <a href="#" class="nav-item">
+                <span class="icon">▦</span>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- Profile -->
+            <a href="#" class="nav-item active">
+                <span class="icon">◉</span>
+                <span>Profile</span>
+            </a>
+
+        </nav>
+
+        <!-- PROFILE + LOGOUT -->
+        <div class="sidebar-bottom">
+
+            <div class="profile">
+
+                <div class="profile-avatar">
+                    DA
+                </div>
+
+                <div class="profile-info">
+                    <strong>Dr. Agrawal</strong>
+                    <small>Doctor</small>
+                </div>
+
+                <button
+                    type="button"
+                    class="logout"
+                    id="logoutButton">
+                    Logout
+                </button>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <div class="page">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+
+                <p class="welcome">
+                    Good Morning, Dr. Agrawal
+                </p>
+
+                <h1>
+                    My Profile
+                </h1>
+
+                <p class="subtitle">
+                    View and manage your professional information.
+                </p>
+
+            </div>
+
+
+            <!-- PROFILE CARD -->
+            <div class="profile-card">
+
+                <div class="profile-card-header">
+
+                    <h2>
+                        Doctor Information
+                    </h2>
+
+                    <p>
+                        Update your professional details below.
+                    </p>
+
+                </div>
+
+
+                <form
+                    class="profile-form"
+                    id="profileForm">
+
+                    <!-- DOCTOR HEADER -->
+                    <div class="profile-top">
+
+                        <div class="large-avatar">
+                            DA
+                        </div>
+
+                        <div>
+                            <h3>
+                                Dr. Agrawal
+                            </h3>
+
+                            <p>
+                                Doctor • MediKiosk
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- FORM FIELDS -->
+                    <div class="form-grid">
+
+                        <!-- Doctor's Name -->
+                        <div class="form-group">
+
+                            <label for="doctorName">
+                                Doctor's Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="doctorName"
+                                name="doctor_name"
+                                value="Dr. Agrawal"
+                                required>
+
+                        </div>
+
+
+                        <!-- Medical Registration Number -->
+                        <div class="form-group">
+
+                            <label for="registrationNumber">
+                                Medical Registration Number
+                            </label>
+
+                            <input
+                                type="text"
+                                id="registrationNumber"
+                                name="medical_registration_number"
+                                value="MCI-00012345"
+                                required>
+
+                        </div>
+
+
+                        <!-- Specialization -->
+                        <div class="form-group">
+
+                            <label for="specialization">
+                                Specialization
+                            </label>
+
+                            <select
+                                id="specialization"
+                                name="specialization"
+                                required>
+
+                                <option value="General Physician" selected>
+                                    General Physician
+                                </option>
+
+                                <option value="Cardiologist">
+                                    Cardiologist
+                                </option>
+
+                                <option value="Dermatologist">
+                                    Dermatologist
+                                </option>
+
+                                <option value="Neurologist">
+                                    Neurologist
+                                </option>
+
+                                <option value="Orthopedic">
+                                    Orthopedic
+                                </option>
+
+                                <option value="Pediatrician">
+                                    Pediatrician
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Qualification -->
+                        <div class="form-group">
+
+                            <label for="qualification">
+                                Qualification
+                            </label>
+
+                            <input
+                                type="text"
+                                id="qualification"
+                                name="qualification"
+                                value="MBBS"
+                                required>
+
+                        </div>
+
+
+                        <!-- Experience -->
+                        <div class="form-group">
+
+                            <label for="experience">
+                                Experience
+                            </label>
+
+                            <input
+                                type="text"
+                                id="experience"
+                                name="experience"
+                                value="10 Years"
+                                required>
+
+                        </div>
+
+
+                        <!-- Phone -->
+                        <div class="form-group">
+
+                            <label for="phone">
+                                Phone Number
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone_number"
+                                value="+91 98765 43210"
+                                required>
+
+                        </div>
+
+
+                        <!-- Email -->
+                        <div class="form-group full">
+
+                            <label for="email">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value="doctor@medikiosk.com"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BUTTONS -->
+                    <div class="form-actions">
+
+                        <button
+                            type="button"
+                            class="btn btn-cancel"
+                            id="cancelButton">
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="btn btn-save">
+                            Save Changes
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="{% static 'js/doctor_profile.js' %}"></script>
+{% endblock %}
+
