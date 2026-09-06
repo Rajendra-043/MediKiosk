@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw
 
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
-from PIL import Image, ImageDraw
+
 import io
 
 
