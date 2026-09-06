@@ -149,6 +149,9 @@ urlpatterns = [
         name="doctor_register"
     ),
 
+    path("doctor/dashboard/",
+        views.doctor_dashboard,
+        name="doctor_dashboard"),
 
     # -------------------------
     # ADMIN

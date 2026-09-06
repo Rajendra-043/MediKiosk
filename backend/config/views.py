@@ -114,7 +114,53 @@ def doctor_landing(request):
 
 
 def doctor_login(request):
+    if request.method == "POST":
+        identifier = request.POST.get("doctor_id")
+        password = request.POST.get("password")
+
+        try:
+            if "@" in identifier:
+                doctor = Doctor.objects.get(email=identifier)
+            else:
+                doctor = Doctor.objects.get(doctor_id=identifier)
+
+        except Doctor.DoesNotExist:
+            return render(
+                request,
+                "doctor/login.html",
+                {"error": "Invalid Doctor ID / Email or Password."}
+            )
+
+        if doctor.password and check_password(password, doctor.password):
+            request.session["doctor_id"] = doctor.id
+            return redirect("/doctor/dashboard/")
+
+        return render(
+            request,
+            "doctor/login.html",
+            {"error": "Invalid Doctor ID / Email or Password."}
+        )
+
     return render(request, "doctor/login.html")
+
+def doctor_dashboard(request):
+    doctor_id = request.session.get("doctor_id")
+
+    if not doctor_id:
+        return redirect("/doctor/login/")
+
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+
+    patients = Patient.objects.all().order_by("-created_at")
+
+    return render(
+        request,
+        "doctor/dashboard.html",
+        {
+            "doctor": doctor,
+            "patients": patients,
+        }
+    )
 
 
 def doctor_register(request):
@@ -130,17 +176,15 @@ def doctor_register(request):
             )
 
         doctor = Doctor.objects.create(
-            full_name=request.POST.get("full_name"),
-            medical_registration_number=request.POST.get(
-                "medical_registration_number"
-            ),
-            specialization=request.POST.get("specialization"),
-            qualification=request.POST.get("qualification"),
-            experience=request.POST.get("experience") or 0,
-            phone=request.POST.get("phone"),
-            email=request.POST.get("email"),
-        )
-
+                full_name=request.POST.get("full_name"),
+                medical_registration_number=request.POST.get("medical_registration_number"),
+                specialization=request.POST.get("specialization"),
+                qualification=request.POST.get("qualification"),
+                experience=request.POST.get("experience") or 0,
+                phone=request.POST.get("phone"),
+                email=request.POST.get("email"),
+                password=make_password(password),
+    )
         doctor.doctor_id = f"DOC{doctor.id:04d}"
         doctor.save()
 

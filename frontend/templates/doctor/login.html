@@ -45,7 +45,8 @@
                     border
                     p-8">
 
-            <form onsubmit="handleDoctorLogin(event)">
+            <form method="POST" action="{% url 'doctor_login' %}">
+                {% csrf_token %}
 
                 <div class="mb-5">
 
@@ -53,10 +54,11 @@
                         Doctor ID / Email
                     </label>
 
-                    <input type="text"
-                           placeholder="Enter Doctor ID or email"
-                           required
-                           class="form-input">
+                    <input type="text" 
+                            name="doctor_id"
+                            placeholder="Enter Doctor ID or email" 
+                            required 
+                            class="form-input">
 
                 </div>
 
@@ -67,12 +69,12 @@
                         Password
                     </label>
 
-                    <input type="password"
-                           id="doctorPassword"
-                           placeholder="Enter password"
-                           required
-                           class="form-input">
-
+                    <input type="password" 
+                            name="password"
+                            id="doctorPassword" 
+                            placeholder="Enter password" 
+                            required 
+                            class="form-input">
                 </div>
 
 
