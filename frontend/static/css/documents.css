@@ -567,7 +567,7 @@
     color: #123f50;
 }
 
-.upload-modal-box > p {
+.upload-modal-box>p {
     margin: 0 auto 25px;
 
     max-width: 400px;
@@ -757,4 +757,49 @@
         padding: 28px 20px;
     }
 
+}
+
+
+/* -------------------------
+   OCR RESULT
+/* -------------------------
+   OCR RESULT
+------------------------- */
+
+.ocr-result {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+
+    margin-top: 24px;
+    padding: 20px;
+
+    border-radius: 12px;
+
+    background: #f5f7fa;
+    border: 1px solid #dfe3e8;
+}
+
+.ocr-result h3 {
+    margin: 0 0 12px 0;
+}
+
+.ocr-result pre {
+    display: block;
+
+    margin: 0;
+    padding: 12px;
+
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.6;
+
+    color: #1f2937;
+}
+
+.ocr-result[hidden] {
+    display: none !important;
 }
