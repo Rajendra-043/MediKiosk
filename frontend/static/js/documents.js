@@ -32,6 +32,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const ocrResultText =
         document.getElementById("ocrResultText");
 
+    const ocrReportText =
+        document.getElementById("ocrReportText");
 
 
 
@@ -257,9 +259,116 @@ document.addEventListener("DOMContentLoaded", function () {
                     ocrResultText.textContent =
                         data.text;
 
+                    ocrReportText.textContent =
+                        data.report;
+
                     ocrResult.hidden = false;
 
                 }
+
+
+
+
+
+                /* -------------------------
+                Add Document To List
+                ------------------------- */
+
+                const documentsList =
+                    document.getElementById("documentsList");
+
+                const documentCount =
+                    document.getElementById("documentCount");
+
+
+                if (documentsList && data.document_id) {
+
+                    const emptyMessage =
+                        documentsList.querySelector(".document-info h3");
+
+                    if (
+                        emptyMessage &&
+                        emptyMessage.textContent.includes(
+                            "No documents uploaded"
+                        )
+                    ) {
+                        documentsList.innerHTML = "";
+                    }
+
+
+                    const documentItem =
+                        document.createElement("div");
+
+                    documentItem.className =
+                        "document-item";
+
+
+                    documentItem.innerHTML = `
+                        <div class="document-file-icon">
+                            FILE
+                        </div>
+
+                        <div class="document-info">
+                            <h3>${data.filename}</h3>
+
+                            <p>
+                                Uploaded just now
+                            </p>
+                        </div>
+
+                        <div class="document-actions">
+
+                            <a
+                                href="/patient/documents/"
+                                class="view-document-button"
+                            >
+                                View
+                            </a>
+
+                            <button
+                                type="button"
+                                class="delete-document-button"
+                                disabled
+                            >
+                                Delete
+                            </button>
+
+                        </div>
+                    `;
+
+
+                    documentsList.prepend(
+                        documentItem
+                    );
+
+
+                    /* -------------------------
+                    Update Document Count
+                    ------------------------- */
+
+                    if (documentCount) {
+
+                        const currentCount =
+                            documentsList.querySelectorAll(
+                                ".document-item"
+                            ).length;
+
+                        documentCount.textContent =
+                            currentCount +
+                            (
+                                currentCount === 1
+                                    ? " Document"
+                                    : " Documents"
+                            );
+                    }
+
+                }
+
+
+
+
+
+
 
 
 

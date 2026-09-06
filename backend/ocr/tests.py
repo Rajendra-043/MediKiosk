@@ -1,6 +1,8 @@
 from django.test import TestCase
 import pytesseract
 from PIL import Image, ImageDraw
+from patients.models import Patient, MedicalDocument
+from .data_extractor import extract_medical_data
 
 
 from django.urls import reverse
@@ -95,6 +97,45 @@ class OCRViewTest(TestCase):
 
     def test_upload_document(self):
 
+
+
+
+
+        
+        # -------------------------
+        # Create test patient
+        # -------------------------
+
+        patient = Patient.objects.create(
+            patient_id="TEST001",
+            name="Rahul",
+            gender="Male"
+        )
+
+        # -------------------------
+        # Log patient into session
+        # -------------------------
+
+        session = self.client.session
+
+        session["patient_id"] = patient.id
+
+        session.save()
+
+        # -------------------------
+        # Create test image
+        # ------------------
+
+
+
+
+
+
+
+
+
+
+
         # Create test image
         image = Image.new(
             "RGB",
@@ -185,3 +226,45 @@ class OCRViewTest(TestCase):
             "Twice Daily",
             data["text"]
         )
+
+
+
+
+
+
+
+class MedicalDataExtractionTest(TestCase):
+
+    def test_extract_medical_data(self):
+
+        text = """
+        Patient Name: Rahul
+        Medicine: Paracetamol 500 mg
+        Dosage: Twice Daily
+        """
+
+        data = extract_medical_data(text)
+
+        print("\n========== STRUCTURED DATA ==========\n")
+        print(data)
+        print("\n=====================================\n")
+
+        self.assertEqual(
+            data["patient_name"],
+            "Rahul"
+        )
+
+        self.assertEqual(
+            data["medicine"],
+            "Paracetamol"
+        )
+
+        self.assertEqual(
+            data["dosage"],
+            "500 mg"
+        )
+
+        self.assertEqual(
+            data["frequency"],
+            "Twice Daily"
+        )        

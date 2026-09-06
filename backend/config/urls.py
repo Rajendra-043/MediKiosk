@@ -115,6 +115,15 @@ urlpatterns = [
         name="documents"
     ),
 
+
+    path(
+        "patient/documents/<int:doc_id>/",
+        views.document_detail,
+        name="document_detail"
+    ),
+
+
+
     # --- DELETE DOCUMENT YAHAN PATIENT MEIN SHIFT KIYA ---
     path(
         "patient/documents/<int:doc_id>/delete/",
