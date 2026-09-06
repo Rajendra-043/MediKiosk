@@ -50,6 +50,11 @@ urlpatterns = [
     include("ai.urls")
     ),
 
+
+    path(
+    "ocr/",
+    include("ocr.urls")
+    ),
     
     path(
         "patient/",
