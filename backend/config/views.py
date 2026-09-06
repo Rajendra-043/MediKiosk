@@ -8,6 +8,7 @@ from patients.models import Patient, MedicalHistory, Medication, MedicalDocument
 from doctor.models import Doctor
 from django.views.decorators.http import require_POST
 
+
 def home(request):
     return render(request, "landing/index.html")
 
@@ -478,3 +479,31 @@ def timeline(request):
         "patient": patient,
         "timeline": timeline_events,
     })
+
+
+def document_detail(request, doc_id):
+
+    patient_id = request.session.get("patient_id")
+
+    if not patient_id:
+        return redirect("/patient/login/")
+
+    patient = get_object_or_404(
+        Patient,
+        id=patient_id
+    )
+
+    document = get_object_or_404(
+        MedicalDocument,
+        id=doc_id,
+        patient=patient
+    )
+
+    return render(
+        request,
+        "paitent/document_detail.html",
+        {
+            "patient": patient,
+            "document": document,
+        }
+    )

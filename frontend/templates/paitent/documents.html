@@ -119,9 +119,8 @@ MediKiosk - Documents
 
                 <div class="document-actions">
 
-                    <a href="{{ document.file.url }}"
-                       target="_blank"
-                       class="view-document-button">
+                    <a href="{% url 'document_detail' document.id %}"
+                        class="view-document-button">
                         View
                     </a>
 
@@ -213,12 +212,20 @@ MediKiosk - Documents
 
 
 <!-- OCR RESULT -->
-
 <div class="ocr-result" id="ocrResult" hidden>
 
     <h3>Extracted Text</h3>
 
     <pre id="ocrResultText"></pre>
+
+
+    <div class="medical-report">
+
+        <h3>Medical Report</h3>
+
+        <pre id="ocrReportText"></pre>
+
+    </div>
 
 </div>
 

@@ -171,5 +171,19 @@ class MedicalDocument(models.Model):
         auto_now_add=True
     )
 
+
+    extracted_text = models.TextField(
+        blank=True
+    )
+
+    report = models.TextField(
+        blank=True
+    )
+
+
+
+
+
+
     def __str__(self):
         return f"{self.patient.patient_id} - {self.document_name}"
