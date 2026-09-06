@@ -1,4 +1,6 @@
 from pathlib import Path
+from datetime import date
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
 
@@ -191,6 +193,82 @@ def doctor_register(request):
         return redirect("/doctor/login/")
 
     return render(request, "doctor/register.html")
+
+
+def patient_detail(request, patient_id):
+    doctor_id = request.session.get("doctor_id")
+
+    if not doctor_id:
+        return redirect("/doctor/login/")
+
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    patient = get_object_or_404(Patient, id=patient_id)
+
+    medical_history = MedicalHistory.objects.filter(
+        patient=patient
+    ).order_by("-diagnosed_date", "-created_at")
+
+    medications = Medication.objects.filter(
+        patient=patient
+    ).order_by("-created_at")
+
+    documents = MedicalDocument.objects.filter(
+        patient=patient
+    ).order_by("-uploaded_at")
+
+    # Calculate patient age
+    age = None
+
+    if patient.date_of_birth:
+        today = date.today()
+        age = today.year - patient.date_of_birth.year
+
+        if (today.month, today.day) < (
+            patient.date_of_birth.month,
+            patient.date_of_birth.day
+        ):
+            age -= 1
+
+
+    # Latest medical history date = last visit
+    last_visit = medical_history.first().diagnosed_date if medical_history.exists() else None
+
+    return render(
+        request,
+        "doctor/patient_detail.html",
+        {
+    "doctor": doctor,
+    "patient": patient,
+    "medical_history": medical_history,
+    "medications": medications,
+    "documents": documents,
+    "age": age,
+    "last_visit": last_visit,
+}
+    )
+
+# -------------------------
+# DOCTOR PROFILE
+# -------------------------
+
+def doctor_profile(request):
+    doctor_id = request.session.get("doctor_id")
+
+    if not doctor_id:
+        return redirect("/doctor/login/")
+
+    doctor = get_object_or_404(
+        Doctor,
+        id=doctor_id
+    )
+
+    return render(
+        request,
+        "doctor/profile.html",
+        {
+            "doctor": doctor,
+        }
+    )
 
 # PROFILE
 def profile(request):

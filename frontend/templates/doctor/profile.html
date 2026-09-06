@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 {% load static %}
 
@@ -21,46 +20,37 @@
         </div>
 
         <nav class="nav">
-
             <div class="nav-label">Menu</div>
 
             <!-- Dashboard -->
-            <a href="#" class="nav-item">
+            <a href="{% url 'doctor_dashboard' %}" class="nav-item">
                 <span class="icon">▦</span>
                 <span>Dashboard</span>
             </a>
 
             <!-- Profile -->
-            <a href="#" class="nav-item active">
+            <a href="{% url 'doctor_profile' %}" class="nav-item active">
                 <span class="icon">◉</span>
                 <span>Profile</span>
             </a>
-
         </nav>
 
         <!-- PROFILE + LOGOUT -->
         <div class="sidebar-bottom">
-
             <div class="profile">
-
                 <div class="profile-avatar">
-                    DA
+                    {{ doctor.full_name|first|upper }}
                 </div>
 
                 <div class="profile-info">
-                    <strong>Dr. Agrawal</strong>
-                    <small>Doctor</small>
+                    <strong>Dr. {{ doctor.full_name }}</strong>
+                    <small>{{ doctor.specialization|default:"Doctor" }}</small>
                 </div>
 
-                <button
-                    type="button"
-                    class="logout"
-                    id="logoutButton">
+                <a href="{% url 'doctor_login' %}" class="logout" id="logoutButton" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
                     Logout
-                </button>
-
+                </a>
             </div>
-
         </div>
 
     </aside>
@@ -73,9 +63,8 @@
 
             <!-- PAGE HEADER -->
             <div class="page-header">
-
                 <p class="welcome">
-                    Good Morning, Dr. Agrawal
+                    Good Morning, Dr. {{ doctor.full_name }}
                 </p>
 
                 <h1>
@@ -85,214 +74,116 @@
                 <p class="subtitle">
                     View and manage your professional information.
                 </p>
-
             </div>
-
 
             <!-- PROFILE CARD -->
             <div class="profile-card">
 
                 <div class="profile-card-header">
-
                     <h2>
                         Doctor Information
                     </h2>
-
                     <p>
                         Update your professional details below.
                     </p>
-
                 </div>
 
-
-                <form
-                    class="profile-form"
-                    id="profileForm">
+                <form class="profile-form" id="profileForm" method="POST" action="{% url 'doctor_profile' %}">
+                    {% csrf_token %}
 
                     <!-- DOCTOR HEADER -->
                     <div class="profile-top">
-
                         <div class="large-avatar">
-                            DA
+                            {{ doctor.full_name|first|upper }}
                         </div>
 
                         <div>
                             <h3>
-                                Dr. Agrawal
+                                Dr. {{ doctor.full_name }}
                             </h3>
-
                             <p>
-                                Doctor • MediKiosk
+                                {{ doctor.specialization|default:"Specialist" }} • MediKiosk
                             </p>
                         </div>
-
                     </div>
-
 
                     <!-- FORM FIELDS -->
                     <div class="form-grid">
 
                         <!-- Doctor's Name -->
                         <div class="form-group">
-
                             <label for="doctorName">
                                 Doctor's Name
                             </label>
-
-                            <input
-                                type="text"
-                                id="doctorName"
-                                name="doctor_name"
-                                value="Dr. Agrawal"
-                                required>
-
+                            <input type="text" id="doctorName" name="full_name" value="{{ doctor.full_name }}" required>
                         </div>
-
 
                         <!-- Medical Registration Number -->
                         <div class="form-group">
-
                             <label for="registrationNumber">
                                 Medical Registration Number
                             </label>
-
-                            <input
-                                type="text"
-                                id="registrationNumber"
-                                name="medical_registration_number"
-                                value="MCI-00012345"
-                                required>
-
+                            <input type="text" id="registrationNumber" name="medical_registration_number" value="{{ doctor.medical_registration_number }}" required>
                         </div>
-
 
                         <!-- Specialization -->
                         <div class="form-group">
-
                             <label for="specialization">
                                 Specialization
                             </label>
-
-                            <select
-                                id="specialization"
-                                name="specialization"
-                                required>
-
-                                <option value="General Physician" selected>
-                                    General Physician
-                                </option>
-
-                                <option value="Cardiologist">
-                                    Cardiologist
-                                </option>
-
-                                <option value="Dermatologist">
-                                    Dermatologist
-                                </option>
-
-                                <option value="Neurologist">
-                                    Neurologist
-                                </option>
-
-                                <option value="Orthopedic">
-                                    Orthopedic
-                                </option>
-
-                                <option value="Pediatrician">
-                                    Pediatrician
-                                </option>
-
+                            <select id="specialization" name="specialization" required>
+                                <option value="General Physician" {% if doctor.specialization == 'General Physician' %}selected{% endif %}>General Physician</option>
+                                <option value="Cardiologist" {% if doctor.specialization == 'Cardiologist' %}selected{% endif %}>Cardiologist</option>
+                                <option value="Dermatologist" {% if doctor.specialization == 'Dermatologist' %}selected{% endif %}>Dermatologist</option>
+                                <option value="Neurologist" {% if doctor.specialization == 'Neurologist' %}selected{% endif %}>Neurologist</option>
+                                <option value="Orthopedic" {% if doctor.specialization == 'Orthopedic' %}selected{% endif %}>Orthopedic</option>
+                                <option value="Pediatrician" {% if doctor.specialization == 'Pediatrician' %}selected{% endif %}>Pediatrician</option>
                             </select>
-
                         </div>
-
 
                         <!-- Qualification -->
                         <div class="form-group">
-
                             <label for="qualification">
                                 Qualification
                             </label>
-
-                            <input
-                                type="text"
-                                id="qualification"
-                                name="qualification"
-                                value="MBBS"
-                                required>
-
+                            <input type="text" id="qualification" name="qualification" value="{{ doctor.qualification }}" required>
                         </div>
-
 
                         <!-- Experience -->
                         <div class="form-group">
-
                             <label for="experience">
-                                Experience
+                                Experience (in years)
                             </label>
-
-                            <input
-                                type="text"
-                                id="experience"
-                                name="experience"
-                                value="10 Years"
-                                required>
-
+                            <input type="number" id="experience" name="experience" value="{{ doctor.experience }}" required>
                         </div>
-
 
                         <!-- Phone -->
                         <div class="form-group">
-
                             <label for="phone">
                                 Phone Number
                             </label>
-
-                            <input
-                                type="tel"
-                                id="phone"
-                                name="phone_number"
-                                value="+91 98765 43210"
-                                required>
-
+                            <input type="tel" id="phone" name="phone" value="{{ doctor.phone }}" required>
                         </div>
-
 
                         <!-- Email -->
                         <div class="form-group full">
-
                             <label for="email">
                                 Email
                             </label>
-
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                value="doctor@medikiosk.com"
-                                required>
-
+                            <input type="email" id="email" name="email" value="{{ doctor.email }}" required>
                         </div>
 
                     </div>
 
-
                     <!-- BUTTONS -->
                     <div class="form-actions">
-
-                        <button
-                            type="button"
-                            class="btn btn-cancel"
-                            id="cancelButton">
+                        <a href="{% url 'doctor_dashboard' %}" class="btn btn-cancel" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
                             Cancel
-                        </button>
+                        </a>
 
-                        <button
-                            type="submit"
-                            class="btn btn-save">
+                        <button type="submit" class="btn btn-save">
                             Save Changes
                         </button>
-
                     </div>
 
                 </form>
@@ -307,8 +198,6 @@
 
 {% endblock %}
 
-
 {% block extra_js %}
 <script src="{% static 'js/doctor_profile.js' %}"></script>
 {% endblock %}
-

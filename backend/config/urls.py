@@ -153,6 +153,20 @@ urlpatterns = [
         views.doctor_dashboard,
         name="doctor_dashboard"),
 
+    path(
+        "doctor/patient/<int:patient_id>/",
+        views.patient_detail,
+        name="patient_detail",
+        ),
+
+
+    path(
+        "doctor/profile/",
+        views.doctor_profile,
+        name="doctor_profile"
+        ),
+    
+
     # -------------------------
     # ADMIN
     # -------------------------

@@ -1,4 +1,4 @@
-{% extends "doctor/base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}
@@ -62,12 +62,9 @@
 
         <!-- AI BUTTON -->
 
-        <a href="{% url 'patient_summary' patient.id %}"
-           class="ai-button">
-
+        <button type="button" class="ai-button" disabled>
             ✨ Ask AI About Patient
-
-        </a>
+        </button>
 
     </section>
 
@@ -81,7 +78,7 @@
             <span>Age</span>
 
             <strong>
-                {{ patient.age }}
+                {{ age }}
             </strong>
 
         </div>
@@ -103,7 +100,7 @@
             <span>Last Visit</span>
 
             <strong>
-                {{ patient.last_visit|date:"d M Y" }}
+                {{ last_visit|date:"d M Y" }}
             </strong>
 
         </div>
@@ -140,10 +137,10 @@
                 </span>
 
 
-                {% for condition in patient.conditions %}
+                {% for condition in medical_history %}
 
                     <p>
-                        • {{ condition }}
+                        • {{ condition.condition }}
                     </p>
 
                 {% empty %}
@@ -159,28 +156,17 @@
 
             <!-- ALLERGIES -->
 
-            <div class="overview-item">
+                <div class="overview-item">
 
-                <span class="item-title">
-                    Allergies
-                </span>
-
-
-                {% for allergy in patient.allergies %}
-
-                    <p>
-                        • {{ allergy }}
-                    </p>
-
-                {% empty %}
+                    <span class="item-title">
+                        Allergies
+                    </span>
 
                     <p class="empty-text">
                         No recorded allergies
                     </p>
 
-                {% endfor %}
-
-            </div>
+                </div>
 
 
             <!-- MEDICATIONS -->
@@ -192,10 +178,10 @@
                 </span>
 
 
-                {% for medication in patient.medications %}
+                {% for medication in medications %}
 
                     <p>
-                        • {{ medication }}
+                        • {{ medication.name }}
                     </p>
 
                 {% empty %}
@@ -232,7 +218,7 @@
 
         <div class="timeline">
 
-            {% for consultation in consultations %}
+            {% for consultation in medical_history %}
 
             <div class="timeline-item">
 
@@ -275,15 +261,13 @@
                     <div class="consultation-details">
 
                         <div>
-
                             <label>
-                                Symptoms
+                                Condition
                             </label>
 
                             <p>
-                                {{ consultation.symptoms }}
+                                {{ consultation.condition }}
                             </p>
-
                         </div>
 
 
