@@ -24,8 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const uploadForm =
         document.getElementById("documentUploadForm");
 
-
-
     const ocrResult =
         document.getElementById("ocrResult");
 
@@ -35,7 +33,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const ocrReportText =
         document.getElementById("ocrReportText");
 
+    const documentsList =
+        document.getElementById("documentsList");
 
+    const documentCount =
+        document.getElementById("documentCount");
 
 
     /* -------------------------
@@ -139,11 +141,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             event.preventDefault();
 
+
+            /* -------------------------
+               Check File
+            ------------------------- */
+
             if (!modalDocumentInput.files.length) {
 
                 alert("Please select a document.");
 
                 return;
+
             }
 
 
@@ -171,6 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
                 return;
+
             }
 
 
@@ -178,7 +187,8 @@ document.addEventListener("DOMContentLoaded", function () {
                Prepare Form Data
             ------------------------- */
 
-            const formData = new FormData();
+            const formData =
+                new FormData();
 
             formData.append(
                 "document",
@@ -187,33 +197,67 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* -------------------------
+               Add Document Name
+            ------------------------- */
+
+            const documentNameInput =
+                uploadForm.querySelector(
+                    '[name="document_name"]'
+                );
+
+
+            if (documentNameInput) {
+
+                formData.append(
+                    "document_name",
+                    documentNameInput.value.trim()
+                );
+
+            }
+
+
+            /* -------------------------
                Get CSRF Token
             ------------------------- */
 
-            const csrfToken =
+            const csrfInput =
                 uploadForm.querySelector(
-                    "[name=csrfmiddlewaretoken]"
-                ).value;
+                    '[name="csrfmiddlewaretoken"]'
+                );
+
+
+            if (!csrfInput) {
+
+                alert("CSRF token not found.");
+
+                return;
+
+            }
+
+
+            const csrfToken =
+                csrfInput.value;
 
 
             try {
 
                 /* -------------------------
-                   Send to OCR Backend
+                   Send To Django
                 ------------------------- */
 
-                const response = await fetch(
-                    uploadForm.action,
-                    {
-                        method: "POST",
+                const response =
+                    await fetch(
+                        uploadForm.action,
+                        {
+                            method: "POST",
 
-                        headers: {
-                            "X-CSRFToken": csrfToken
-                        },
+                            headers: {
+                                "X-CSRFToken": csrfToken
+                            },
 
-                        body: formData
-                    }
-                );
+                            body: formData
+                        }
+                    );
 
 
                 const data =
@@ -221,10 +265,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 /* -------------------------
-                   Handle Error
+                   Handle Backend Error
                 ------------------------- */
 
-                if (!response.ok || !data.success) {
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
 
                     alert(
                         data.error ||
@@ -232,6 +279,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
                     return;
+
                 }
 
 
@@ -245,16 +293,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-                // alert(
-                //     "Document processed successfully.\n\n" +
-                //     "Extracted Text:\n\n" +
-                //     data.text
-                // );
-
-
-
-
-                if (ocrResult && ocrResultText) {
+                if (
+                    ocrResult &&
+                    ocrResultText &&
+                    ocrReportText
+                ) {
 
                     ocrResultText.textContent =
                         data.text;
@@ -267,34 +310,34 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-
-
-
                 /* -------------------------
-                Add Document To List
+                   Update Document List
                 ------------------------- */
 
-                const documentsList =
-                    document.getElementById("documentsList");
-
-                const documentCount =
-                    document.getElementById("documentCount");
+                if (documentsList) {
 
 
-                if (documentsList && data.document_id) {
+                    /*
+                       Remove "No documents uploaded"
+                       message if it exists.
+                    */
 
                     const emptyMessage =
-                        documentsList.querySelector(".document-info h3");
+                        documentsList.querySelector(
+                            ".document-empty"
+                        );
 
-                    if (
-                        emptyMessage &&
-                        emptyMessage.textContent.includes(
-                            "No documents uploaded"
-                        )
-                    ) {
-                        documentsList.innerHTML = "";
+
+                    if (emptyMessage) {
+
+                        emptyMessage.remove();
+
                     }
 
+
+                    /*
+                       Create new document item
+                    */
 
                     const documentItem =
                         document.createElement("div");
@@ -303,39 +346,46 @@ document.addEventListener("DOMContentLoaded", function () {
                         "document-item";
 
 
+                    /*
+                       Use document name returned
+                       by Django.
+                    */
+
                     documentItem.innerHTML = `
+
                         <div class="document-file-icon">
                             FILE
                         </div>
 
                         <div class="document-info">
-                            <h3>${data.filename}</h3>
+
+                            <h3>
+                                ${escapeHtml(data.filename)}
+                            </h3>
 
                             <p>
                                 Uploaded just now
                             </p>
+
                         </div>
 
                         <div class="document-actions">
 
                             <a
-                                href="/patient/documents/"
+                                href="/patient/documents/${data.document_id}/"
                                 class="view-document-button"
                             >
                                 View
                             </a>
 
-                            <button
-                                type="button"
-                                class="delete-document-button"
-                                disabled
-                            >
-                                Delete
-                            </button>
-
                         </div>
+
                     `;
 
+
+                    /*
+                       Put newest document first.
+                    */
 
                     documentsList.prepend(
                         documentItem
@@ -343,42 +393,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                     /* -------------------------
-                    Update Document Count
+                       Update Count
                     ------------------------- */
 
-                    if (documentCount) {
-
-                        const currentCount =
-                            documentsList.querySelectorAll(
-                                ".document-item"
-                            ).length;
-
-                        documentCount.textContent =
-                            currentCount +
-                            (
-                                currentCount === 1
-                                    ? " Document"
-                                    : " Documents"
-                            );
-                    }
+                    updateDocumentCount();
 
                 }
 
 
-
-
-
-
-
-
-
-
-
                 /* -------------------------
-                   Close Modal
+                   Reset Form
                 ------------------------- */
 
-                uploadModal.classList.remove("active");
+                uploadForm.reset();
+
+
+                if (selectedFile) {
+
+                    selectedFile.textContent =
+                        "No file selected";
+
+                }
+
+
+                /*
+                   Close modal after successful
+                   upload.
+                */
+
+                if (uploadModal) {
+
+                    uploadModal.classList.remove(
+                        "active"
+                    );
+
+                }
 
 
             } catch (error) {
@@ -395,6 +444,57 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
         });
+
+    }
+
+
+    /* -------------------------
+       Update Document Count
+    ------------------------- */
+
+    function updateDocumentCount() {
+
+        if (
+            !documentsList ||
+            !documentCount
+        ) {
+
+            return;
+
+        }
+
+
+        const items =
+            documentsList.querySelectorAll(
+                ".document-item"
+            );
+
+
+        const count =
+            items.length;
+
+
+        documentCount.textContent =
+            count === 1
+                ? "1 Document"
+                : `${count} Documents`;
+
+    }
+
+
+    /* -------------------------
+       Escape HTML
+    ------------------------- */
+
+    function escapeHtml(value) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent =
+            value || "";
+
+        return div.innerHTML;
 
     }
 

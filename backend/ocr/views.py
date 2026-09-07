@@ -1,8 +1,10 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
-from patients.models import Patient, MedicalDocument
+from patients.models import Patient, Medication, MedicalDocument
+
 from .ocr_engine import extract_text
+from .data_extractor import extract_medical_data
 
 
 @require_POST
@@ -37,7 +39,7 @@ def process_document(request):
         )
 
     # -------------------------
-    # Get uploaded file
+    # Get uploaded document
     # -------------------------
 
     uploaded_file = request.FILES.get("document")
@@ -54,19 +56,17 @@ def process_document(request):
     try:
 
         # -------------------------
-        # STEP 1
-        # Save document first
+        # Save uploaded document
         # -------------------------
 
         document = MedicalDocument.objects.create(
             patient=patient,
             document_name=uploaded_file.name,
-            document_type=uploaded_file.content_type,
-            file=uploaded_file
+            file=uploaded_file,
+            document_type=uploaded_file.content_type
         )
 
         # -------------------------
-        # STEP 2
         # Run OCR
         # -------------------------
 
@@ -75,49 +75,149 @@ def process_document(request):
         )
 
         # -------------------------
-        # STEP 3
-        # Generate report
+        # Store raw OCR text
         # -------------------------
 
-        report = f"""Medical Document Report
+        document.extracted_text = text
+
+        # -------------------------
+        # Extract structured data
+        # -------------------------
+
+        medical_data = extract_medical_data(text)
+
+        # -------------------------
+        # Store detected document type
+        # -------------------------
+
+        document.document_type = medical_data["document_type"]
+
+        # -------------------------
+        # Save medication
+        # -------------------------
+
+        if medical_data["medicine"]:
+
+            Medication.objects.create(
+                patient=patient,
+                name=medical_data["medicine"],
+                dosage=medical_data["dosage"],
+                frequency=medical_data["frequency"],
+                doctor=medical_data["doctor"]
+            )
+
+        # -------------------------
+        # Generate structured report
+        # -------------------------
+
+        if medical_data["document_type"] == "Lab Report":
+
+            report = f"""Medical Document Report
+
+Document Type:
+Lab Report
 
 Patient Information:
-Patient Name: {patient.name}
+Patient Name: {medical_data["patient_name"]}
+Patient ID: {medical_data["patient_id"]}
+Age: {medical_data["age"]}
+Gender: {medical_data["gender"]}
+
+Report Information:
+Report ID: {medical_data["report_id"]}
+Collection Date: {medical_data["collection_date"]}
+Report Date: {medical_data["report_date"]}
+
+Laboratory Tests:
+"""
+
+            for test in medical_data["tests"]:
+
+                report += (
+                    f'Test: {test["test"]}\n'
+                    f'Result: {test["result"]}\n'
+                    f'Reference Range: {test["reference"]}\n\n'
+                )
+
+            report += """OCR Status:
+Text successfully extracted from the uploaded document.
+"""
+
+        elif medical_data["document_type"] == "Prescription":
+
+            report = f"""Medical Document Report
+
+Document Type:
+Prescription
+
+Patient Information:
+Patient Name: {medical_data["patient_name"]}
+
+Prescription Information:
+Medicine: {medical_data["medicine"]}
+Dosage: {medical_data["dosage"]}
+Frequency: {medical_data["frequency"]}
+Doctor: {medical_data["doctor"]}
+Diagnosis: {medical_data["diagnosis"]}
+
+OCR Status:
+Text successfully extracted from the uploaded document.
+"""
+
+        else:
+
+            report = f"""Medical Document Report
+
+Document Type:
+Unknown
+
+Patient Information:
+Patient Name: {medical_data["patient_name"]}
 
 Extracted Information:
-{text}
+Medicine: {medical_data["medicine"]}
+Dosage: {medical_data["dosage"]}
+Frequency: {medical_data["frequency"]}
+Doctor: {medical_data["doctor"]}
+Diagnosis: {medical_data["diagnosis"]}
 
 OCR Status:
 Text successfully extracted from the uploaded document.
 """
 
         # -------------------------
-        # STEP 4
-        # Store OCR data
+        # Store generated report
         # -------------------------
 
-        document.extracted_text = text
         document.report = report
 
         document.save(
             update_fields=[
                 "extracted_text",
-                "report"
+                "report",
+                "document_type"
             ]
         )
 
         # -------------------------
-        # STEP 5
         # Return response
         # -------------------------
 
         return JsonResponse(
             {
                 "success": True,
+
                 "filename": document.document_name,
-                "text": document.extracted_text,
-                "report": document.report,
-                "document_id": document.id
+
+                "text": text,
+
+                "report": report,
+
+                "document_id": document.id,
+
+                "document_type": medical_data["document_type"],
+
+                "medical_data": medical_data,
             }
         )
 

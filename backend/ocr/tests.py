@@ -1,8 +1,9 @@
 from django.test import TestCase
 import pytesseract
 from PIL import Image, ImageDraw
-from patients.models import Patient, MedicalDocument
+from patients.models import Patient, MedicalDocument ,Medication
 from .data_extractor import extract_medical_data
+
 
 
 from django.urls import reverse
@@ -228,6 +229,34 @@ class OCRViewTest(TestCase):
         )
 
 
+        # -------------------------
+        # Verify Medication record
+        # -------------------------
+
+        medication = Medication.objects.filter(
+            patient=patient
+        ).first()
+
+        self.assertIsNotNone(
+            medication
+        )
+
+        self.assertEqual(
+            medication.name,
+            "Paracetamol"
+        )
+
+        self.assertEqual(
+            medication.dosage,
+            "500 mg"
+        )
+
+        self.assertEqual(
+            medication.frequency,
+            "Twice Daily"
+        )
+
+
 
 
 
@@ -267,4 +296,103 @@ class MedicalDataExtractionTest(TestCase):
         self.assertEqual(
             data["frequency"],
             "Twice Daily"
+        )        
+
+
+
+class MedicalParserTest(TestCase):
+
+    def test_prescription_data(self):
+
+        text = """
+        Patient Name: Rahul
+        Medicine: Paracetamol 500 mg
+        Dosage: Twice Daily
+        """
+
+        data = extract_medical_data(text)
+
+        print("\n========== PARSED DATA ==========")
+        print(data)
+        print("=================================")
+
+        self.assertEqual(
+            data["patient_name"],
+            "Rahul"
+        )
+
+        self.assertEqual(
+            data["medicine"],
+            "Paracetamol"
+        )
+
+        self.assertEqual(
+            data["dosage"],
+            "500 mg"
+        )
+
+        self.assertEqual(
+            data["frequency"],
+            "Twice Daily"
+        )        
+
+
+
+
+class LabReportParserTest(TestCase):
+
+    def test_lab_report_data(self):
+
+        text = """
+        Patient Name: MrDummy
+        Age / Gender: 20 / Male
+        Report ID: RE1
+        Collection Date: 24/06/2023 08:49 PM
+        Report Date: 24/06/2023 09:02 PM
+
+        COMPLETE BLOOD COUNT (CBC)
+
+        Haemoglobin 15 13-17 g/dL
+        Total Leucocyte Count 5000 4000-11000 /cumm
+        Neutrophils 50 40-80 %
+        Lymphocytes 40 20-40 %
+        Eosinophils 1 1-6 %
+        Monocytes 9 2-10 %
+        Basophils 0 0-1 %
+        """
+
+        data = extract_medical_data(text)
+
+        print("\n========== LAB REPORT DATA ==========")
+        print(data)
+        print("=====================================")
+
+        self.assertEqual(
+            data["document_type"],
+            "Lab Report"
+        )
+
+        self.assertEqual(
+            data["patient_name"],
+            "MrDummy"
+        )
+
+        self.assertEqual(
+            data["age"],
+            "20"
+        )
+
+        self.assertEqual(
+            data["gender"],
+            "Male"
+        )
+
+        self.assertEqual(
+            data["report_id"],
+            "RE1"
+        )
+
+        self.assertGreater(
+            len(data["tests"]),
+            0
         )        

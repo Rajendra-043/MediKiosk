@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from django.urls import path , include
+from django.views.generic import TemplateView
 
 
 from . import views
@@ -40,6 +41,9 @@ urlpatterns = [
     # -------------------------
     # PATIENT
     # -------------------------
+    
+    
+   
     path(
     "api/patients/",
     include("patients.urls")
@@ -135,6 +139,14 @@ urlpatterns = [
         views.timeline,
         name='timeline'),
 
+
+    path(
+    "patient/chatbot/",
+    TemplateView.as_view(
+        template_name="paitent/ai-chatbot.html"
+    ),
+    name="ai_chatbot"
+    ),
 
     # -------------------------
     # DOCTOR

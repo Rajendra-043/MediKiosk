@@ -183,7 +183,7 @@ def doctor_register(request):
                 medical_registration_number=request.POST.get("medical_registration_number"),
                 specialization=request.POST.get("specialization"),
                 qualification=request.POST.get("qualification"),
-                experience=request.POST.get("experience") or 0,
+                experience=int(request.POST.get("experience") or 0),
                 phone=request.POST.get("phone"),
                 email=request.POST.get("email"),
                 password=make_password(password),

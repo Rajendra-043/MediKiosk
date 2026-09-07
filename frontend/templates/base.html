@@ -29,10 +29,16 @@
 
     <!-- Main CSS -->
     <link rel="stylesheet"
+
           href="{% static 'css/style.css' %}">
 
     <!-- Page Specific CSS -->
     {% block extra_css %}
+    
+
+      href="{% static 'css/style.css' %}"
+
+    
     {% endblock %}
 
 </head>
@@ -49,6 +55,9 @@
     <!-- Page Specific JavaScript -->
     {% block extra_js %}
     {% endblock %}
+
+
+
 
 </body>
 </html>

@@ -3,9 +3,11 @@ document.addEventListener(
     function () {
 
 
+
         /* =========================================
            GET ELEMENTS
         ========================================= */
+
 
         const liveSpeechButton =
             document.getElementById(
