@@ -1,3 +1,3 @@
-from voice.services import speak_text
+from voice.services import speak
 
-speak_text("Hello. I am MediKiosk. How can I help you?")
+speak("Hello. I am MediKiosk. How can I help you?")

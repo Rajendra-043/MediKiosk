@@ -1,0 +1,4 @@
+{"role": "user", "content": "I have headache"}
+{"role": "assistant", "content": "Hello, I'm MediKiosk, your clinic assistant. I'm here to listen and help -- how are you feeling today? Could you share more about your headache? What type of headache do you have, and how long have you been experiencing it?"}
+{"role": "user", "content": "since yesterday"}
+{"role": "assistant", "content": "Since yesterday, you've been experiencing a headache. That's a significant duration. Could you tell me more about the location of your headache? Is it on one side of your head, or does it feel like it's spreading to other areas?"}

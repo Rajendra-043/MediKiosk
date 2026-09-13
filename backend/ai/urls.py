@@ -10,4 +10,10 @@ urlpatterns = [
         name="ai_chat"
     ),
 
+    path(
+        "assist/",
+        views.ai_assist,
+        name="ai_assist"
+    ),
+
 ]

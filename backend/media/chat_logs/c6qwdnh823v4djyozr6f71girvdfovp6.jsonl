@@ -1,0 +1,6 @@
+{"role": "user", "content": "Hello"}
+{"role": "assistant", "content": "Hello, I'm MediKiosk, your clinic assistant. I'm here to listen and help -- how are you feeling today? Could you share how you're feeling today?"}
+{"role": "user", "content": "I have headache"}
+{"role": "assistant", "content": "I'm glad you're here. Could you tell me more about the headache? Is it a sudden onset, or has it been going on for a while? What kind of headache do you have - is it throbbing, pulsating, or a dull ache?"}
+{"role": "user", "content": "since yesterday"}
+{"role": "assistant", "content": "Headaches can be quite debilitating, especially if they're new. Since your headache started yesterday, it's possible that it might be related to a viral infection or a headache disorder. Have you been experiencing any other symptoms such as fever, fatigue, or sensitivity to light and sound?"}

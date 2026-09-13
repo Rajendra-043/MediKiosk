@@ -1,0 +1,4 @@
+{"role": "user", "content": "Hello"}
+{"role": "assistant", "content": "Hello, I'm MediKiosk, your clinic assistant. I'm here to listen and help -- how are you feeling today? Could you share what brings you in today?"}
+{"role": "user", "content": "I have headache"}
+{"role": "assistant", "content": "A headache can be quite uncomfortable. How long have you been experiencing this headache, and have you noticed any other symptoms such as sensitivity to light or sound?"}

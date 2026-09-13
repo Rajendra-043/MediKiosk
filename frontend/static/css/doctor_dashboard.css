@@ -6,8 +6,8 @@
 body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
-    background: #f5f7fa;
-    color: #172033;
+    background: #F8FAFC;
+    color: #1E293B;
 }
 
 .app {
@@ -23,7 +23,7 @@ body {
 .sidebar {
     width: 245px;
     background: #ffffff;
-    border-right: 1px solid #e5e9ef;
+    border-right: 1px solid #E2E8F0;
 
     display: flex;
     flex-direction: column;
@@ -39,18 +39,18 @@ body {
 
 .brand {
     padding: 25px 24px 28px;
-    border-bottom: 1px solid #edf0f4;
+    border-bottom: 1px solid #E2E8F0;
 }
 
 .brand-name {
     font-size: 22px;
     font-weight: 700;
-    color: #1769e0;
+    color: #0B2D42;
 }
 
 .brand-sub {
     font-size: 10px;
-    color: #929aaa;
+    color: #64748B;
     margin-top: 4px;
 }
 
@@ -65,7 +65,7 @@ body {
 .nav-label {
     font-size: 9px;
     text-transform: uppercase;
-    color: #a1a9b7;
+    color: #64748B;
     font-weight: 700;
     padding: 0 12px 10px;
 }
@@ -80,7 +80,7 @@ body {
 
     border-radius: 8px;
 
-    color: #697386;
+    color: #64748B;
     text-decoration: none;
 
     font-size: 12px;
@@ -94,12 +94,12 @@ body {
 }
 
 .nav-item.active {
-    background: #eaf2ff;
-    color: #1769e0;
+    background: #CCFBF1;
+    color: #0F766E;
 }
 
 .nav-item:hover {
-    background: #f5f8fd;
+    background: #CCFBF1;
 }
 
 
@@ -109,7 +109,7 @@ body {
 
 .sidebar-bottom {
     padding: 14px;
-    border-top: 1px solid #edf0f4;
+    border-top: 1px solid #E2E8F0;
 }
 
 .profile {
@@ -127,8 +127,8 @@ body {
 
     border-radius: 50%;
 
-    background: #e9f2ff;
-    color: #1769e0;
+    background: #CCFBF1;
+    color: #0F766E;
 
     display: flex;
     align-items: center;
@@ -148,14 +148,14 @@ body {
     display: block;
 
     font-size: 11px;
-    color: #273044;
+    color: #1E293B;
 }
 
 .profile-info small {
     display: block;
 
     font-size: 9px;
-    color: #929aaa;
+    color: #64748B;
 
     margin-top: 3px;
 }
@@ -171,7 +171,7 @@ body {
     border: 0;
     background: transparent;
 
-    color: #d9534f;
+    color: #DC2626;
 
     padding: 7px 4px;
 
@@ -185,7 +185,7 @@ body {
 }
 
 .logout:hover {
-    background: #fff3f2;
+    background: #FEF2F2;
 }
 
 
@@ -218,7 +218,7 @@ body {
 .welcome {
     margin: 0 0 9px;
 
-    color: #1769e0;
+    color: #0F766E;
 
     font-size: 19px;
     font-weight: 600;
@@ -229,13 +229,13 @@ body {
 
     font-size: 38px;
 
-    color: #172033;
+    color: #1E293B;
 }
 
 .subtitle {
     margin-top: 8px;
 
-    color: #8a93a3;
+    color: #64748B;
 
     font-size: 13px;
 }
@@ -248,7 +248,7 @@ body {
 .patients-card {
     background: #ffffff;
 
-    border: 1px solid #e4e8ee;
+    border: 1px solid #E2E8F0;
 
     border-radius: 14px;
 
@@ -262,7 +262,7 @@ body {
     justify-content: space-between;
     align-items: center;
 
-    border-bottom: 1px solid #edf0f4;
+    border-bottom: 1px solid #E2E8F0;
 }
 
 .patients-top h2 {
@@ -270,13 +270,13 @@ body {
 
     font-size: 19px;
 
-    color: #172033;
+    color: #1E293B;
 }
 
 .patients-top p {
     margin: 5px 0 0;
 
-    color: #929aaa;
+    color: #64748B;
 
     font-size: 11px;
 }
@@ -294,7 +294,7 @@ body {
 
     padding: 0 38px 0 13px;
 
-    border: 1px solid #dfe4eb;
+    border: 1px solid #E2E8F0;
 
     border-radius: 8px;
 
@@ -304,7 +304,7 @@ body {
 }
 
 .search-container input:focus {
-    border-color: #1769e0;
+    border-color: #0F766E;
 }
 
 .search-container span {
@@ -336,9 +336,9 @@ body {
 .patient-table-header {
     padding: 13px 25px;
 
-    background: #fafbfc;
+    background: #F8FAFC;
 
-    color: #929aaa;
+    color: #64748B;
 
     font-size: 9px;
 
@@ -352,9 +352,9 @@ body {
 
     padding: 15px 25px;
 
-    border-top: 1px solid #edf0f4;
+    border-top: 1px solid #E2E8F0;
 
-    color: #687386;
+    color: #64748B;
 
     text-decoration: none;
 
@@ -364,7 +364,7 @@ body {
 }
 
 .patient-row:hover {
-    background: #f7faff;
+    background: #CCFBF1;
 }
 
 
@@ -389,9 +389,9 @@ body {
     align-items: center;
     justify-content: center;
 
-    background: #e9f2ff;
+    background: #CCFBF1;
 
-    color: #1769e0;
+    color: #0F766E;
 
     font-size: 12px;
 
@@ -401,7 +401,7 @@ body {
 .patient-info strong {
     display: block;
 
-    color: #273044;
+    color: #1E293B;
 
     font-size: 12px;
 }
@@ -411,7 +411,7 @@ body {
 
     margin-top: 3px;
 
-    color: #9aa2b0;
+    color: #64748B;
 
     font-size: 9px;
 }
@@ -434,9 +434,9 @@ body {
 }
 
 .completed {
-    background: #e9f8ef;
+    background: #DCFCE7;
 
-    color: #258653;
+    color: #16A34A;
 }
 
 

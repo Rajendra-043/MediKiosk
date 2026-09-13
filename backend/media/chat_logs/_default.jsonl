@@ -1,0 +1,18 @@
+{"role": "user", "content": "Hello"}
+{"role": "assistant", "content": "Hello, I'm MediKiosk, your clinic assistant. I'm here to listen and help -- how are you feeling today?"}
+{"role": "user", "content": "Hello"}
+{"role": "assistant", "content": "Can you tell me a bit more about what brings you in today?"}
+{"role": "user", "content": "Hello"}
+{"role": "assistant", "content": "How long have you been experiencing this pain/ discomfort in your chest?"}
+{"role": "user", "content": "Hello"}
+{"role": "assistant", "content": "Have you noticed any other symptoms, such as shortness of breath, dizziness, or fatigue?"}
+{"role": "user", "content": "Hello"}
+{"role": "assistant", "content": "Hello, I'm MediKiosk, your clinic assistant. I'm here to listen and help -- how are you feeling today?"}
+{"role": "user", "content": "Hello"}
+{"role": "assistant", "content": "How's your day going so far?"}
+{"role": "user", "content": "I have a headache"}
+{"role": "assistant", "content": "Hello, I'm MediKiosk, your clinic assistant. I'm here to listen and help -- how are you feeling today?"}
+{"role": "user", "content": "Since yesterday"}
+{"role": "assistant", "content": "You've had a headache since yesterday. That can be a bit of a worrisome time. Have you experienced any other symptoms like fatigue, dizziness, or nausea?"}
+{"role": "user", "content": "I have chest pain"}
+{"role": "assistant", "content": "Hello, I'm MediKiosk, your clinic assistant. I'm here to listen and help -- how are you feeling today? Could you share what's been going on with your chest pain?"}

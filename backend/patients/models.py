@@ -176,11 +176,29 @@ class MedicalDocument(models.Model):
         blank=True
     )
 
-    report = models.TextField(
+
+
+
+    ocr_layout = models.JSONField(
+        default=list,
+        blank=True
+    )
+
+    ocr_segments = models.JSONField(
+        default=list,
         blank=True
     )
 
 
+
+
+    report = models.TextField(
+        blank=True
+    )
+
+    uploaded_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
 
 

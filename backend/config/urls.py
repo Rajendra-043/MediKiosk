@@ -54,10 +54,29 @@ urlpatterns = [
     include("ai.urls")
     ),
 
+    path(
+    "api/voice/",
+    include("voice.urls")
+    ),
+
+    path(
+    "api/doctor/",
+    include("doctor.urls")
+    ),
+
+    path(
+    "api/live/",
+    include("live.urls")
+    ),
 
     path(
     "ocr/",
     include("ocr.urls")
+    ),
+
+    path(
+    "patient/abha/",
+    include("abdm.urls")
     ),
     
     path(
@@ -86,12 +105,17 @@ urlpatterns = [
     ),
 
     path(
-    "patient/chatbot/",
-    views.patient_chatbot,
-    name="patient_chatbot"
+        "patient/chatbot/",
+        views.patient_chatbot,
+        name="patient_chatbot"
     ),
 
     path(
+        "patient/ai-chatbot/",
+        views.patient_chatbot,
+        name="patient_ai_chatbot"
+    ),
+        path(
         "patient/dashboard/",
         views.patient_dashboard,
         name="patient_dashboard"
@@ -139,15 +163,6 @@ urlpatterns = [
         views.timeline,
         name='timeline'),
 
-
-    path(
-    "patient/chatbot/",
-    TemplateView.as_view(
-        template_name="paitent/ai-chatbot.html"
-    ),
-    name="ai_chatbot"
-    ),
-
     # -------------------------
     # DOCTOR
     # -------------------------
@@ -181,13 +196,18 @@ urlpatterns = [
         ),
 
 
-    path(
+path(
         "doctor/profile/",
         views.doctor_profile,
         name="doctor_profile"
         ),
-    
 
+    path(
+        "doctor/logout/",
+        views.doctor_logout,
+        name="doctor_logout"
+        ),
+    
     # -------------------------
     # ADMIN
     # -------------------------

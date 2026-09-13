@@ -3,6 +3,7 @@ from datetime import date
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
+from django.db import models
 
 from patients.models import Patient, MedicalHistory, Medication, MedicalDocument
 from doctor.models import Doctor
@@ -22,27 +23,41 @@ def patient_landing(request):
 
 
 def patient_login(request):
+    next_url = request.GET.get("next", "") or request.POST.get("next", "")
+    # Only allow internal patient paths as redirect targets
+    if not next_url.startswith("/patient/"):
+        next_url = "/patient/dashboard/"
+
     if request.method == "POST":
         identifier = request.POST.get("patient_id")
         password = request.POST.get("password")
 
-       
+        def _fail():
+            return render(
+                request,
+                "paitent/login.html",
+                {
+                    "error": "Invalid Patient ID / Email or Password.",
+                    "next": next_url,
+                },
+            )
+
         try:
-            if "@" in identifier:
+            if identifier and "@" in identifier:
                 patient = Patient.objects.get(email=identifier)
             else:
                 patient = Patient.objects.get(patient_id=identifier)
-        except Patient.DoesNotExist:
-            return render(request, "paitent/login.html", {"error": "Invalid Patient ID / Email or Password."})
+        except (Patient.DoesNotExist, TypeError, ValueError):
+            return _fail()
 
         # Hashed password match karo
         if check_password(password, patient.passward):
             request.session["patient_id"] = patient.id
-            return redirect("/patient/dashboard/")
+            return redirect(next_url)
         else:
-            return render(request, "paitent/login.html", {"error": "Invalid Patient ID / Email or Password."})
+            return _fail()
 
-    return render(request, "paitent/login.html")
+    return render(request, "paitent/login.html", {"next": next_url})
 
 
 def patient_register(request):
@@ -154,7 +169,14 @@ def doctor_dashboard(request):
 
     doctor = get_object_or_404(Doctor, id=doctor_id)
 
+    search_query = request.GET.get("search", "")
     patients = Patient.objects.all().order_by("-created_at")
+
+    if search_query:
+        patients = patients.filter(
+            models.Q(name__icontains=search_query) |
+            models.Q(patient_id__icontains=search_query)
+        )
 
     return render(
         request,
@@ -162,6 +184,7 @@ def doctor_dashboard(request):
         {
             "doctor": doctor,
             "patients": patients,
+            "search_query": search_query,
         }
     )
 
@@ -238,14 +261,15 @@ def patient_detail(request, patient_id):
         request,
         "doctor/patient_detail.html",
         {
-    "doctor": doctor,
-    "patient": patient,
-    "medical_history": medical_history,
-    "medications": medications,
-    "documents": documents,
-    "age": age,
-    "last_visit": last_visit,
-}
+            "doctor": doctor,
+            "patient": patient,
+            "medical_history": medical_history,
+            "medications": medications,
+            "documents": documents,
+            "reports": documents,
+            "age": age,
+            "last_visit": last_visit,
+        }
     )
 
 # -------------------------
@@ -263,6 +287,18 @@ def doctor_profile(request):
         id=doctor_id
     )
 
+    if request.method == "POST":
+        doctor.full_name = request.POST.get("full_name", doctor.full_name)
+        doctor.medical_registration_number = request.POST.get("medical_registration_number", doctor.medical_registration_number)
+        doctor.specialization = request.POST.get("specialization", doctor.specialization)
+        doctor.qualification = request.POST.get("qualification", doctor.qualification)
+        doctor.experience = int(request.POST.get("experience", doctor.experience))
+        doctor.phone = request.POST.get("phone", doctor.phone)
+        doctor.email = request.POST.get("email", doctor.email)
+        doctor.save()
+
+        return redirect("/doctor/profile/")
+
     return render(
         request,
         "doctor/profile.html",
@@ -270,6 +306,12 @@ def doctor_profile(request):
             "doctor": doctor,
         }
     )
+
+# DOCTOR LOGOUT
+def doctor_logout(request):
+    request.session.flush()
+    return redirect("/doctor/login/")
+
 
 # PROFILE
 def profile(request):
@@ -499,11 +541,48 @@ def document_detail(request, doc_id):
         patient=patient
     )
 
+    # Re-parse aligned OCR text so document_detail.html actually
+    # receives {{ medical_data.* }}. Without this all fields showed
+    # "—" and raw text looked misaligned.
+    try:
+        from ocr.data_extractor import extract_medical_data
+
+        medical_data = extract_medical_data(
+            document.extracted_text or ""
+        )
+    except Exception:
+        medical_data = {
+            "patient_name": "",
+            "patient_id": "",
+            "age": "",
+            "gender": "",
+            "doctor": "",
+            "diagnosis": "",
+            "medicine": "",
+            "dosage": "",
+            "frequency": "",
+            "report_id": "",
+            "collection_date": "",
+            "report_date": "",
+            "tests": [],
+            "segments": [],
+            "raw_text": document.extracted_text or "",
+            "document_type": document.document_type or "General Document",
+        }
+
+    document_type = (
+        document.document_type
+        or medical_data.get("document_type")
+        or "Medical Document"
+    )
+
     return render(
         request,
         "paitent/document_detail.html",
         {
             "patient": patient,
             "document": document,
+            "medical_data": medical_data,
+            "document_type": document_type,
         }
     )

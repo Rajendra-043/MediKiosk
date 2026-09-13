@@ -1,0 +1,6 @@
+{"role": "user", "content": "Hello"}
+{"role": "assistant", "content": "Hello, I'm MediKiosk, your clinic assistant. I'm here to listen and help -- how are you feeling today? Could you share what brings you here today?"}
+{"role": "user", "content": "I have headache"}
+{"role": "assistant", "content": "Headache can be quite uncomfortable. Have you tried any over-the-counter pain relievers or medications already?"}
+{"role": "user", "content": "mujhe sir dard hai"}
+{"role": "assistant", "content": "I'm so sorry to hear that you're feeling unwell. Dard hai? Can you tell me a bit more about what's been going on?"}

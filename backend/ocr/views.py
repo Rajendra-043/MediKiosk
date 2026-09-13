@@ -3,7 +3,10 @@ from django.views.decorators.http import require_POST
 
 from patients.models import Patient, Medication, MedicalDocument
 
-from .ocr_engine import extract_text
+from .ocr_engine import (
+    extract_text,
+    extract_document_data
+)
 from .data_extractor import extract_medical_data
 
 
@@ -67,25 +70,45 @@ def process_document(request):
         )
 
         # -------------------------
-        # Run OCR
+        # Run complete OCR
         # -------------------------
 
-        text = extract_text(
+        ocr_data = extract_document_data(
             document.file.path
         )
 
+        # Aligned text keeps columns (4 spaces for table gaps),
+        # so tables do not collapse into a single stream.
+        text = ocr_data.get("aligned_text") or ocr_data.get("text", "")
+
+        # Fallback for legacy docs without aligned_text
+        if not text:
+            text = ocr_data.get("raw_text", "")
+
+        layout = ocr_data.get("layout", {})
+        segments = ocr_data.get("segments", [])
+
         # -------------------------
-        # Store raw OCR text
+        # Store complete OCR data
         # -------------------------
 
         document.extracted_text = text
 
+        # Save full spatial layout (rows + gaps + hierarchy) so
+        # overlays and aligned-text rendering can use x/y.
+        document.ocr_layout = layout
+
+        document.ocr_segments = segments
+
+
         # -------------------------
-        # Extract structured data
+        # Existing medical parser
         # -------------------------
+        # Keep this temporarily so the
+        # existing medical functionality
+        # continues working.
 
         medical_data = extract_medical_data(text)
-
         # -------------------------
         # Store detected document type
         # -------------------------
@@ -106,30 +129,54 @@ def process_document(request):
                 doctor=medical_data["doctor"]
             )
 
-        # -------------------------
-        # Generate structured report
-        # -------------------------
+        # --------------------------------------------------
+        # Generate universal document report
+        # --------------------------------------------------
 
-        if medical_data["document_type"] == "Lab Report":
+        report = f"""Medical Document Report
 
-            report = f"""Medical Document Report
+        Document Type:
+        {medical_data["document_type"]}
 
-Document Type:
-Lab Report
+        Patient Information:
+        Patient Name: {medical_data["patient_name"]}
+        Patient ID: {medical_data["patient_id"]}
+        Age: {medical_data["age"]}
+        Gender: {medical_data["gender"]}
 
-Patient Information:
-Patient Name: {medical_data["patient_name"]}
-Patient ID: {medical_data["patient_id"]}
-Age: {medical_data["age"]}
-Gender: {medical_data["gender"]}
+        Doctor:
+        {medical_data["doctor"]}
 
-Report Information:
-Report ID: {medical_data["report_id"]}
-Collection Date: {medical_data["collection_date"]}
-Report Date: {medical_data["report_date"]}
+        Diagnosis:
+        {medical_data["diagnosis"]}
 
-Laboratory Tests:
-"""
+        Medicine:
+        {medical_data["medicine"]}
+
+        Dosage:
+        {medical_data["dosage"]}
+
+        Frequency:
+        {medical_data["frequency"]}
+
+        Report ID:
+        {medical_data["report_id"]}
+
+        Collection Date:
+        {medical_data["collection_date"]}
+
+        Report Date:
+        {medical_data["report_date"]}
+
+        """
+
+        # --------------------------------------------------
+        # Laboratory information
+        # --------------------------------------------------
+
+        if medical_data["tests"]:
+
+            report += "Laboratory Tests:\n\n"
 
             for test in medical_data["tests"]:
 
@@ -139,51 +186,35 @@ Laboratory Tests:
                     f'Reference Range: {test["reference"]}\n\n'
                 )
 
-            report += """OCR Status:
-Text successfully extracted from the uploaded document.
-"""
 
-        elif medical_data["document_type"] == "Prescription":
+        # --------------------------------------------------
+        # Universal document segments
+        # --------------------------------------------------
 
-            report = f"""Medical Document Report
+        report += "Document Segments:\n\n"
 
-Document Type:
-Prescription
+        for segment in medical_data["segments"]:
 
-Patient Information:
-Patient Name: {medical_data["patient_name"]}
+            report += (
+                f'[{segment["heading"]}]\n'
+            )
 
-Prescription Information:
-Medicine: {medical_data["medicine"]}
-Dosage: {medical_data["dosage"]}
-Frequency: {medical_data["frequency"]}
-Doctor: {medical_data["doctor"]}
-Diagnosis: {medical_data["diagnosis"]}
+            for line in segment["content"]:
 
-OCR Status:
-Text successfully extracted from the uploaded document.
-"""
+                report += (
+                    f"{line}\n"
+                )
 
-        else:
+            report += "\n"
 
-            report = f"""Medical Document Report
 
-Document Type:
-Unknown
+        # --------------------------------------------------
+        # OCR status
+        # --------------------------------------------------
 
-Patient Information:
-Patient Name: {medical_data["patient_name"]}
-
-Extracted Information:
-Medicine: {medical_data["medicine"]}
-Dosage: {medical_data["dosage"]}
-Frequency: {medical_data["frequency"]}
-Doctor: {medical_data["doctor"]}
-Diagnosis: {medical_data["diagnosis"]}
-
-OCR Status:
-Text successfully extracted from the uploaded document.
-"""
+        report += """OCR Status:
+        Text successfully extracted from the uploaded document.
+        """
 
         # -------------------------
         # Store generated report
@@ -194,11 +225,12 @@ Text successfully extracted from the uploaded document.
         document.save(
             update_fields=[
                 "extracted_text",
+                "ocr_layout",
+                "ocr_segments",
                 "report",
-                "document_type"
+                "document_type",
             ]
         )
-
         # -------------------------
         # Return response
         # -------------------------
@@ -206,18 +238,22 @@ Text successfully extracted from the uploaded document.
         return JsonResponse(
             {
                 "success": True,
-
                 "filename": document.document_name,
-
                 "text": text,
 
+                # Structured information
+                "medical_data": medical_data,
+
+                # Human-readable report
                 "report": report,
 
+                # Document information
                 "document_id": document.id,
-
                 "document_type": medical_data["document_type"],
-
-                "medical_data": medical_data,
+                # Spatial layout so frontend can render aligned columns
+                "layout": layout,
+                "image_width": ocr_data.get("image_width"),
+                "image_height": ocr_data.get("image_height"),
             }
         )
 
@@ -230,3 +266,4 @@ Text successfully extracted from the uploaded document.
             },
             status=500
         )
+

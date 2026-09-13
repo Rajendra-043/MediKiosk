@@ -18,9 +18,19 @@
             theme: {
                 extend: {
                     colors: {
-                        mediblue: '#2563EB',
+                        primary: '#0B2D42',
+                        secondary: '#0F766E',
+                        accent: '#14B8A6',
+                        background: '#F8FAFC',
+                        maintext: '#1E293B',
+                        secondarytext: '#64748B',
+                        borderlight: '#E2E8F0',
+                        mediblue: '#0F766E',
                         medigreen: '#16A34A',
-                        darkblue: '#0F172A'
+                        darkblue: '#0B2D42',
+                        success: '#16A34A',
+                        warning: '#F59E0B',
+                        error: '#DC2626'
                     }
                 }
             }
@@ -43,11 +53,63 @@
 
 </head>
 
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-slate-50 text-slate-800" style="padding-bottom: 56px;">
 
     {% block content %}
     {% endblock %}
 
+    <!-- ================================
+         LIVE AI ASSISTANT – background AI navigator + chatbot handoff
+         ================================ -->
+    <div id="live-assist-panel" class="live-assist-panel" hidden>
+        <div class="live-assist-header">
+            <div class="live-assist-title">
+                <span class="live-pulse" aria-hidden="true"></span>
+                <strong>LIVE • AI Navigator</strong>
+                <span id="live-assist-role" class="live-assist-role"></span>
+            </div>
+            <button id="live-assist-close" class="live-assist-close" type="button" aria-label="Close">×</button>
+        </div>
+        <p class="live-assist-sub">Tell me your problem — I'll guide you, open the right page, or take you to the chatbot.</p>
+        <div id="live-assist-messages" class="live-assist-messages">
+            <div class="live-assist-msg ai">Hi! I'm live. Try: "I have fever, help me", "take me to documents", or "open chatbot".</div>
+        </div>
+        <div id="live-assist-action-row" class="live-assist-action-row" hidden>
+            <button id="live-assist-goto" class="live-assist-goto" type="button">Take me there</button>
+            <button id="live-assist-chatbot" class="live-assist-chatbot" type="button">Continue in Chatbot</button>
+        </div>
+        <div class="live-assist-quick" id="live-assist-quick"></div>
+        <form id="live-assist-form" class="live-assist-form">
+            <button id="live-assist-mic" class="live-assist-mic" type="button" title="Speak">🎙️</button>
+            <input id="live-assist-input" class="live-assist-input" type="text" placeholder="Ask or say where you want to go..." autocomplete="off" />
+            <button class="live-assist-send" type="submit" title="Send">➤</button>
+        </form>
+    </div>
+
+    <!-- ================================
+         LIVE BAR – Always visible (Doctor + Patient)
+         Styled Go Live only – no text area
+         ================================ -->
+    <div id="medikiosk-live-bar" class="medikiosk-live-bar medikiosk-live-bar--styled">
+        <div class="live-bar-left">
+            <span class="live-pulse" aria-hidden="true"></span>
+            <span class="live-badge">LIVE</span>
+            <span class="live-divider"></span>
+            <span id="live-time" class="live-time">--:--:--</span>
+            <span class="live-divider hide-mobile"></span>
+            <span id="live-status" class="live-status">
+                <span class="live-status-dot"></span>
+                System Online
+            </span>
+            <span id="live-role" class="live-role hide-mobile"></span>
+        </div>
+        <div class="live-bar-right">
+            <span id="live-queue" class="live-queue hide-mobile">Queue: <strong id="live-queue-count">—</strong></span>
+            <button id="live-go-btn" class="live-circle-btn" onclick="handleGoLive()" type="button" aria-label="Go Live">
+                LIVE
+            </button>
+        </div>
+    </div>
 
     <!-- Main JavaScript -->
     <script src="{% static 'js/main.js' %}"></script>
@@ -55,9 +117,6 @@
     <!-- Page Specific JavaScript -->
     {% block extra_js %}
     {% endblock %}
-
-
-
 
 </body>
 </html>

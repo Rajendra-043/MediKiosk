@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Create ABHA ID - MediKiosk{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-slate-50 p-5 md:p-8">
+<div class="max-w-xl mx-auto">
+<a href="{% url 'abha_home' %}" class="text-sm text-slate-500 hover:text-blue-600">← Back to ABHA</a>
+<h1 class="text-3xl font-bold text-slate-900 mt-2">Create new ABHA ID</h1>
+<p class="text-slate-500 mt-1">Recommended Aadhaar creation flow (demo).</p>
+
+<div class="mt-4 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl px-4 py-3">
+<strong>Demo mode:</strong> OTP is generated locally and shown on the next step. In production this OTP arrives on the Aadhaar-linked mobile number.
+</div>
+
+<div class="mt-5 flex items-center gap-1 text-xs font-bold">
+{% for n in "1234" %}
+{% if forloop.counter == step %}
+<span class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center">{{ forloop.counter }}</span>
+{% elif forloop.counter < step %}
+<span class="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center">✓</span>
+{% else %}
+<span class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center">{{ forloop.counter }}</span>
+{% endif %}
+{% if not forloop.last %}<span class="flex-1 h-0.5 bg-slate-200 mx-1"></span>{% endif %}
+{% endfor %}
+</div>
+<p class="text-xs text-slate-500 mt-2">
+{% if step == 1 %}Page 1 — Registration method &amp; Aadhaar{% endif %}
+{% if step == 2 %}Page 2 — OTP verification{% endif %}
+{% if step == 3 %}Page 3 — Confirm profile{% endif %}
+{% if step == 4 %}Page 4 — ABHA Address &amp; finish{% endif %}
+</p>
+
+<div class="mt-4 bg-white rounded-2xl border p-6">
+{% if error %}
+<div class="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">{{ error }}</div>
+{% endif %}
+
+{% if step == 1 %}
+<form method="POST">
+{% csrf_token %}
+<input type="hidden" name="step" value="1">
+<label class="form-label">Registration method</label>
+<input class="form-input bg-slate-50" value="Create ABHA using Aadhaar" readonly>
+<label class="form-label mt-4">Aadhaar number (12 digits)</label>
+<input class="form-input" type="text" name="aadhaar" inputmode="numeric" maxlength="14" placeholder="e.g. 2345 6789 0123" required>
+<label class="mt-4 flex items-start gap-2 text-sm text-slate-600">
+<input type="checkbox" name="consent" class="mt-1" required>
+<span>I accept the required consent/declaration for ABHA creation via Aadhaar (demo).</span>
+</label>
+<button class="mt-6 w-full px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">Continue</button>
+</form>
+{% endif %}
+
+{% if step == 2 %}
+<div class="mb-4 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-xl px-4 py-3">
+OTP sent to the Aadhaar-linked mobile number ending <strong>{{ wizard.aadhaar_masked|default:"XXXX-XXXX-XXXX" }}</strong> (Txn {{ wizard.txn_id }}).
+</div>
+<div class="mb-4 bg-slate-100 border border-dashed border-slate-300 text-slate-700 text-sm rounded-xl px-4 py-3">
+Demo OTP (no SMS wired): <strong class="text-lg tracking-widest">{{ wizard.otp }}</strong>
+<span class="text-slate-400">· valid {{ otp_ttl }} min</span>
+</div>
+<form method="POST">
+{% csrf_token %}
+<input type="hidden" name="step" value="2">
+<label class="form-label">Enter OTP (6 digits)</label>
+<input class="form-input tracking-widest" type="text" name="otp" inputmode="numeric" maxlength="6" placeholder="••••••" required>
+<button class="mt-6 w-full px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">Verify</button>
+</form>
+<a href="/patient/abha/create/?step=1" class="block text-center text-sm text-slate-500 hover:text-blue-600 mt-4">← Restart from Step 1</a>
+{% endif %}
+
+{% if step == 3 %}
+<p class="text-sm text-slate-500 mb-4">Verified via Aadhaar ({{ wizard.aadhaar_masked }}). Confirm or edit fields ABDM permits.</p>
+<form method="POST">
+{% csrf_token %}
+<input type="hidden" name="step" value="3">
+<label class="form-label">Name</label>
+<input class="form-input" type="text" name="full_name" value="{{ profile.full_name }}" required>
+<div class="grid grid-cols-2 gap-4 mt-4">
+<div>
+<label class="form-label">Date of birth</label>
+<input class="form-input" type="date" name="date_of_birth" value="{{ profile.date_of_birth }}" required>
+</div>
+<div>
+<label class="form-label">Gender</label>
+<select class="form-input" name="gender" required>
+<option value="">Select</option>
+<option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+<option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+<option value="Other" {% if profile.gender == "Other" %}selected{% endif %}>Other</option>
+</select>
+</div>
+</div>
+<label class="form-label mt-4">Mobile number</label>
+<input class="form-input" type="text" name="mobile" value="{{ profile.mobile }}" inputmode="numeric" maxlength="10" required>
+<button class="mt-6 w-full px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">Continue</button>
+</form>
+{% endif %}
+
+{% if step == 4 %}
+<form method="POST">
+{% csrf_token %}
+<input type="hidden" name="step" value="4">
+<label class="form-label">Choose your ABHA Address (e.g. rajendra@abdm)</label>
+<input class="form-input" type="text" name="abha_address" value="{{ suggested_address }}" required>
+<p class="text-xs text-slate-400 mt-2">Lowercase letters, digits, . _ - allowed, must end with @abdm.</p>
+<button class="mt-6 w-full px-5 py-3 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-700">Confirm &amp; Finish</button>
+</form>
+{% endif %}
+</div>
+</div>
+</div>
+{% endblock %}

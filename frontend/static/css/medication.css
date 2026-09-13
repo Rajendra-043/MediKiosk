@@ -23,7 +23,7 @@
     font-size: 30px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .medication-header p {
@@ -77,9 +77,9 @@
 
     border-radius: 50%;
 
-    background: #dbeafe;
+    background: #CCFBF1;
 
-    color: #2563eb;
+    color: #0F766E;
 
     font-size: 20px;
     font-weight: 700;
@@ -91,7 +91,7 @@
     font-size: 18px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .medication-patient-info p {
@@ -103,7 +103,7 @@
 }
 
 .medication-patient-info strong {
-    color: #334155;
+    color: #1E293B;
 }
 
 
@@ -144,7 +144,7 @@
     font-size: 21px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .medication-section-header p {
@@ -165,12 +165,12 @@
 
     border-radius: 999px;
 
-    background: #eff6ff;
+    background: #CCFBF1;
 
     font-size: 13px;
     font-weight: 600;
 
-    color: #2563eb;
+    color: #0F766E;
 
     white-space: nowrap;
 }
@@ -211,7 +211,7 @@
 .medication-card:hover {
     transform: translateY(-2px);
 
-    border-color: #cbd5e1;
+    border-color: #E2E8F0;
 
     box-shadow:
         0 5px 15px rgba(15, 23, 42, 0.06);
@@ -247,7 +247,7 @@
 
     border-radius: 12px;
 
-    background: #ede9fe;
+    background: #CCFBF1;
 
     font-size: 21px;
 }
@@ -270,7 +270,7 @@
 
     font-weight: 600;
 
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .medication-heading p {
@@ -297,7 +297,7 @@
 
     font-weight: 600;
 
-    color: #7c3aed;
+    color: #0F766E;
 
     white-space: nowrap;
 }
@@ -343,7 +343,7 @@
 
     letter-spacing: 0.04em;
 
-    color: #94a3b8;
+    color: #64748B;
 }
 
 .medication-detail-value {
@@ -353,7 +353,7 @@
 
     line-height: 1.5;
 
-    color: #475569;
+    color: #64748B;
 
     overflow-wrap: anywhere;
 }
@@ -381,7 +381,7 @@
 }
 
 .medication-doctor strong {
-    color: #334155;
+    color: #1E293B;
 }
 
 
@@ -394,7 +394,7 @@
 
     text-align: center;
 
-    border: 1px dashed #cbd5e1;
+    border: 1px dashed #E2E8F0;
 
     border-radius: 12px;
 }
@@ -410,7 +410,7 @@
 
     font-weight: 600;
 
-    color: #334155;
+    color: #1E293B;
 }
 
 .medication-empty p {
@@ -435,9 +435,9 @@
 
     padding: 22px;
 
-    background: #f0fdf4;
+    background: #DCFCE7;
 
-    border: 1px solid #bbf7d0;
+    border: 1px solid #86EFAC;
 
     border-radius: 16px;
 }
@@ -466,7 +466,7 @@
 
     font-weight: 600;
 
-    color: #166534;
+    color: #16A34A;
 }
 
 .medication-info-box p {
@@ -476,7 +476,7 @@
 
     line-height: 1.6;
 
-    color: #15803d;
+    color: #16A34A;
 }
 
 

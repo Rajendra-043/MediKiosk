@@ -19,7 +19,7 @@
     margin: 0;
     font-size: 30px;
     font-weight: 700;
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .timeline-header p {
@@ -67,8 +67,8 @@
 
     border-radius: 50%;
 
-    background: #dbeafe;
-    color: #2563eb;
+    background: #CCFBF1;
+    color: #0F766E;
 
     font-size: 20px;
     font-weight: 700;
@@ -80,7 +80,7 @@
     font-size: 18px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .timeline-patient-info p {
@@ -92,7 +92,7 @@
 }
 
 .timeline-patient-info strong {
-    color: #334155;
+    color: #1E293B;
 }
 
 
@@ -105,7 +105,7 @@
 
     border-radius: 12px;
 
-    background: #eff6ff;
+    background: #CCFBF1;
 }
 
 .timeline-event-count span {
@@ -113,7 +113,7 @@
 
     font-size: 12px;
 
-    color: #3b82f6;
+    color: #0F766E;
 }
 
 .timeline-event-count strong {
@@ -123,7 +123,7 @@
 
     font-size: 22px;
 
-    color: #1d4ed8;
+    color: #0F766E;
 }
 
 
@@ -146,7 +146,7 @@
     font-size: 21px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .timeline-section-description {
@@ -227,23 +227,23 @@
 /* Icon Colors */
 
 .timeline-icon-visit {
-    background: #dbeafe;
+    background: #CCFBF1;
 }
 
 .timeline-icon-diagnosis {
-    background: #fef3c7;
+    background: #FEF3C7;
 }
 
 .timeline-icon-medication {
-    background: #f3e8ff;
+    background: #CCFBF1;
 }
 
 .timeline-icon-document {
-    background: #d1fae5;
+    background: #DCFCE7;
 }
 
 .timeline-icon-default {
-    background: #f1f5f9;
+    background: #F8FAFC;
 }
 
 
@@ -268,7 +268,7 @@
 .timeline-event-card:hover {
     transform: translateY(-2px);
 
-    border-color: #cbd5e1;
+    border-color: #E2E8F0;
 
     box-shadow:
         0 5px 15px rgba(15, 23, 42, 0.06);
@@ -291,7 +291,7 @@
 
     font-weight: 600;
 
-    color: #2563eb;
+    color: #0F766E;
 }
 
 .timeline-type {
@@ -318,7 +318,7 @@
 
     font-weight: 600;
 
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .timeline-description {
@@ -328,7 +328,7 @@
 
     line-height: 1.65;
 
-    color: #475569;
+    color: #64748B;
 }
 
 
@@ -356,7 +356,7 @@
 
     text-align: center;
 
-    border: 1px dashed #cbd5e1;
+    border: 1px dashed #E2E8F0;
 
     border-radius: 12px;
 }
@@ -372,7 +372,7 @@
 
     font-weight: 600;
 
-    color: #334155;
+    color: #1E293B;
 }
 
 .timeline-empty p {
@@ -395,9 +395,9 @@
 
     padding: 22px;
 
-    background: #faf5ff;
+    background: #F0FDFA;
 
-    border: 1px solid #e9d5ff;
+    border: 1px solid #CCFBF1;
 
     border-radius: 16px;
 }
@@ -426,7 +426,7 @@
 
     font-weight: 600;
 
-    color: #6b21a8;
+    color: #0B2D42;
 }
 
 .timeline-ai-box p {
@@ -436,7 +436,7 @@
 
     line-height: 1.6;
 
-    color: #7e22ce;
+    color: #0F766E;
 }
 
 

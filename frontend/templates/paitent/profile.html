@@ -277,9 +277,38 @@
                         </p>
                     </div>
 
-                </div>
+                    <!-- ABHA Health ID -->
+                    {% if patient.abha_profile %}
+                    <div class="rounded-xl border border-slate-200 p-5 bg-teal-50">
+                        <div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-teal-100">
+                            🪪
+                        </div>
+                        <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                            ABHA Health ID
+                        </p>
+                        <p class="mt-2 text-lg font-bold text-slate-800">
+                            {{ patient.abha_profile.formatted_number }}
+                        </p>
+                        <p class="mt-1 text-sm text-teal-600 font-semibold">
+                            {{ patient.abha_profile.abha_address }}
+                        </p>
+                    </div>
+                    {% endif %}
 
-            </section>
+                    <!-- Record Type -->
+                    <div class="rounded-xl border border-slate-200 p-5">
+                        <div class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50">
+                            📁
+                        </div>
+                        <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                            Record Type
+                        </p>
+                        <p class="mt-2 text-lg font-bold text-slate-800">
+                            Digital Record
+                        </p>
+                    </div>
+
+                </div>
 
             <!-- ================= EMERGENCY CONTACT ================= -->
             <section class="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

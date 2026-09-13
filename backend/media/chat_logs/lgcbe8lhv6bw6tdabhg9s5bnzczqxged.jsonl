@@ -1,0 +1,14 @@
+{"role": "user", "content": "Hello"}
+{"role": "assistant", "content": "Hello, I'm MediKiosk, your clinic assistant. I'm here to listen and help -- how are you feeling today? Could you share what brings you in today?"}
+{"role": "user", "content": "I have headache"}
+{"role": "assistant", "content": "Headache can be quite a nuisance. Have you noticed any other symptoms besides the headache, such as sensitivity to light or sound, or nausea?"}
+{"role": "user", "content": "since yesterday"}
+{"role": "assistant", "content": "So your headache started yesterday. Have you tried any over-the-counter pain relievers or medications to help manage your symptoms?"}
+{"role": "user", "content": "severe"}
+{"role": "assistant", "content": "A severe headache can be quite concerning. Have you noticed any other symptoms, such as sensitivity to light or sound, or nausea, that might be related to your headache?"}
+{"role": "user", "content": "left side"}
+{"role": "assistant", "content": "It sounds like your headache is centered on the left side. Have you tried any over-the-counter pain relievers or medications to help manage your symptoms?"}
+{"role": "user", "content": "ok tell me more"}
+{"role": "assistant", "content": "So you've tried over-the-counter pain relievers, and they didn't seem to provide much relief. You're experiencing a severe headache, and it's centered on the left side. Have you noticed any other symptoms, such as sensitivity to light or sound, or nausea, that might be related to your headache?"}
+{"role": "user", "content": "What medicine can I take"}
+{"role": "assistant", "content": "Rest in a quiet, dim room and limit screen time for a while. Drink water regularly and try a cold compress on the forehead if it feels soothing. Keep a regular sleep schedule and take short breaks from continuous work. For headache, general options that in many places are available without prescription include paracetamol (acetaminophen) and ibuprofen. Follow the label and ask a pharmacist if unsure. This is general information only -- please check the package label and ask a pharmacist or doctor before use. Suitability depends on allergies, other medicines and health conditions."}

@@ -62,7 +62,7 @@
 
         <!-- AI BUTTON -->
 
-        <button type="button" class="ai-button" disabled>
+        <button type="button" class="ai-button" id="aiButton">
             ✨ Ask AI About Patient
         </button>
 
@@ -355,11 +355,11 @@
                 <div class="report-info">
 
                     <strong>
-                        {{ report.name }}
+                        {{ report.document_name }}
                     </strong>
 
                     <span>
-                        {{ report.date|date:"d M Y" }}
+                        {{ report.uploaded_at|date:"d M Y" }}
                     </span>
 
                 </div>

@@ -1,114 +1,629 @@
 {% extends "base.html" %}
 
-{% block title %}
-{{ document.document_name }} - MediKiosk
-{% endblock %}
-
 {% block content %}
 
-<div class="document-detail-page">
+<style>
+    .report-page {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px 60px;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #1E293B;
+    }
 
-    <h1>{{ document.document_name }}</h1>
+    .report-header {
+        background: #ffffff;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        padding: 28px 30px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
 
-    <p>
-        Uploaded on
-        {{ document.uploaded_at|date:"d F Y, h:i A" }}
-    </p>
+    .report-title {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+        color: #1E293B;
+    }
 
-    <hr>
+    .report-subtitle {
+        margin-top: 8px;
+        color: #64748B;
+        font-size: 14px;
+    }
 
-    <!-- ORIGINAL DOCUMENT -->
+    .section {
+        background: #ffffff;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        margin-bottom: 22px;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    }
 
-    <h2>Original Document</h2>
+    .section-header {
+        padding: 17px 22px;
+        background: #F8FAFC;
+        border-bottom: 1px solid #E2E8F0;
+    }
 
-    {% if document.file %}
+    .section-header h2 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 700;
+        color: #1E293B;
+    }
 
-        <p>
-            <a href="{{ document.file.url }}" target="_blank">
-                Open Original Document
-            </a>
-        </p>
+    .section-body {
+        padding: 22px;
+    }
 
-        <img
-            src="{{ document.file.url }}"
-            alt="{{ document.document_name }}"
-            style="
-                max-width: 100%;
-                max-height: 700px;
-                display: block;
-                margin: 20px 0;
-                border: 1px solid #ddd;
-            "
-        >
+    .patient-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px 30px;
+    }
 
-    {% else %}
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
 
-        <p>Original document is not available.</p>
+    .info-label {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #64748B;
+    }
+
+    .info-value {
+        font-size: 16px;
+        color: #1E293B;
+        font-weight: 500;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 650px;
+    }
+
+    .report-table th {
+        text-align: left;
+        background: #F8FAFC;
+        color: #1E293B;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 13px 15px;
+        border-bottom: 2px solid #E2E8F0;
+    }
+
+    .report-table td {
+        padding: 13px 15px;
+        border-bottom: 1px solid #E2E8F0;
+        font-size: 14px;
+        color: #1E293B;
+    }
+
+    .report-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .report-table tbody tr:hover {
+        background: #F8FAFC;
+    }
+
+    .test-name {
+        font-weight: 600;
+        color: #1E293B;
+    }
+
+    .empty-value {
+        color: #64748B;
+    }
+
+    .status-box {
+        padding: 16px 18px;
+        border-radius: 10px;
+        background: #DCFCE7;
+        border: 1px solid #86EFAC;
+        color: #16A34A;
+        font-size: 14px;
+    }
+
+    .raw-text {
+        white-space: pre-wrap;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 18px;
+        font-family: Consolas, monospace;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #1E293B;
+        max-height: 450px;
+        overflow-y: auto;
+    }
+
+    .back-button {
+        display: inline-block;
+        margin-bottom: 22px;
+        padding: 10px 17px;
+        border-radius: 8px;
+        background: #1E293B;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .back-button:hover {
+        background: #1E293B;
+    }
+
+    .document-badge {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: #CCFBF1;
+        color: #0F766E;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .segment {
+        margin-bottom: 18px;
+    }
+
+    .segment:last-child {
+        margin-bottom: 0;
+    }
+
+    .segment-heading {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1E293B;
+        margin-bottom: 8px;
+    }
+
+    .segment-content {
+        margin: 0;
+        padding-left: 20px;
+        color: #64748B;
+        line-height: 1.7;
+    }
+
+    @media (max-width: 700px) {
+
+        .report-page {
+            margin-top: 20px;
+            padding: 0 12px 40px;
+        }
+
+        .report-header {
+            padding: 22px;
+        }
+
+        .report-title {
+            font-size: 24px;
+        }
+
+        .patient-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .section-body {
+            padding: 16px;
+        }
+    }
+</style>
+
+
+<div class="report-page">
+
+    <!-- BACK BUTTON -->
+    <a href="/patient/documents/" class="back-button">
+        ← Back to Documents
+    </a>
+
+
+    <!-- REPORT HEADER -->
+    <div class="report-header">
+
+        <h1 class="report-title">
+            Medical Document Report
+        </h1>
+
+        <div class="report-subtitle">
+            Extracted medical information from uploaded document
+        </div>
+
+        <span class="document-badge">
+            {{ document_type|default:"Medical Document" }}
+        </span>
+
+    </div>
+
+
+    <!-- =========================================
+         PATIENT INFORMATION
+    ========================================== -->
+
+    <div class="section">
+
+        <div class="section-header">
+            <h2>Patient Information</h2>
+        </div>
+
+        <div class="section-body">
+
+            <div class="patient-grid">
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Patient Name
+                    </span>
+
+                    <span class="info-value">
+                        {{ medical_data.patient_name|default:"—" }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Patient ID
+                    </span>
+
+                    <span class="info-value">
+                        {{ medical_data.patient_id|default:"—" }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Age
+                    </span>
+
+                    <span class="info-value">
+                        {{ medical_data.age|default:"—" }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Gender
+                    </span>
+
+                    <span class="info-value">
+                        {{ medical_data.gender|default:"—" }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Report ID
+                    </span>
+
+                    <span class="info-value">
+                        {{ medical_data.report_id|default:"—" }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Doctor / Referred By
+                    </span>
+
+                    <span class="info-value">
+                        {{ medical_data.doctor|default:"Self" }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Collection Date
+                    </span>
+
+                    <span class="info-value">
+                        {{ medical_data.collection_date|default:"—" }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Report Date
+                    </span>
+
+                    <span class="info-value">
+                        {{ medical_data.report_date|default:"—" }}
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         COMPLETE BLOOD COUNT
+    ========================================== -->
+
+    {% if medical_data.tests %}
+
+    <div class="section">
+
+        <div class="section-header">
+            <h2>
+                Haematology — Complete Blood Count (CBC)
+            </h2>
+        </div>
+
+        <div class="section-body">
+
+            <div class="table-wrapper">
+
+                <table class="report-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Test Description</th>
+                            <th>Result</th>
+                            <th>Reference Range</th>
+                            <th>Unit</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for test in medical_data.tests %}
+
+                        <tr>
+
+                            <td class="test-name">
+                                {{ test.test|default:"—" }}
+                            </td>
+
+                            <td>
+                                {{ test.result|default:"—" }}
+                            </td>
+
+                            <td>
+                                {{ test.reference|default:"—" }}
+                            </td>
+
+                            <td>
+                                {{ test.unit|default:"—" }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
 
     {% endif %}
 
 
-    <hr>
+    <!-- =========================================
+         MEDICAL INFORMATION
+    ========================================== -->
+
+    {% if medical_data.medicine or medical_data.dosage or medical_data.frequency or medical_data.diagnosis %}
+
+    <div class="section">
+
+        <div class="section-header">
+            <h2>Medical Information</h2>
+        </div>
+
+        <div class="section-body">
+
+            <div class="patient-grid">
+
+                {% if medical_data.medicine %}
+                <div class="info-item">
+                    <span class="info-label">
+                        Medicine
+                    </span>
+
+                    <span class="info-value">
+                        {{ medical_data.medicine }}
+                    </span>
+                </div>
+                {% endif %}
 
 
-    <!-- EXTRACTED OCR TEXT -->
+                {% if medical_data.dosage %}
+                <div class="info-item">
+                    <span class="info-label">
+                        Dosage
+                    </span>
 
-    <h2>Raw OCR Text</h2>
+                    <span class="info-value">
+                        {{ medical_data.dosage }}
+                    </span>
+                </div>
+                {% endif %}
 
-    {% if document.extracted_text %}
 
-        <pre style="
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            background: #f5f5f5;
-            padding: 20px;
-            border: 1px solid #ddd;
-            overflow-x: auto;
-        ">{{ document.extracted_text }}</pre>
+                {% if medical_data.frequency %}
+                <div class="info-item">
+                    <span class="info-label">
+                        Frequency
+                    </span>
 
-    {% else %}
+                    <span class="info-value">
+                        {{ medical_data.frequency }}
+                    </span>
+                </div>
+                {% endif %}
 
-        <p>No OCR text available.</p>
+
+                {% if medical_data.diagnosis %}
+                <div class="info-item">
+                    <span class="info-label">
+                        Diagnosis
+                    </span>
+
+                    <span class="info-value">
+                        {{ medical_data.diagnosis }}
+                    </span>
+                </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
 
     {% endif %}
 
 
-    <hr>
+    <!-- =========================================
+         DOCUMENT SEGMENTS
+    ========================================== -->
 
+    {% if medical_data.segments %}
 
-    <!-- MEDICAL REPORT -->
+    <div class="section">
 
-    <h2>Medical Document Report</h2>
+        <div class="section-header">
+            <h2>Document Sections</h2>
+        </div>
 
-    {% if document.report %}
+        <div class="section-body">
 
-        <pre style="
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            background: #f5f5f5;
-            padding: 20px;
-            border: 1px solid #ddd;
-            overflow-x: auto;
-            line-height: 1.6;
-        ">{{ document.report }}</pre>
+            {% for segment in medical_data.segments %}
 
-    {% else %}
+            <div class="segment">
 
-        <p>No medical report available.</p>
+                <div class="segment-heading">
+                    {{ segment.heading }}
+                </div>
+
+                {% if segment.content %}
+
+                <ul class="segment-content">
+
+                    {% for item in segment.content %}
+
+                    <li>
+                        {{ item }}
+                    </li>
+
+                    {% endfor %}
+
+                </ul>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
 
     {% endif %}
 
 
-    <hr>
+    <!-- =========================================
+         INTERPRETATION
+    ========================================== -->
+
+    {% if medical_data.interpretation %}
+
+    <div class="section">
+
+        <div class="section-header">
+            <h2>Interpretation</h2>
+        </div>
+
+        <div class="section-body">
+
+            <p>
+                {{ medical_data.interpretation }}
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endif %}
 
 
-    <!-- BACK -->
+    <!-- =========================================
+         RAW OCR TEXT
+    ========================================== -->
 
-    <p>
-        <a href="{% url 'documents' %}">
-            ← Back to Documents
-        </a>
-    </p>
+    {% if medical_data.raw_text %}
+
+    <div class="section">
+
+        <div class="section-header">
+            <h2>Original OCR Text</h2>
+        </div>
+
+        <div class="section-body">
+
+            <div class="raw-text">{{ medical_data.raw_text }}</div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- =========================================
+         OCR STATUS
+    ========================================== -->
+
+    <div class="section">
+
+        <div class="section-header">
+            <h2>OCR Status</h2>
+        </div>
+
+        <div class="section-body">
+
+            <div class="status-box">
+                Text successfully extracted from the uploaded document.
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

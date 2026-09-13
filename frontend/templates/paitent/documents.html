@@ -336,34 +336,167 @@ MediKiosk - Documents
             </form>
 
 
-            <!-- =================================
-                 OCR RESULT
-            ================================== -->
+            <!-- =========================================
+     OCR RESULT
+========================================= -->
 
-            <div
-                class="ocr-result"
-                id="ocrResult"
-                hidden
-            >
+<section id="ocrResult" class="ocr-result" style="display:none;">
 
-                <h3>
-                    Extracted Text
-                </h3>
+    <div class="result-header">
+        <div>
+            <span class="result-label">OCR RESULT</span>
+            <h2>Medical Document</h2>
+        </div>
 
-                <pre id="ocrResultText"></pre>
+        <span id="documentType" class="document-type">
+            —
+        </span>
+    </div>
 
 
-                <div class="medical-report">
+    <!-- PATIENT INFORMATION -->
 
-                    <h3>
-                        Medical Report
-                    </h3>
+    <div class="result-card">
 
-                    <pre id="ocrReportText"></pre>
+        <h3>Patient Information</h3>
 
-                </div>
+        <div class="result-grid">
 
+            <div class="result-item">
+                <span>Patient Name</span>
+                <strong id="patientName">—</strong>
             </div>
+
+            <div class="result-item">
+                <span>Patient ID</span>
+                <strong id="patientId">—</strong>
+            </div>
+
+            <div class="result-item">
+                <span>Age</span>
+                <strong id="patientAge">—</strong>
+            </div>
+
+            <div class="result-item">
+                <span>Gender</span>
+                <strong id="patientGender">—</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MEDICAL INFORMATION -->
+
+    <div class="result-card">
+
+        <h3>Medical Information</h3>
+
+        <div class="result-grid">
+
+            <div class="result-item">
+                <span>Medicine</span>
+                <strong id="medicine">—</strong>
+            </div>
+
+            <div class="result-item">
+                <span>Dosage</span>
+                <strong id="dosage">—</strong>
+            </div>
+
+            <div class="result-item">
+                <span>Frequency</span>
+                <strong id="frequency">—</strong>
+            </div>
+
+            <div class="result-item">
+                <span>Doctor</span>
+                <strong id="doctor">—</strong>
+            </div>
+
+            <div class="result-item">
+                <span>Diagnosis</span>
+                <strong id="diagnosis">—</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- LAB RESULTS -->
+
+    <div
+        id="labResultsCard"
+        class="result-card"
+        style="display:none;"
+    >
+
+        <h3>Laboratory Results</h3>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>Result</th>
+                        <th>Reference Range</th>
+                        <th>Unit</th>
+                    </tr>
+                </thead>
+
+                <tbody id="labResultsBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- REPORT INFORMATION -->
+
+    <div class="result-card">
+
+        <h3>Report Information</h3>
+
+        <div class="result-grid">
+
+            <div class="result-item">
+                <span>Report ID</span>
+                <strong id="reportId">—</strong>
+            </div>
+
+            <div class="result-item">
+                <span>Collection Date</span>
+                <strong id="collectionDate">—</strong>
+            </div>
+
+            <div class="result-item">
+                <span>Report Date</span>
+                <strong id="reportDate">—</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RAW OCR TEXT -->
+
+    <div class="result-card">
+
+        <h3>Extracted Text</h3>
+
+        <pre id="rawOcrText"></pre>
+
+    </div>
+
+</section>
 
         </div>
 

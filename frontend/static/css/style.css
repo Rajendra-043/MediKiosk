@@ -1,6 +1,33 @@
 /* ================================
-   MEDIKIOSK GLOBAL CSS
+   MEDIKIOSK GLOBAL CSS + THEME
+   Primary Deep Navy #0B2D42
+   Secondary Teal #0F766E
+   Accent Cyan #14B8A6
+   Background Off White #F8FAFC
+   Card White #FFFFFF
+   Main Text Dark Slate #1E293B
+   Secondary Text Slate #64748B
+   Border Light Slate #E2E8F0
+   Success Green #16A34A
+   Warning Amber #F59E0B
+   Error Red #DC2626
 ================================ */
+
+:root {
+    --primary: #0B2D42;
+    --secondary: #0F766E;
+    --accent: #14B8A6;
+    --background: #F8FAFC;
+    --card: #FFFFFF;
+    --main-text: #1E293B;
+    --secondary-text: #64748B;
+    --border: #E2E8F0;
+    --success: #16A34A;
+    --warning: #F59E0B;
+    --error: #DC2626;
+    --teal-light: #CCFBF1;
+    --teal-bg: #F0FDFA;
+}
 
 * {
     box-sizing: border-box;
@@ -10,6 +37,8 @@ body {
     margin: 0;
     font-family: Inter, system-ui, -apple-system,
         BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--background);
+    color: var(--main-text);
 }
 
 
@@ -22,23 +51,23 @@ body {
     margin-bottom: 8px;
     font-size: 14px;
     font-weight: 600;
-    color: #334155;
+    color: #1E293B;
 }
 
 .form-input {
     width: 100%;
     padding: 13px 15px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid #E2E8F0;
     border-radius: 12px;
     outline: none;
     background: white;
-    color: #0f172a;
+    color: #1E293B;
     transition: 0.2s;
 }
 
 .form-input:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    border-color: #0F766E;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
 }
 
 textarea.form-input {
@@ -53,7 +82,7 @@ textarea.form-input {
 .section-title {
     font-size: 18px;
     font-weight: 700;
-    color: #0f172a;
+    color: #1E293B;
     margin-bottom: 20px;
 }
 
@@ -69,7 +98,7 @@ textarea.form-input {
     gap: 13px;
     padding: 12px 14px;
     border-radius: 10px;
-    color: #475569;
+    color: #64748B;
     font-size: 14px;
     font-weight: 500;
     text-align: left;
@@ -77,13 +106,13 @@ textarea.form-input {
 }
 
 .sidebar-link:hover {
-    background: #eff6ff;
-    color: #2563eb;
+    background: #CCFBF1;
+    color: #0F766E;
 }
 
 .sidebar-link.active {
-    background: #dbeafe;
-    color: #2563eb;
+    background: #CCFBF1;
+    color: #0F766E;
     font-weight: 600;
 }
 
@@ -115,7 +144,7 @@ textarea.form-input {
 }
 
 .card-number {
-    color: #0f172a;
+    color: #1E293B;
     font-size: 25px;
     font-weight: 700;
     margin-top: 3px;
@@ -141,8 +170,8 @@ textarea.form-input {
 }
 
 .quick-action:hover {
-    background: #eff6ff;
-    color: #2563eb;
+    background: #CCFBF1;
+    color: #0F766E;
 }
 
 
@@ -181,13 +210,357 @@ textarea.form-input {
 
 
 /* ================================
-   MOBILE SIDEBAR
-================================ */
+    LIVE BAR – Fixed bottom, always visible
+   ================================ */
+
+.medikiosk-live-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -6px 24px rgba(15,23,42,0.08);
+    font-size: 13px;
+    line-height: 1;
+}
+
+.live-bar-left, .live-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.live-pulse {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #DC2626;
+    box-shadow: 0 0 0 4px rgba(239,68,68,0.18);
+    animation: livePulse 1.5s infinite;
+    flex-shrink: 0;
+}
+
+@keyframes livePulse {
+    0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.35); }
+    70% { box-shadow: 0 0 0 7px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+
+.live-badge {
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #dc2626;
+    font-size: 12px;
+}
+
+.live-divider {
+    width: 1px;
+    height: 16px;
+    background: #e2e8f0;
+}
+
+.live-time {
+    font-variant-numeric: tabular-nums;
+    color: #1E293B;
+    font-weight: 600;
+}
+
+.live-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.live-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #16a34a;
+    display: inline-block;
+}
+
+.live-role {
+    color: #64748b;
+    font-weight: 500;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.live-queue {
+    color: #64748B;
+    font-weight: 500;
+}
+
+/* Styled Go Live button – replaces old text-area widget (slim so content stays visible) */
+.medikiosk-live-bar--styled {
+    background: linear-gradient(90deg, #0B2D42 0%, #0F766E 100%);
+    border-top: 1px solid #0B2D42;
+    color: #F8FAFC;
+    padding: 4px 12px;
+    min-height: 0;
+}
+
+.medikiosk-live-bar--styled .live-badge {
+    color: #DC2626;
+    background: rgba(248,113,113,0.15);
+    padding: 3px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+}
+
+.medikiosk-live-bar--styled .live-divider { background: #1E293B; }
+.medikiosk-live-bar--styled .live-time { color: #F8FAFC; }
+.medikiosk-live-bar--styled .live-status { color: #86efac; }
+.medikiosk-live-bar--styled .live-role { color: #64748B; }
+.medikiosk-live-bar--styled .live-queue { color: #E2E8F0; }
+
+.live-circle-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #DC2626 0%, #dc2626 100%);
+    color: white;
+    font-weight: 900;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    border: 2px solid white;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(239,68,68,0.40), 0 0 0 3px rgba(239,68,68,0.15);
+    transition: transform 0.12s, box-shadow 0.12s, filter 0.12s;
+    flex-shrink: 0;
+    animation: livePulse 1.6s infinite;
+    line-height: 1;
+}
+
+.live-circle-btn:hover {
+    transform: scale(1.06);
+    filter: brightness(1.07);
+    box-shadow: 0 8px 22px rgba(239,68,68,0.50), 0 0 0 6px rgba(239,68,68,0.18);
+}
+
+.live-circle-btn:active { transform: scale(0.97); }
+
+.live-circle-btn.is-live {
+    background: linear-gradient(135deg, #16a34a 0%, #16A34A 100%);
+    box-shadow: 0 6px 18px rgba(22,163,74,0.40), 0 0 0 4px rgba(22,163,74,0.18);
+}
+
+@media (max-width: 640px) {
+    .hide-mobile { display: none !important; }
+    .medikiosk-live-bar { padding: 8px 10px; }
+    .live-widget { right: 10px; left: 10px; width: auto; }
+}
+
+/* ================================
+    MOBILE SIDEBAR
+   ================================ */
 
 @media (max-width: 1023px) {
 
     .sidebar {
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.08);
     }
+}
+
+/* ================================
+   LIVE AI ASSISTANT PANEL
+   ================================ */
+
+.live-assist-panel {
+    position: fixed;
+    right: 14px;
+    bottom: 64px;
+    width: min(370px, calc(100vw - 28px));
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 18px;
+    box-shadow: 0 18px 50px rgba(11,45,66,0.22);
+    z-index: 10000;
+    overflow: hidden;
+}
+
+.live-assist-panel[hidden] { display: none !important; }
+
+.live-assist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: linear-gradient(90deg, #0B2D42 0%, #0F766E 100%);
+    color: #fff;
+}
+
+.live-assist-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.live-assist-role {
+    font-size: 11px;
+    opacity: 0.85;
+    font-weight: 500;
+}
+
+.live-assist-close {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.live-assist-sub {
+    margin: 0;
+    padding: 10px 14px 0;
+    font-size: 12px;
+    color: #64748B;
+}
+
+.live-assist-messages {
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.live-assist-msg {
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 9px 12px;
+    border-radius: 12px;
+    max-width: 100%;
+}
+
+.live-assist-msg.ai {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    color: #1E293B;
+}
+
+.live-assist-msg.user {
+    background: #0F766E;
+    color: #fff;
+    align-self: flex-end;
+}
+
+.live-assist-msg.thinking {
+    opacity: 0.7;
+    font-style: italic;
+}
+
+.live-assist-action-row {
+    display: flex;
+    gap: 8px;
+    padding: 0 14px 10px;
+}
+
+.live-assist-action-row[hidden] { display: none !important; }
+
+.live-assist-goto {
+    flex: 1;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    background: #0F766E;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.live-assist-chatbot {
+    flex: 1;
+    border: 1px solid #0F766E;
+    border-radius: 10px;
+    padding: 10px;
+    background: #fff;
+    color: #0F766E;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.live-assist-quick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 14px 10px;
+}
+
+.live-assist-chip {
+    border: 1px solid #E2E8F0;
+    background: #F8FAFC;
+    color: #0B2D42;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.live-assist-chip:hover {
+    background: #CCFBF1;
+    border-color: #14B8A6;
+}
+
+.live-assist-form {
+    display: flex;
+    gap: 8px;
+    padding: 10px 12px 12px;
+    border-top: 1px solid #E2E8F0;
+    background: #F8FAFC;
+}
+
+.live-assist-input {
+    flex: 1;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 9px 10px;
+    font-size: 13px;
+    outline: none;
+    min-width: 0;
+}
+
+.live-assist-input:focus { border-color: #14B8A6; }
+
+.live-assist-mic, .live-assist-send {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.live-assist-mic { background: #fff; border: 1px solid #E2E8F0; }
+.live-assist-mic.listening { background: #DC2626; color: #fff; border-color: #DC2626; }
+.live-assist-send { background: #0F766E; color: #fff; }
 
 }

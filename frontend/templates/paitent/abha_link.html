@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Link ABHA ID - MediKiosk{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-slate-50 p-5 md:p-8">
+<div class="max-w-xl mx-auto">
+<a href="{% url 'abha_home' %}" class="text-sm text-slate-500 hover:text-blue-600">← Back to ABHA</a>
+<h1 class="text-3xl font-bold text-slate-900 mt-2">Link existing ABHA ID</h1>
+<p class="text-slate-500 mt-1">Enter your valid ABHA Number (14 digits) or ABHA Address plus your password.</p>
+<div class="mt-6 bg-white rounded-2xl border p-6">
+{% if error %}
+<div class="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">{{ error }}</div>
+{% endif %}
+<form method="POST">
+{% csrf_token %}
+<label class="form-label">ABHA Number or ABHA Address</label>
+<input class="form-input" type="text" name="identifier" value="{{ identifier }}" placeholder="e.g. 1234-5678-9012-34 or name@abdm" required>
+<label class="form-label mt-4">ABHA Password</label>
+<input class="form-input" type="password" name="password" placeholder="Your ABHA password" required>
+<button class="mt-6 w-full px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">Link ABHA ID</button>
+</form>
+<p class="text-xs text-slate-400 mt-4">Demo check: the ID format is validated and uniqueness is enforced locally.</p>
+</div>
+</div>
+</div>
+{% endblock %}

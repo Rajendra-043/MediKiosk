@@ -1,18 +1,28 @@
 import re
 
 
-def clean_lines(text):
+# ============================================================
+# BASIC OCR LINE CLEANING
+# ============================================================
+
+def clean_ocr_lines(text):
     """
-    Clean OCR text while preserving the original order.
+    Clean OCR lines while preserving their original order.
     """
+
+    if not text:
+        return []
+
     lines = []
 
     for line in text.splitlines():
+
         line = line.strip()
 
         if not line:
             continue
 
+        # Normalize tabs and repeated spaces
         line = re.sub(r"\s+", " ", line)
 
         lines.append(line)
@@ -20,530 +30,921 @@ def clean_lines(text):
     return lines
 
 
+# ============================================================
+# DOCUMENT TYPE DETECTION
+# ============================================================
+
+def detect_document_type(text):
+    """
+    Detect the broad type of document.
+
+    This does NOT modify OCR text.
+    """
+
+    lower = (text or "").lower()
+
+    # --------------------------------------------------------
+    # Lab reports first
+    # --------------------------------------------------------
+
+    if any(
+        word in lower
+        for word in [
+            "complete blood count",
+            "haematology",
+            "hematology",
+            "laboratory",
+            "lab report",
+            "test description",
+            "reference range",
+            "cbc",
+            "blood test",
+            "blood report",
+        ]
+    ):
+        return "Lab Report"
+
+    # --------------------------------------------------------
+    # Prescription
+    # --------------------------------------------------------
+
+    if any(
+        word in lower
+        for word in [
+            "prescription",
+            "medicine",
+            "medication",
+            "tablet",
+            "tablets",
+            "capsule",
+            "capsules",
+            "dosage",
+            "dose",
+            "frequency",
+        ]
+    ):
+        return "Prescription"
+
+    # --------------------------------------------------------
+    # Registration / application forms
+    # --------------------------------------------------------
+
+    if any(
+        word in lower
+        for word in [
+            "registration form",
+            "application form",
+            "registration",
+            "student",
+            "school",
+            "college",
+            "admission",
+            "enrollment",
+            "date of birth",
+        ]
+    ):
+        return "Form / Registration Document"
+
+    # --------------------------------------------------------
+    # Invoice / bill
+    # --------------------------------------------------------
+
+    if any(
+        word in lower
+        for word in [
+            "invoice",
+            "invoice number",
+            "bill number",
+            "billing",
+            "amount due",
+            "subtotal",
+            "grand total",
+            "total amount",
+        ]
+    ):
+        return "Invoice / Bill"
+
+    # --------------------------------------------------------
+    # Certificate
+    # --------------------------------------------------------
+
+    if any(
+        word in lower
+        for word in [
+            "certificate",
+            "certification",
+            "this is to certify",
+            "issued on",
+        ]
+    ):
+        return "Certificate"
+
+    # --------------------------------------------------------
+    # General document
+    # --------------------------------------------------------
+
+    return "General Document"
+
+
+# ============================================================
+# SEGMENT EXTRACTION
+# ============================================================
+
+def extract_segments(text):
+    """
+    Divide OCR text into readable sections.
+
+    The original OCR text is not changed.
+    """
+
+    lines = clean_ocr_lines(text)
+
+    segments = []
+
+    current_heading = ""
+    current_content = []
+
+    def save_segment():
+
+        nonlocal current_heading
+        nonlocal current_content
+
+        if current_heading or current_content:
+
+            segments.append(
+                {
+                    "heading": current_heading,
+                    "content": current_content,
+                }
+            )
+
+        current_heading = ""
+        current_content = []
+
+    for line in lines:
+
+        stripped = line.strip()
+
+        # ----------------------------------------------------
+        # Obvious headings
+        # ----------------------------------------------------
+
+        is_upper_heading = (
+            len(stripped) < 100
+            and stripped.upper() == stripped
+            and any(char.isalpha() for char in stripped)
+        )
+
+        is_colon_heading = (
+            stripped.endswith(":")
+            and len(stripped) < 100
+        )
+
+        # ----------------------------------------------------
+        # Known section headings
+        # ----------------------------------------------------
+
+        lower = stripped.lower()
+
+        known_heading = any(
+            heading in lower
+            for heading in [
+                "patient information",
+                "prescription information",
+                "report information",
+                "laboratory tests",
+                "hematology",
+                "haematology",
+                "complete blood count",
+                "differential leucocyte count",
+                "rbc indices",
+                "platelets indices",
+                "interpretation",
+                "student information",
+                "personal information",
+                "invoice details",
+                "billing information",
+            ]
+        )
+
+        is_heading = (
+            is_upper_heading
+            or is_colon_heading
+            or known_heading
+        )
+
+        # ----------------------------------------------------
+        # Start a new segment
+        # ----------------------------------------------------
+
+        if is_heading:
+
+            if current_heading or current_content:
+                save_segment()
+
+            current_heading = stripped
+
+        else:
+
+            if not current_heading:
+
+                # First line becomes heading only when
+                # there is no active segment.
+                current_heading = stripped
+
+            else:
+
+                current_content.append(stripped)
+
+    # Save final segment
+
+    save_segment()
+
+    return segments
+
+
+# ============================================================
+# HELPERS
+# ============================================================
+
+def first_match(patterns, text, flags=re.IGNORECASE):
+
+    for pattern in patterns:
+
+        match = re.search(
+            pattern,
+            text,
+            flags
+        )
+
+        if match:
+            return match
+
+    return None
+
+
+def clean_value(value):
+    """
+    Clean a field value without destroying useful content.
+    """
+
+    if not value:
+        return ""
+
+    value = value.strip()
+
+    value = re.sub(
+        r"\s+",
+        " ",
+        value
+    )
+
+    return value.strip(" :-")
+
+
+def extract_value_after_label(
+    line,
+    labels
+):
+    """
+    Extract:
+
+    Name: Rahul
+
+    Patient Name - Rahul
+    """
+
+    label_pattern = "|".join(
+        re.escape(label)
+        for label in labels
+    )
+
+    match = re.search(
+        rf"(?:{label_pattern})\s*[:\-]\s*(.+)",
+        line,
+        re.IGNORECASE
+    )
+
+    if not match:
+        return ""
+
+    return clean_value(
+        match.group(1)
+    )
+
+
+# ============================================================
+# MEDICAL INFORMATION EXTRACTION
+# ============================================================
+
 def extract_medical_data(text):
-    """
-    Extract structured medical information from OCR text.
 
-    Supports:
-    - Lab reports
-    - Prescriptions
-    - Basic medical documents
-    """
+    lines = clean_ocr_lines(text)
 
-    lines = clean_lines(text)
+    document_type = detect_document_type(text)
 
     data = {
-        "document_type": "Unknown",
 
+        # Document
+        "document_type": document_type,
+
+        # Patient
         "patient_name": "",
         "patient_id": "",
         "age": "",
         "gender": "",
 
+        # Prescription
         "medicine": "",
         "dosage": "",
         "frequency": "",
-
         "doctor": "",
         "diagnosis": "",
 
+        # Lab report
         "report_id": "",
         "collection_date": "",
         "report_date": "",
 
+        # Laboratory tests
         "tests": [],
+
+        # Generic OCR organization
+        "segments": extract_segments(text),
+
+        # Original OCR
+        "raw_text": text or "",
     }
 
-    # ==================================================
-    # DOCUMENT TYPE
-    # ==================================================
-
-    full_text = " ".join(lines).lower()
-
-    lab_keywords = [
-        "haematology",
-        "hematology",
-        "complete blood count",
-        "cbc",
-        "test description",
-        "reference range",
-        "haemoglobin",
-        "hemoglobin",
-        "total leucocyte count",
-        "platelet count",
-    ]
-
-    prescription_keywords = [
-        "medicine",
-        "medication",
-        "dosage",
-        "dose",
-        "frequency",
-        "tablet",
-        "capsule",
-        "prescription",
-    ]
-
-    lab_score = sum(
-        1 for keyword in lab_keywords
-        if keyword in full_text
-    )
-
-    prescription_score = sum(
-        1 for keyword in prescription_keywords
-        if keyword in full_text
-    )
-
-    if lab_score >= 2:
-        data["document_type"] = "Lab Report"
-
-    elif prescription_score >= 2:
-        data["document_type"] = "Prescription"
-
-
-    # ==================================================
-    # PATIENT NAME
-    # ==================================================
+    # ========================================================
+    # UNIVERSAL FIELD EXTRACTION
+    # ========================================================
 
     for line in lines:
 
-        # Normal format:
-        # Patient Name: Rahul
+        line = line.strip()
+
+        if not line:
+            continue
+
+        # ------------------------------------------
+        # Patient Name
+        # ------------------------------------------
+
         match = re.search(
-            r"(?:patient\s*name)\s*[:\-]\s*(.+)",
+            r"patient\s*name\s*[:\-]\s*(.+)",
             line,
             re.IGNORECASE
         )
 
         if match:
-            value = match.group(1).strip()
+            data["patient_name"] = match.group(1).strip()
+            continue
 
-            # Remove possible extra fields
-            value = re.split(
-                r"\s+(?:patient\s*id|age|gender)\b",
-                value,
-                flags=re.IGNORECASE
-            )[0].strip()
-
-            data["patient_name"] = value
-            break
-
-
-    # Lab report format:
-    # Name : MrDummy Patient ID 2 PN2
-
-    if not data["patient_name"]:
-
-        for line in lines:
-
-            match = re.search(
-                r"\bName\s*:\s*(.+?)\s+Patient\s*ID\b",
-                line,
-                re.IGNORECASE
-            )
-
-            if match:
-                data["patient_name"] = match.group(1).strip()
-                break
-
-
-    # ==================================================
-    # PATIENT ID
-    # ==================================================
-
-    for line in lines:
+        # ------------------------------------------
+        # Age / Gender
+        # ------------------------------------------
 
         match = re.search(
-            r"(?:patient\s*id|patient\s*no)\s*[:\-]?\s*(.+?)(?=\s+(?:Age|Gender|Report|Referred|Collection)\b|$)",
+            r"age\s*/?\s*gender\s*[:\-]\s*(\d+)\s*/\s*([A-Za-z]+)",
             line,
             re.IGNORECASE
         )
 
         if match:
-            data["patient_id"] = match.group(1).strip()
-            break
+            data["age"] = match.group(1).strip()
+            data["gender"] = match.group(2).strip()
+            continue
 
-
-    # Special lab format:
-    # Name : MrDummy Patient ID 2 PN2
-
-    if not data["patient_id"]:
-
-        for line in lines:
-
-            match = re.search(
-                r"Patient\s*ID\s*[:\-]?\s*(.+?)(?=\s+(?:Age|Gender|Report|Referred|Collection)\b|$)",
-                line,
-                re.IGNORECASE
-            )
-
-            if match:
-                data["patient_id"] = match.group(1).strip()
-                break
-
-
-    # ==================================================
-    # AGE + GENDER
-    # ==================================================
-
-    for line in lines:
-
-        # Example:
-        # Age/Gender : 20/Male
+        # ------------------------------------------
+        # Report ID
+        # ------------------------------------------
 
         match = re.search(
-            r"Age\s*/\s*Gender\s*[:\-]?\s*(\d+)\s*/\s*(Male|Female|M|F|Other)",
+            r"report\s*id\s*[:\-]\s*(.+)",
             line,
             re.IGNORECASE
         )
 
         if match:
+            data["report_id"] = match.group(1).strip()
+            continue
+
+        # ------------------------------------------
+        # Collection Date
+        # ------------------------------------------
+
+        match = re.search(
+            r"collection\s*date\s*[:\-]\s*(.+)",
+            line,
+            re.IGNORECASE
+        )
+
+        if match:
+            data["collection_date"] = match.group(1).strip()
+            continue
+
+        # ------------------------------------------
+        # Report Date
+        # ------------------------------------------
+
+        match = re.search(
+            r"report\s*date\s*[:\-]\s*(.+)",
+            line,
+            re.IGNORECASE
+        )
+
+        if match:
+            data["report_date"] = match.group(1).strip()
+            continue
+
+    # ------------------------------------------
+    # YOUR EXISTING TEST DETECTION CODE
+    # ------------------------------------------
+
+    # test parsing comes AFTER Age / Gender
+
+         # ------------------------------------------
+        # Skip Age / Gender from laboratory tests
+        # ------------------------------------------
+
+        if re.match(
+            r"age\s*/\s*gender",
+            line,
+            re.IGNORECASE
+        ):
+            continue   
+
+
+
+
+        # ----------------------------------------------------
+        # Standalone age
+        # ----------------------------------------------------
+
+        match = re.search(
+            r"\bage\s*[:\-]\s*(\d{1,3})\b",
+            line,
+            re.IGNORECASE
+        )
+
+        if match and not data["age"]:
 
             data["age"] = match.group(1)
 
-            gender = match.group(2).lower()
+        # ----------------------------------------------------
+        # Gender
+        # ----------------------------------------------------
 
-            if gender == "m":
-                gender = "Male"
+        match = re.search(
+            r"\b(male|female)\b",
+            line,
+            re.IGNORECASE
+        )
 
-            elif gender == "f":
-                gender = "Female"
+        if match and not data["gender"]:
 
-            else:
-                gender = gender.capitalize()
-
-            data["gender"] = gender
-
-            break
-
-
-    # Normal separate Age field
-
-    if not data["age"]:
-
-        for line in lines:
-
-            match = re.search(
-                r"\bAge\s*[:\-]?\s*(\d+)",
-                line,
-                re.IGNORECASE
+            data["gender"] = (
+                "Male"
+                if match.group(1).lower() == "male"
+                else "Female"
             )
 
-            if match:
-                data["age"] = match.group(1)
-                break
+        # ----------------------------------------------------
+        # Doctor / Referred By
+        # ----------------------------------------------------
 
+        match = re.search(
+            r"(?:doctor|dr\.?|referred\s+by)"
+            r"\s*[:\-]\s*"
+            r"(.+)",
+            line,
+            re.IGNORECASE
+        )
 
-    # Normal separate Gender field
+        if match and not data["doctor"]:
 
-    if not data["gender"]:
-
-        for line in lines:
-
-            match = re.search(
-                r"\bGender\s*[:\-]?\s*(Male|Female|M|F|Other)",
-                line,
-                re.IGNORECASE
+            value = clean_value(
+                match.group(1)
             )
 
-            if match:
+            value = re.split(
+                r"\s+(?:collection\s+date|report\s+date|"
+                r"phone\s+no|patient\s+id)\b",
+                value,
+                maxsplit=1,
+                flags=re.IGNORECASE
+            )[0]
 
-                gender = match.group(1).lower()
-
-                if gender == "m":
-                    gender = "Male"
-
-                elif gender == "f":
-                    gender = "Female"
-
-                else:
-                    gender = gender.capitalize()
-
-                data["gender"] = gender
-                break
-
-
-    # ==================================================
-    # DOCTOR / REFERRED BY
-    # ==================================================
-
-    for line in lines:
-
-        match = re.search(
-            r"(?:Referred\s*By|Doctor|Dr\.?)\s*[:\-]\s*(.+?)(?=\s+(?:Collection|ReportDate|Report\s*Date|Phone)\b|$)",
-            line,
-            re.IGNORECASE
-        )
-
-        if match:
-
-            data["doctor"] = match.group(1).strip()
-            break
-
-
-    # ==================================================
-    # DIAGNOSIS
-    # ==================================================
-
-    for line in lines:
-
-        match = re.search(
-            r"(?:Diagnosis|Diagnosed\s*With|Condition)\s*[:\-]\s*(.+)",
-            line,
-            re.IGNORECASE
-        )
-
-        if match:
-
-            data["diagnosis"] = match.group(1).strip()
-            break
-
-
-    # ==================================================
-    # REPORT ID
-    # ==================================================
-
-    for line in lines:
-
-        match = re.search(
-            r"Report\s*ID\s*[:\-]?\s*(.+?)(?=\s+(?:Referred|Collection|ReportDate|Report\s*Date)\b|$)",
-            line,
-            re.IGNORECASE
-        )
-
-        if match:
-
-            data["report_id"] = match.group(1).strip()
-            break
-
-
-    # ==================================================
-    # COLLECTION DATE
-    # ==================================================
-
-    for line in lines:
-
-        match = re.search(
-            r"(?:Collection\s*Date|Sample\s*Collection)\s*[:\-]\s*(.+?)(?=\s+(?:Phone|ReportDate|Report\s*Date)\b|$)",
-            line,
-            re.IGNORECASE
-        )
-
-        if match:
-
-            data["collection_date"] = match.group(1).strip()
-            break
-
-
-    # ==================================================
-    # REPORT DATE
-    # ==================================================
-
-    for line in lines:
-
-        match = re.search(
-            r"(?:Report\s*Date|ReportDate|Reported\s*On)\s*[:\-]\s*(.+)",
-            line,
-            re.IGNORECASE
-        )
-
-        if match:
-
-            data["report_date"] = match.group(1).strip()
-            break
-
-
-    # ==================================================
-    # MEDICINE
-    # ==================================================
-
-    for line in lines:
-
-        match = re.search(
-            r"(?:Medicine|Medication|Drug)\s*[:\-]\s*(.+)",
-            line,
-            re.IGNORECASE
-        )
-
-        if match:
-
-            medicine_value = match.group(1).strip()
-
-            dosage_match = re.search(
-                r"\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|tablet|tablets|capsule|capsules)",
-                medicine_value,
-                re.IGNORECASE
+            data["doctor"] = clean_value(
+                value
             )
 
-            if dosage_match:
-
-                data["dosage"] = dosage_match.group(0).strip()
-
-                medicine_value = (
-                    medicine_value[:dosage_match.start()]
-                    +
-                    medicine_value[dosage_match.end():]
-                )
-
-            data["medicine"] = medicine_value.strip()
-
-            break
-
-
-    # ==================================================
-    # DOSAGE
-    # ==================================================
-
-    for line in lines:
+        # ----------------------------------------------------
+        # Diagnosis
+        # ----------------------------------------------------
 
         match = re.search(
-            r"(?:Dosage|Dose)\s*[:\-]\s*(.+)",
+            r"(?:diagnosis|diagnosed\s+with|condition)"
+            r"\s*[:\-]\s*"
+            r"(.+)",
             line,
             re.IGNORECASE
         )
 
-        if match:
+        if match and not data["diagnosis"]:
 
-            value = match.group(1).strip()
+            data["diagnosis"] = clean_value(
+                match.group(1)
+            )
 
-            dosage_match = re.search(
-                r"\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|tablet|tablets|capsule|capsules)",
+        # ----------------------------------------------------
+        # Report ID
+        # ----------------------------------------------------
+
+        match = re.search(
+            r"(?:report\s+id|report\s+no\.?)"
+            r"\s*[:\-]?\s*"
+            r"([A-Za-z0-9][A-Za-z0-9\-_\/]*)",
+            line,
+            re.IGNORECASE
+        )
+
+        if match and not data["report_id"]:
+
+            data["report_id"] = clean_value(
+                match.group(1)
+            )
+
+        # ----------------------------------------------------
+        # Collection Date
+        # ----------------------------------------------------
+
+        match = re.search(
+            r"(?:collection\s+date|sample\s+collection)"
+            r"\s*[:\-]\s*"
+            r"(.+)",
+            line,
+            re.IGNORECASE
+        )
+
+        if match and not data["collection_date"]:
+
+            value = clean_value(
+                match.group(1)
+            )
+
+            value = re.split(
+                r"\s+(?:report\s+date|phone\s+no)\b",
+                value,
+                maxsplit=1,
+                flags=re.IGNORECASE
+            )[0]
+
+            data["collection_date"] = clean_value(
+                value
+            )
+
+        # ----------------------------------------------------
+        # Report Date
+        # ----------------------------------------------------
+
+        match = re.search(
+            r"(?:report\s+date|reported\s+on)"
+            r"\s*[:\-]\s*"
+            r"(.+)",
+            line,
+            re.IGNORECASE
+        )
+
+        if match and not data["report_date"]:
+
+            value = clean_value(
+                match.group(1)
+            )
+
+            data["report_date"] = value
+
+        # ----------------------------------------------------
+        # Medicine
+        # ----------------------------------------------------
+
+        match = re.search(
+            r"(?:medicine|medication|drug)"
+            r"\s*[:\-]\s*"
+            r"(.+)",
+            line,
+            re.IGNORECASE
+        )
+
+        if match and not data["medicine"]:
+
+            value = clean_value(
+                match.group(1)
+            )
+
+            # Detect dosage inside medicine field
+            dose_match = re.search(
+                r"\b\d+(?:\.\d+)?\s*"
+                r"(?:mg|mcg|g|ml|tablet|tablets|"
+                r"capsule|capsules)\b",
                 value,
                 re.IGNORECASE
             )
 
-            if dosage_match:
+            if dose_match:
 
-                data["dosage"] = dosage_match.group(0).strip()
+                if not data["dosage"]:
+                    data["dosage"] = (
+                        dose_match.group(0)
+                        .strip()
+                    )
 
-                remaining = value[
-                    dosage_match.end():
-                ].strip()
+                value = (
+                    value[:dose_match.start()]
+                    + value[dose_match.end():]
+                )
 
-                if remaining:
-                    data["frequency"] = remaining
+            data["medicine"] = clean_value(
+                value
+            )
 
-            else:
-
-                frequency_words = [
-                    "once",
-                    "twice",
-                    "thrice",
-                    "daily",
-                    "weekly",
-                    "morning",
-                    "evening",
-                    "night",
-                    "hourly",
-                    "every",
-                ]
-
-                if any(
-                    word in value.lower()
-                    for word in frequency_words
-                ):
-                    data["frequency"] = value
-
-                else:
-                    data["dosage"] = value
-
-            break
-
-
-    # ==================================================
-    # FREQUENCY
-    # ==================================================
-
-    for line in lines:
+        # ----------------------------------------------------
+        # Dosage
+        # ----------------------------------------------------
 
         match = re.search(
-            r"(?:Frequency|Freq)\s*[:\-]\s*(.+)",
+            r"(?:dosage|dose)"
+            r"\s*[:\-]\s*"
+            r"(.+)",
             line,
             re.IGNORECASE
         )
 
         if match:
 
-            data["frequency"] = match.group(1).strip()
-            break
+            dosage_value = clean_value(
+                match.group(1)
+            )
 
+            dosage_match = re.search(
+                r"\b\d+(?:\.\d+)?\s*"
+                r"(?:mg|mcg|g|ml|"
+                r"tablet|tablets|capsule|capsules)\b",
+                dosage_value,
+                re.IGNORECASE
+            )
 
-    # ==================================================
-    # LABORATORY TESTS
-    # ==================================================
+            if dosage_match:
 
-    if data["document_type"] == "Lab Report":
+                data["dosage"] = (
+                    dosage_match.group(0)
+                    .strip()
+                )
 
-        test_names = [
-            "Haemoglobin",
-            "Hemoglobin",
-            "Total Leucocyte Count",
-            "Neutrophils",
-            "Lymphocytes",
-            "Eosinophils",
-            "Monocytes",
-            "Basophils",
-            "Absolute Neutrophils",
-            "Absolute Lymphocytes",
-            "Absolute Eosinophils",
-            "Absolute Monocytes",
-            "RBC Count",
-            "MCV",
-            "MCH",
-            "MCHC",
-            "Hct",
-            "HCT",
-            "Het",
-            "RDW-CV",
-            "RDW-SD",
-            "ROW-SD",
-            "Platelet Count",
-            "PCT",
-            "MPV",
-            "PDW",
-        ]
+            elif not data["frequency"]:
 
-        for line in lines:
-
-            for test_name in test_names:
-
-                if line.lower().startswith(
-                    test_name.lower()
+                # Some OCR documents incorrectly label
+                # frequency as dosage.
+                if any(
+                    word in dosage_value.lower()
+                    for word in [
+                        "daily",
+                        "twice",
+                        "once",
+                        "morning",
+                        "evening",
+                        "night",
+                        "hourly",
+                    ]
                 ):
+                    data["frequency"] = dosage_value
 
-                    remaining = line[
-                        len(test_name):
-                    ].strip()
+                else:
+                    data["dosage"] = dosage_value
 
-                    # Extract first numeric result
-                    result_match = re.search(
-                        r"(\d+(?:\.\d+)?)",
-                        remaining
-                    )
+        # ----------------------------------------------------
+        # Frequency
+        # ----------------------------------------------------
 
-                    if not result_match:
-                        continue
+        match = re.search(
+            r"(?:frequency|freq)"
+            r"\s*[:\-]\s*"
+            r"(.+)",
+            line,
+            re.IGNORECASE
+        )
 
-                    result = result_match.group(1)
+        if match:
 
-                    reference = remaining[
-                        result_match.end():
-                    ].strip()
+            data["frequency"] = clean_value(
+                match.group(1)
+            )
 
-                    # Remove obvious OCR junk before reference
-                    reference = re.sub(
-                        r"^[^\d\-]*",
-                        "",
-                        reference
-                    ).strip()
 
-                    data["tests"].append({
-                        "test": test_name,
-                        "result": result,
-                        "reference": reference,
-                    })
 
-                    break
 
+
+        # ------------------------------------------
+        # Ignore Age / Gender from laboratory tests
+        # ------------------------------------------
+
+        if re.match(
+            r"age\s*/?\s*gender",
+            line,
+            re.IGNORECASE
+        ):
+            continue
+
+
+
+
+
+    # ========================================================
+    # LABORATORY TEST EXTRACTION
+    # ========================================================
+
+    # Common headings that should never become tests
+    ignored_test_names = {
+        "test description",
+        "test",
+        "description",
+        "result",
+        "reference range",
+        "unit",
+        "laboratory tests",
+        "patient information",
+        "report information",
+    }
+
+    for line in lines:
+
+        # ----------------------------------------------------
+        # Skip obvious headings
+        # ----------------------------------------------------
+
+        lower_line = line.lower().strip()
+
+        if lower_line in ignored_test_names:
+            continue
+
+        if lower_line.startswith(
+            (
+                "name :",
+                "patient name:",
+                "patient id:",
+                "age/gender:",
+                "report id:",
+                "collection date:",
+                "report date:",
+                "phone no:",
+                "referred by:",
+                "medicine:",
+                "dosage:",
+                "frequency:",
+                "doctor:",
+                "diagnosis:",
+            )
+        ):
+            continue
+
+        # ----------------------------------------------------
+        # Normal lab format:
+        #
+        # Haemoglobin 15 13-17 g/dL
+        #
+        # Test name can contain spaces.
+        # ----------------------------------------------------
+
+        match = re.match(
+            r"^(.+?)\s+"
+            r"(-?\d+(?:\.\d+)?)\s+"
+            r"(.+)$",
+            line
+        )
+
+        if not match:
+            continue
+
+        test_name = clean_value(
+            match.group(1)
+        )
+
+        result = clean_value(
+            match.group(2)
+        )
+
+        remaining = clean_value(
+            match.group(3)
+        )
+
+        # ----------------------------------------------------
+        # Prevent ordinary text from becoming tests
+        # ----------------------------------------------------
+
+        if len(test_name) < 3:
+            continue
+
+        if test_name.lower() in ignored_test_names:
+            continue
+
+        if any(
+            word in test_name.lower()
+            for word in [
+                "patient information",
+                "prescription information",
+                "report information",
+                "ocr status",
+                "medicine",
+                "dosage",
+                "frequency",
+                "doctor",
+                "diagnosis",
+            ]
+        ):
+            continue
+
+        # ----------------------------------------------------
+        # Separate reference range and unit where possible
+        # ----------------------------------------------------
+
+        reference = remaining
+        unit = ""
+
+        unit_match = re.search(
+            r"\s+"
+            r"((?:mg|mcg|g|kg|ml|"
+            r"g/dl|mg/dl|fl|pg|"
+            r"%|/cumm|/mm3|/eumm|"
+            r"cells/ul|cells/µl|"
+            r"u/l|iu/l|bpm))"
+            r"\s*$",
+            remaining,
+            re.IGNORECASE
+        )
+
+        if unit_match:
+
+            unit = unit_match.group(1).strip()
+
+            reference = clean_value(
+                remaining[
+                    :unit_match.start()
+                ]
+            )
+
+        # ----------------------------------------------------
+        # Ignore lines that are clearly not tests
+        # ----------------------------------------------------
+
+        if test_name.lower() in [
+            "absolute leucocyte count",
+            "absolute leukocyte count",
+        ] and not reference:
+
+            # Keep it only if it has useful content
+            continue
+
+        data["tests"].append(
+            {
+                "test": test_name,
+                "result": result,
+                "reference": reference,
+                "unit": unit,
+            }
+        )
+
+    # ========================================================
+    # REMOVE DUPLICATE TESTS
+    # ========================================================
+
+    unique_tests = []
+
+    seen = set()
+
+    for test in data["tests"]:
+
+        key = (
+            test["test"].lower(),
+            test["result"],
+            test["reference"].lower(),
+        )
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+
+        unique_tests.append(test)
+
+    data["tests"] = unique_tests
+
+    # ========================================================
+    # FINAL DOCUMENT TYPE FALLBACK
+    # ========================================================
+
+    if not data["document_type"]:
+
+        data["document_type"] = "General Document"
 
     return data

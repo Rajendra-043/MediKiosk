@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}ABHA Card - MediKiosk{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-slate-50 p-5 md:p-8">
+<div class="max-w-xl mx-auto">
+<a href="{% url 'abha_home' %}" class="text-sm text-slate-500 hover:text-blue-600 print:hidden">← Back to ABHA</a>
+
+<div class="mt-4 bg-white rounded-2xl border overflow-hidden" id="abhaCard">
+<div class="bg-gradient-to-r from-blue-700 to-teal-600 text-white px-6 py-4 flex items-center justify-between">
+<div>
+<p class="text-xs uppercase tracking-widest text-blue-100">Ayushman Bharat Health Account</p>
+<h1 class="text-2xl font-bold">ABHA Card</h1>
+</div>
+<div class="text-3xl">🪪</div>
+</div>
+<div class="px-6 py-5">
+<p class="text-xs text-slate-400 uppercase">ABHA Number (14-digit)</p>
+<p class="text-2xl font-bold tracking-wider">{{ profile.formatted_number }}</p>
+<p class="text-blue-600 font-semibold mt-1">{{ profile.abha_address }}</p>
+<div class="grid grid-cols-2 gap-4 mt-5 text-sm">
+<div><p class="text-slate-400 text-xs uppercase">Name</p><p class="font-semibold">{{ profile.full_name }}</p></div>
+<div><p class="text-slate-400 text-xs uppercase">Gender</p><p class="font-semibold">{{ profile.gender|default:"—" }}</p></div>
+<div><p class="text-slate-400 text-xs uppercase">Date of birth</p><p class="font-semibold">{{ profile.date_of_birth|default:"—" }}</p></div>
+<div><p class="text-slate-400 text-xs uppercase">Mobile</p><p class="font-semibold">{{ profile.masked_mobile }}</p></div>
+</div>
+<p class="text-xs text-slate-400 mt-5">Demo card issued by MediKiosk. Verify at official ABDM channels before medical use.</p>
+</div>
+</div>
+
+<div class="mt-5 flex gap-3 print:hidden">
+<button onclick="window.print()" class="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">Download / Print Card</button>
+<a href="{% url 'patient_dashboard' %}" class="px-5 py-2.5 rounded-xl border font-semibold hover:bg-slate-100">Dashboard</a>
+</div>
+</div>
+</div>
+<style>@media print { body * { visibility: hidden; } #abhaCard, #abhaCard * { visibility: visible; } #abhaCard { position: absolute; top: 20px; left: 20px; right: 20px; } }</style>
+{% endblock %}

@@ -3,14 +3,16 @@ import pytesseract
 from PIL import Image, ImageDraw
 from patients.models import Patient, MedicalDocument ,Medication
 from .data_extractor import extract_medical_data
+import os
 
+from django.conf import settings
 
 
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 import io
-
+from .ocr_engine import extract_document_data
 
 
 # Tell pytesseract exactly where Tesseract is installed
@@ -396,3 +398,168 @@ class LabReportParserTest(TestCase):
             len(data["tests"]),
             0
         )        
+
+
+class OCRLayoutTest(TestCase):
+
+    def test_layout_rows(self):
+
+        file_path = os.path.join(
+            settings.BASE_DIR,
+            "media",
+            "medical_documents",
+            "test_document.png"
+        )
+
+        data = extract_document_data(file_path)
+
+        print("\n========== OCR LAYOUT ==========")
+
+        for row in data["layout"]["rows"]:
+
+            print(
+                f"\nROW {row['row_number']} "
+                f"(Y={row['y']}):"
+            )
+
+            # ------------------------------------------
+            # WORDS
+            # ------------------------------------------
+
+            for word in row["words"]:
+
+                print(
+                    f"  {word['text']!r} "
+                    f"x={word['x']} "
+                    f"width={word['width']} "
+                    f"gap={word['gap_from_previous']}"
+                )
+
+            # ------------------------------------------
+            # HIERARCHICAL GROUPS
+            # ------------------------------------------
+
+            print("\n  HIERARCHY:")
+
+            def print_group(group, level=2):
+
+                indent = "  " * level
+
+                print(
+                    f"{indent}- "
+                    f"{group.get('text', '')!r} "
+                    f"x={group.get('x')} "
+                    f"width={group.get('width')}"
+                )
+
+                for child in group.get("children", []):
+
+                    print_group(
+                        child,
+                        level + 1
+                    )
+
+            for group in row.get("groups", []):
+
+                print_group(group)
+
+
+            print("\n================================")
+
+
+    def test_hierarchy_multiple_levels(self):
+
+            from .ocr_engine import _build_hierarchical_layout
+
+            words = [
+                {
+                    "text": "A",
+                    "x": 10,
+                    "y": 50,
+                    "width": 10,
+                    "height": 10,
+                    "confidence": 99,
+                    "gap_from_previous": None
+                },
+                {
+                    "text": "B",
+                    "x": 25,
+                    "y": 50,
+                    "width": 10,
+                    "height": 10,
+                    "confidence": 99,
+                    "gap_from_previous": 5
+                },
+                {
+                    "text": "C",
+                    "x": 40,
+                    "y": 50,
+                    "width": 10,
+                    "height": 10,
+                    "confidence": 99,
+                    "gap_from_previous": 5
+                },
+                {
+                    "text": "D",
+                    "x": 55,
+                    "y": 50,
+                    "width": 10,
+                    "height": 10,
+                    "confidence": 99,
+                    "gap_from_previous": 5
+                },
+                {
+                    "text": "E",
+                    "x": 100,
+                    "y": 50,
+                    "width": 10,
+                    "height": 10,
+                    "confidence": 99,
+                    "gap_from_previous": 35
+                },
+                {
+                    "text": "F",
+                    "x": 115,
+                    "y": 50,
+                    "width": 10,
+                    "height": 10,
+                    "confidence": 99,
+                    "gap_from_previous": 5
+                },
+                {
+                    "text": "G",
+                    "x": 130,
+                    "y": 50,
+                    "width": 10,
+                    "height": 10,
+                    "confidence": 99,
+                    "gap_from_previous": 5
+                },
+            ]
+
+            hierarchy = _build_hierarchical_layout(words)
+
+            print("\n========== MULTIPLE LEVEL HIERARCHY ==========")
+
+            def print_node(node, level=0):
+
+                indent = "  " * level
+
+                print(
+                    f"{indent}- {node['text']!r} "
+                    f"x={node['x']} "
+                    f"width={node['width']}"
+                )
+
+                for child in node.get("children", []):
+
+                    print_node(
+                        child,
+                        level + 1
+                    )
+
+            for node in hierarchy:
+
+                print_node(node)
+
+            print("==============================================")

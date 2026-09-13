@@ -30,8 +30,18 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "10.185.210.209",
+    "10.200.118.209",
+    "deplete-settle-onward.ngrok-free.dev",
+    ".ngrok-free.dev",
+    ".ngrok-free.app",
+    ".ngrok.io",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://deplete-settle-onward.ngrok-free.dev",
+]
+
+
 
 
 load_dotenv()
@@ -55,6 +65,7 @@ INSTALLED_APPS = [
     'history',
     'ocr',
     'abdm',
+    'live',
 ]
 
 MIDDLEWARE = [

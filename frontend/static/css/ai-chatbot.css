@@ -2,7 +2,7 @@
 
     min-height: calc(100vh - 75px);
 
-    background: #f4f9fc;
+    background: #F8FAFC;
 
     display: flex;
 
@@ -41,7 +41,7 @@
 
     border-radius: 14px;
 
-    background: #0c8aa6;
+    background: #0F766E;
 
     color: white;
 
@@ -61,7 +61,7 @@
 
     font-size: 22px;
 
-    color: #163f50;
+    color: #1E293B;
 
 }
 
@@ -71,7 +71,7 @@
 
     font-size: 12px;
 
-    color: #78939e;
+    color: #64748B;
 
 }
 
@@ -87,7 +87,7 @@
 
     font-size: 12px;
 
-    color: #63818c;
+    color: #64748B;
 
 }
 
@@ -97,7 +97,7 @@
 
     height: 8px;
 
-    background: #22b573;
+    background: #16A34A;
 
     border-radius: 50%;
 
@@ -143,7 +143,7 @@
 
     border-radius: 20px;
 
-    background: #0c8aa6;
+    background: #0F766E;
 
     color: white;
 
@@ -165,7 +165,7 @@
 
     margin-top: 15px;
 
-    color: #173f50;
+    color: #1E293B;
 
     font-size: 23px;
 
@@ -175,7 +175,7 @@
 
     margin-top: 7px;
 
-    color: #78939e;
+    color: #64748B;
 
     font-size: 13px;
 
@@ -216,7 +216,7 @@
 
     border-radius: 12px;
 
-    background: #0c8aa6;
+    background: #0F766E;
 
     color: white;
 
@@ -244,7 +244,7 @@
 
     font-size: 11px;
 
-    color: #78939e;
+    color: #64748B;
 
     margin-bottom: 5px;
 
@@ -258,9 +258,9 @@
 
     background: white;
 
-    border: 1px solid #dcecf2;
+    border: 1px solid #E2E8F0;
 
-    color: #315462;
+    color: #1E293B;
 
     font-size: 14px;
 
@@ -291,7 +291,7 @@
 
 .user-message .message-bubble {
 
-    background: #0c8aa6;
+    background: #0F766E;
 
     color: white;
 
@@ -310,7 +310,7 @@
 
     position: fixed;
 
-    bottom: 0;
+    bottom: 48px;
 
     left: 0;
 
@@ -322,7 +322,7 @@
 
     backdrop-filter: blur(10px);
 
-    border-top: 1px solid #dcecf2;
+    border-top: 1px solid #E2E8F0;
 
     padding: 12px 20px;
 
@@ -351,7 +351,7 @@
 
     background: white;
 
-    border: 1px solid #cfe4eb;
+    border: 1px solid #E2E8F0;
 
     border-radius: 18px;
 
@@ -380,7 +380,7 @@
 
     background: transparent;
 
-    color: #254e5d;
+    color: #1E293B;
 
     font-family: inherit;
 
@@ -396,7 +396,7 @@
 
 .chat-input-box textarea::placeholder {
 
-    color: #9aafb7;
+    color: #64748B;
 
 }
 
@@ -435,7 +435,7 @@
 
 .input-button:hover {
 
-    background: #edf7fa;
+    background: #CCFBF1;
 
 }
 
@@ -462,7 +462,7 @@
 
     border-radius: 13px;
 
-    background: #0c8aa6;
+    background: #0F766E;
 
     color: white;
 
@@ -482,7 +482,7 @@
 
 .send-button:hover {
 
-    background: #086f87;
+    background: #0B2D42;
 
     transform: translateY(-1px);
 
@@ -501,7 +501,7 @@
 
     text-align: center;
 
-    color: #9aafb7;
+    color: #64748B;
 
     font-size: 9px;
 
@@ -528,7 +528,7 @@
 
     background: white;
 
-    border: 1px solid #dcecf2;
+    border: 1px solid #E2E8F0;
 
     border-radius: 14px;
 
@@ -564,7 +564,7 @@
 
 .preview-details p {
 
-    color: #315462;
+    color: #1E293B;
 
     font-size: 12px;
 
@@ -586,7 +586,7 @@
 
     margin-top: 4px;
 
-    color: #df5757;
+    color: #DC2626;
 
     font-size: 11px;
 
@@ -643,7 +643,7 @@
 
     border-radius: 50%;
 
-    background: #e8f7fa;
+    background: #CCFBF1;
 
     display: flex;
 
@@ -659,13 +659,13 @@
 
     margin-top: 15px;
 
-    color: #234b5b;
+    color: #1E293B;
 
 }
 
 .recording-box p {
 
-    color: #819ba5;
+    color: #64748B;
 
     font-size: 13px;
 
@@ -677,7 +677,7 @@
 
     border: none;
 
-    background: #0c8aa6;
+    background: #0F766E;
 
     color: white;
 
@@ -718,7 +718,7 @@
 
     border-radius: 10px;
 
-    background: #0c8aa6;
+    background: #0F766E;
 
     animation: recordingWave 0.8s infinite alternate;
 
@@ -845,7 +845,7 @@
 
 .live-label {
 
-    color: #df5757;
+    color: #DC2626;
 
     font-size: 11px;
 
@@ -857,7 +857,7 @@
 
 .live-speech-header h2 {
 
-    color: #163f50;
+    color: #1E293B;
 
     font-size: 23px;
 
@@ -867,11 +867,52 @@
 
 .live-speech-header p {
 
-    color: #8199a3;
+    color: #64748B;
 
     font-size: 13px;
 
     margin-top: 5px;
+
+}
+
+
+.speech-lang-toggle {
+
+    display: inline-flex;
+
+    gap: 6px;
+
+    margin-top: 10px;
+
+}
+
+.lang-toggle-btn {
+
+    border: 1px solid #cfe0e6;
+
+    background: #F8FAFC;
+
+    color: #64748B;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    cursor: pointer;
+
+}
+
+.lang-toggle-btn.active {
+
+    background: #0F766E;
+
+    border-color: #0F766E;
+
+    color: #ffffff;
 
 }
 
@@ -890,9 +931,9 @@
 
     border-radius: 50%;
 
-    background: #f1f6f8;
+    background: #F8FAFC;
 
-    color: #52727e;
+    color: #64748B;
 
     font-size: 24px;
 
@@ -929,7 +970,7 @@
 
     border-radius: 20px;
 
-    background: #0c8aa6;
+    background: #0F766E;
 
     animation: liveWave 0.9s infinite ease-in-out;
 
@@ -1015,7 +1056,7 @@
 
     border-radius: 50%;
 
-    background: #e8f7fa;
+    background: #CCFBF1;
 
     display: flex;
 
@@ -1025,7 +1066,7 @@
 
     font-size: 30px;
 
-    box-shadow: 0 0 0 10px #f3fafb;
+    box-shadow: 0 0 0 10px #F8FAFC;
 
 }
 
@@ -1048,11 +1089,11 @@
 
     border-radius: 13px;
 
-    background: #f5fafb;
+    background: #F8FAFC;
 
-    border: 1px solid #deedf2;
+    border: 1px solid #E2E8F0;
 
-    color: #315462;
+    color: #1E293B;
 
     font-size: 14px;
 
@@ -1071,7 +1112,7 @@
 
     border: none;
 
-    background: #0c8aa6;
+    background: #0F766E;
 
     color: white;
 
@@ -1087,7 +1128,7 @@
 
 .stop-live-button:hover {
 
-    background: #086f87;
+    background: #0B2D42;
 
 }
 
@@ -1191,7 +1232,7 @@
 }
 
 .live-speech-button.active {
-    background: #e7f7fa;
+    background: #CCFBF1;
 }
 
 
@@ -1284,7 +1325,7 @@
 
     margin-top: 6px;
 
-    color: #163f50;
+    color: #1E293B;
 
     font-size: 23px;
 }
@@ -1293,7 +1334,7 @@
 
     margin-top: 5px;
 
-    color: #8199a3;
+    color: #64748B;
 
     font-size: 13px;
 }
@@ -1305,7 +1346,7 @@
 
     font-weight: 700;
 
-    color: #e05252;
+    color: #DC2626;
 
     letter-spacing: 1px;
 }
@@ -1325,9 +1366,9 @@
 
     border-radius: 50%;
 
-    background: #f1f6f8;
+    background: #F8FAFC;
 
-    color: #52727e;
+    color: #64748B;
 
     font-size: 24px;
 
@@ -1374,7 +1415,7 @@
 
     border-radius: 20px;
 
-    background: #0c8aa6;
+    background: #0F766E;
 
     animation:
         liveWave 0.9s infinite
@@ -1469,12 +1510,12 @@
 
     justify-content: center;
 
-    background: #e8f7fa;
+    background: #CCFBF1;
 
     font-size: 30px;
 
     box-shadow:
-        0 0 0 10px #f2fafb;
+        0 0 0 10px #F8FAFC;
 }
 
 
@@ -1496,11 +1537,11 @@
 
     border-radius: 13px;
 
-    background: #f5fafb;
+    background: #F8FAFC;
 
-    border: 1px solid #deedf2;
+    border: 1px solid #E2E8F0;
 
-    color: #315462;
+    color: #1E293B;
 
     font-size: 14px;
 
@@ -1518,7 +1559,7 @@
 
     border: none;
 
-    background: #0c8aa6;
+    background: #0F766E;
 
     color: white;
 
@@ -1535,7 +1576,7 @@
 
 .stop-live-button:hover {
 
-    background: #086f87;
+    background: #0B2D42;
 
     transform: translateY(-1px);
 }

@@ -25,7 +25,7 @@
     font-size: 30px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .medical-history-header p {
@@ -74,9 +74,9 @@
 
     border-radius: 50%;
 
-    background: #dbeafe;
+    background: #CCFBF1;
 
-    color: #2563eb;
+    color: #0F766E;
 
     font-size: 20px;
     font-weight: 700;
@@ -88,7 +88,7 @@
     font-size: 18px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .medical-history-patient-info p {
@@ -100,7 +100,7 @@
 }
 
 .medical-history-patient-info strong {
-    color: #334155;
+    color: #1E293B;
 }
 
 
@@ -137,7 +137,7 @@
     font-size: 21px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .medical-history-section-header p {
@@ -156,12 +156,12 @@
 
     border-radius: 999px;
 
-    background: #eff6ff;
+    background: #CCFBF1;
 
     font-size: 13px;
     font-weight: 600;
 
-    color: #2563eb;
+    color: #0F766E;
 
     white-space: nowrap;
 }
@@ -194,7 +194,7 @@
 .medical-history-record:hover {
     transform: translateY(-2px);
 
-    border-color: #cbd5e1;
+    border-color: #E2E8F0;
 
     box-shadow:
         0 5px 15px rgba(15, 23, 42, 0.06);
@@ -229,23 +229,23 @@
 }
 
 .medical-icon-condition {
-    background: #dbeafe;
+    background: #CCFBF1;
 }
 
 .medical-icon-allergy {
-    background: #fef3c7;
+    background: #FEF3C7;
 }
 
 .medical-icon-surgery {
-    background: #fee2e2;
+    background: #FEE2E2;
 }
 
 .medical-icon-procedure {
-    background: #ede9fe;
+    background: #CCFBF1;
 }
 
 .medical-icon-default {
-    background: #f1f5f9;
+    background: #F8FAFC;
 }
 
 
@@ -261,7 +261,7 @@
     font-size: 17px;
     font-weight: 600;
 
-    color: #0f172a;
+    color: #1E293B;
 }
 
 .medical-record-heading span {
@@ -295,7 +295,7 @@
 
     font-size: 11px;
 
-    color: #94a3b8;
+    color: #64748B;
 }
 
 .medical-record-date strong {
@@ -307,7 +307,7 @@
 
     font-weight: 600;
 
-    color: #475569;
+    color: #64748B;
 }
 
 
@@ -345,7 +345,7 @@
 
     letter-spacing: 0.04em;
 
-    color: #94a3b8;
+    color: #64748B;
 }
 
 .medical-record-detail p {
@@ -355,7 +355,7 @@
 
     line-height: 1.6;
 
-    color: #475569;
+    color: #64748B;
 }
 
 
@@ -366,7 +366,7 @@
 
     text-align: center;
 
-    border: 1px dashed #cbd5e1;
+    border: 1px dashed #E2E8F0;
 
     border-radius: 12px;
 }
@@ -381,7 +381,7 @@
     font-size: 16px;
     font-weight: 600;
 
-    color: #334155;
+    color: #1E293B;
 }
 
 .medical-history-empty p {
@@ -404,9 +404,9 @@
 
     padding: 22px;
 
-    background: #eff6ff;
+    background: #CCFBF1;
 
-    border: 1px solid #bfdbfe;
+    border: 1px solid #E2E8F0;
 
     border-radius: 16px;
 }
@@ -434,7 +434,7 @@
     font-size: 15px;
     font-weight: 600;
 
-    color: #1e40af;
+    color: #0F766E;
 }
 
 .medical-history-info-box p {
@@ -444,7 +444,7 @@
 
     line-height: 1.6;
 
-    color: #1d4ed8;
+    color: #0F766E;
 }
 
 

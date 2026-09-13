@@ -107,6 +107,53 @@ document.addEventListener(
 
         let processingSpeech = false;
 
+        let listenLang = "en-IN";
+
+        // Manual override: "auto" follows the last used language,
+        // "en" / "hi" force English / Hindi recognition.
+        let listenMode = "auto";
+
+        function effectiveListenLang() {
+            if (listenMode === "hi") {
+                return "hi-IN";
+            }
+            if (listenMode === "en") {
+                return "en-IN";
+            }
+            return listenLang;
+        }
+
+        function refreshLangButtons() {
+            const map = {
+                auto: "langAutoBtn",
+                en: "langEnBtn",
+                hi: "langHiBtn"
+            };
+            Object.keys(map).forEach(function (mode) {
+                const btn = document.getElementById(map[mode]);
+                if (btn) {
+                    btn.classList.toggle("active", listenMode === mode);
+                }
+            });
+        }
+
+        ["auto", "en", "hi"].forEach(function (mode) {
+            const ids = { auto: "langAutoBtn", en: "langEnBtn", hi: "langHiBtn" };
+            const btn = document.getElementById(ids[mode]);
+            if (btn) {
+                btn.addEventListener("click", function () {
+                    listenMode = mode;
+                    refreshLangButtons();
+                    if (speechRecognition && liveSpeechActive && !processingSpeech) {
+                        try {
+                            speechRecognition.stop();
+                        } catch (error) { /* will restart via onend */ }
+                    }
+                });
+            }
+        });
+        refreshLangButtons();
+
 
         let speechPauseTimer = null;
 
@@ -121,12 +168,73 @@ document.addEventListener(
 
 
         /* =========================================
-           AI VOICE RESPONSE
+           AI VOICE RESPONSE (responsive, like first version)
+           Auto language: Devanagari -> hi-IN, else en-IN
         ========================================= */
 
-        function speakAIResponse(text) {
+        let availableVoices = [];
+
+        function loadVoices() {
+            try {
+                availableVoices =
+                    window.speechSynthesis.getVoices() || [];
+            } catch (error) {
+                availableVoices = [];
+            }
+        }
+
+        if ("speechSynthesis" in window) {
+            loadVoices();
+            if (typeof speechSynthesis.onvoiceschanged !== "undefined") {
+                speechSynthesis.onvoiceschanged = loadVoices;
+            }
+        }
+
+        function isHindiText(text) {
+            return /[\u0900-\u097F]/.test(String(text || ""));
+        }
+
+        // Hinglish markers mirror backend/ai/services.py HINGLISH_WORDS.
+        // Word boundaries keep English ("hair", "chain", "yes sir") English.
+        var HINGLISH_RE = /\b(mujhe|mujhko|mujhse|mera|meri|mere|maine|tum|tumhe|tumhara|tumhari|aap|aapko|aapka|hai|hain|hun|hoon|tha|thi|hoga|hogi|kya|kaise|kaisa|kaisi|kyun|kab|kahan|kitna|dard|bukhar|bukhaar|khansi|zukam|dawa|davai|ilaj|ilaz|bimari|mariz|batao|bataiye|kaho|suniye|sunao|namaste|namaskar|dhanyavad|shukriya|theek|accha|nahi|nahin|haan|haanji|arre|kripya|din|raat|subah|sham|kal|aaj|parson|pet|kamar|seene|gala|daant|pair|haath|sar|sir)\b/i;
+
+        function isHinglish(text) {
+            const words = String(text || "").toLowerCase().match(/[a-z]+/g) || [];
+            const hits = words.filter(function (w) {
+                return HINGLISH_RE.test(w);
+            });
+            const weak = { hai: 1, hain: 1, din: 1, kal: 1, sir: 1, pet: 1, aaj: 1, sar: 1 };
+            const strong = hits.filter(function (w) { return !weak[w]; });
+            if (hits.length >= 2) {
+                return true;
+            }
+            return strong.length > 0;
+        }
+
+        // True when the user is speaking Hindi in ANY script.
+        // Used for auto-shift of mic + reply voice.
+        function isHindiSpoken(text) {
+            return isHindiText(text) || isHinglish(text);
+        }
+
+        function pickVoice(lang) {
+            if (!availableVoices || !availableVoices.length) {
+                return null;
+            }
+            const short = String(lang || "en-IN").slice(0, 2).toLowerCase();
+            return (
+                availableVoices.find(function (v) {
+                    return v.lang && v.lang.toLowerCase().indexOf(short) === 0;
+                }) || null
+            );
+        }
+
+        function speakAIResponse(text, onend) {
 
             if (!text) {
+                if (typeof onend === "function") {
+                    onend();
+                }
                 return;
             }
 
@@ -142,16 +250,21 @@ document.addEventListener(
                     "Speech synthesis is not supported."
                 );
 
+                if (typeof onend === "function") {
+                    onend();
+                }
                 return;
             }
 
 
             /*
-             * Stop any previous AI speech
+             * Stop any previous AI speech so output stays responsive
              */
 
             window.speechSynthesis.cancel();
 
+
+            const lang = isHindiSpoken(text) ? "hi-IN" : "en-IN";
 
             const speech =
                 new SpeechSynthesisUtterance(
@@ -159,7 +272,13 @@ document.addEventListener(
                 );
 
 
-            speech.lang = "en-IN";
+            speech.lang = lang;
+
+            const voice = pickVoice(lang);
+
+            if (voice) {
+                speech.voice = voice;
+            }
 
             speech.rate = 0.95;
 
@@ -167,9 +286,23 @@ document.addEventListener(
 
             speech.volume = 1;
 
+            speech.onend = function () {
+                console.log("AI finished speaking.");
+                if (typeof onend === "function") {
+                    onend();
+                }
+            };
+
+            speech.onerror = function (error) {
+                console.error("Speech synthesis error:", error);
+                if (typeof onend === "function") {
+                    onend();
+                }
+            };
+
 
             console.log(
-                "AI speaking:",
+                "AI speaking (" + lang + "):",
                 text
             );
 
@@ -178,6 +311,23 @@ document.addEventListener(
                 speech
             );
 
+        }
+
+        function resumeLiveListening() {
+            processingSpeech = false;
+            if (liveSpeechActive) {
+                liveTranscript.textContent = "Listening...";
+                try {
+                    const resumeLang = effectiveListenLang();
+                    speechRecognition.lang = resumeLang;
+                    speechRecognition.start();
+                    console.log("Live Speech resumed (" + resumeLang + ").");
+                } catch (error) {
+                    console.log("Unable to resume speech.");
+                }
+            } else {
+                processingSpeech = false;
+            }
         }
 
 
@@ -330,8 +480,23 @@ document.addEventListener(
                 true;
 
 
-            speechRecognition.lang =
-                "en-IN";
+            // Dynamic language: remember last used language, default English.
+            // If the user last typed/spoke Hindi, listen in Hindi next time.
+            listenLang = "en-IN";
+
+            try {
+                const lastUserMsg = document.querySelector(
+                    ".user-message:last-child .message-bubble"
+                );
+                if (
+                    lastUserMsg &&
+                    isHindiSpoken(lastUserMsg.textContent || "")
+                ) {
+                    listenLang = "hi-IN";
+                }
+            } catch (error) { /* keep default */ }
+
+            speechRecognition.lang = effectiveListenLang();
 
 
             /* =====================================
@@ -379,11 +544,15 @@ document.addEventListener(
 
                     try {
 
+                        // Apply current mode (Auto follows last language)
+                        speechRecognition.lang = effectiveListenLang();
+
                         speechRecognition.start();
 
 
                         console.log(
-                            "Speech recognition started"
+                            "Speech recognition started (" +
+                            speechRecognition.lang + ")"
                         );
 
                     }
@@ -664,6 +833,9 @@ SEND LIVE SPEECH TO AI
 
             processingSpeech = true;
 
+            // Remember the user's language for the next listen + reply voice
+            listenLang = isHindiSpoken(spokenText) ? "hi-IN" : "en-IN";
+
 
             /*
              * Stop current speech recognition
@@ -791,115 +963,11 @@ SEND LIVE SPEECH TO AI
 
 
                     /*
-                     * Speak AI response.
+                     * Speak AI response (responsive voice output),
+                     * then resume listening.
                      */
 
-                    console.log(
-                        "AI speaking:",
-                        data.answer
-                    );
-
-
-                    const utterance =
-                        new SpeechSynthesisUtterance(
-                            data.answer
-                        );
-
-
-                    utterance.lang =
-                        "en-IN";
-
-
-                    utterance.rate =
-                        1;
-
-
-                    utterance.volume =
-                        1;
-
-
-                    utterance.onend =
-                        function () {
-
-                            console.log(
-                                "AI finished speaking."
-                            );
-
-
-                            processingSpeech = false;
-
-
-                            if (
-                                liveSpeechActive
-                            ) {
-
-                                liveTranscript.textContent =
-                                    "Listening...";
-
-
-                                try {
-
-                                    speechRecognition.start();
-
-                                    console.log(
-                                        "Live Speech resumed."
-                                    );
-
-                                }
-
-                                catch (error) {
-
-                                    console.log(
-                                        "Unable to resume speech."
-                                    );
-
-                                }
-
-                            }
-
-                        };
-
-
-                    utterance.onerror =
-                        function (error) {
-
-                            console.error(
-                                "Speech synthesis error:",
-                                error
-                            );
-
-
-                            processingSpeech = false;
-
-
-                            if (
-                                liveSpeechActive
-                            ) {
-
-                                try {
-
-                                    speechRecognition.start();
-
-                                }
-
-                                catch (error) {
-
-                                    console.log(
-                                        "Unable to resume speech."
-                                    );
-
-                                }
-
-                            }
-
-                        };
-
-
-                    window.speechSynthesis.cancel();
-
-                    window.speechSynthesis.speak(
-                        utterance
-                    );
+                    speakAIResponse(data.answer, resumeLiveListening);
 
                 }
 
@@ -1158,6 +1226,9 @@ SEND LIVE SPEECH TO AI
 
                 }
 
+                // Remember language for next live listen
+                listenLang = isHindiSpoken(question) ? "hi-IN" : "en-IN";
+
 
                 console.log(
                     "Sending question:",
@@ -1365,3 +1436,37 @@ SEND LIVE SPEECH TO AI
 
     }
 );
+
+/* =========================================
+   LIVE HANDOFF – auto-fill from LIVE button
+   ========================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        let q = params.get("q") || "";
+        if (!q) {
+            q = localStorage.getItem("medikiosk_live_handoff") || "";
+        }
+        if (q) localStorage.removeItem("medikiosk_live_handoff");
+        q = (q || "").trim();
+        if (!q) return;
+        const input = document.getElementById("messageInput");
+        const form = document.getElementById("chatForm");
+        const msgs = document.getElementById("messages");
+        if (!input || !form) return;
+        // Show where this came from
+        setTimeout(function () {
+            input.value = q;
+            input.style.height = "auto";
+            try { input.style.height = input.scrollHeight + "px"; } catch (e) {}
+            if (msgs) {
+                const note = document.createElement("div");
+                note.className = "message ai-message";
+                note.innerHTML = '<div class="message-avatar">+</div><div class="message-content"><span class="message-name">MediKiosk AI</span><div class="message-bubble">Continuing from LIVE — I got your problem: "' + q.replace(/</g, "&lt;") + '". Helping you now...</div></div>';
+                msgs.appendChild(note);
+            }
+            form.requestSubmit();
+        }, 600);
+    } catch (e) {}
+});
