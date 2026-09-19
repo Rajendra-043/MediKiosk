@@ -25,17 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-k@19=mroyf4(+a+y(hr^-rk&1o^+6u6n@julu$m*gkn!g56s!d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    "127.0.0.1",
+    "medikiosk-ytry.onrender.com",
     "localhost",
-    "10.200.118.209",
-    "deplete-settle-onward.ngrok-free.dev",
-    ".ngrok-free.dev",
-    ".ngrok-free.app",
-    ".ngrok.io",
+    "127.0.0.1",
 ]
+
 
 CSRF_TRUSTED_ORIGINS = [
     "https://deplete-settle-onward.ngrok-free.dev",
