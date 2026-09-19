@@ -1,0 +1,33 @@
+# Core Django
+Django==6.0.5
+python-dotenv==1.2.3
+
+# Database
+SQLAlchemy==2.0.49
+
+# AI / LLM
+ollama==0.6.2
+google-genai==2.22.0
+
+# OCR / Document Processing
+opencv-python==4.13.0.92
+pytesseract==0.3.13
+Pillow==12.2.0
+
+# Audio / Speech
+faster-whisper==1.1.1
+pyttsx3==2.99
+SpeechRecognition==3.17.0
+
+# HTTP / External APIs
+requests==2.33.1
+httpx==0.28.1
+
+# Utilities
+numpy==2.4.4
+python-dateutil==2.9.0.post0
+PyYAML==6.0.3
+
+# Development / Production
+gunicorn==23.0.0
+whitenoise==6.9.0
