@@ -27,13 +27,14 @@ SECRET_KEY = 'django-insecure-k@19=mroyf4(+a+y(hr^-rk&1o^+6u6n@julu$m*gkn!g56s!d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+
 ALLOWED_HOSTS = [
-    "medikiosk-ytry.onrender.com",
     "localhost",
     "127.0.0.1",
 ]
 
-
+if os.getenv("RENDER_EXTERNAL_HOSTNAME"):
+    ALLOWED_HOSTS.append(os.getenv("RENDER_EXTERNAL_HOSTNAME"))
 CSRF_TRUSTED_ORIGINS = [
     "https://deplete-settle-onward.ngrok-free.dev",
 ]
