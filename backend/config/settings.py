@@ -33,11 +33,13 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
-if os.getenv("RENDER_EXTERNAL_HOSTNAME"):
-    ALLOWED_HOSTS.append(os.getenv("RENDER_EXTERNAL_HOSTNAME"))
 CSRF_TRUSTED_ORIGINS = [
     "https://deplete-settle-onward.ngrok-free.dev",
 ]
+
+if os.getenv("RENDER_EXTERNAL_HOSTNAME"):
+    ALLOWED_HOSTS.append(os.getenv("RENDER_EXTERNAL_HOSTNAME"))
+    CSRF_TRUSTED_ORIGINS.append(f"https://{os.getenv('RENDER_EXTERNAL_HOSTNAME')}")
 
 
 
@@ -68,6 +70,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -148,6 +151,11 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR.parent / "frontend" / "static",
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# WhiteNoise configuration for production static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Email
