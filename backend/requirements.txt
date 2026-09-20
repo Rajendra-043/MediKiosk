@@ -31,3 +31,5 @@ PyYAML==6.0.3
 # Development / Production
 gunicorn==23.0.0
 whitenoise==6.9.0
+
+whitenoise==6.12.0

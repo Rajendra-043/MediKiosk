@@ -1,13 +1,16 @@
+import logging
 from pathlib import Path
 from datetime import date
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
-from django.db import models
+from django.db import models, IntegrityError, transaction
 
 from patients.models import Patient, MedicalHistory, Medication, MedicalDocument
 from doctor.models import Doctor
 from django.views.decorators.http import require_POST
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -72,20 +75,37 @@ def patient_register(request):
                 {"error": "Passwords do not match."}
             )
 
-        patient = Patient.objects.create(
-            name=request.POST.get("name"),
-            date_of_birth=request.POST.get("date_of_birth"),
-            gender=request.POST.get("gender"),
-            blood_group=request.POST.get("blood_group", ""),
-            phone=request.POST.get("phone", ""),
-            email=request.POST.get("email", ""),
-            address=request.POST.get("address", ""),
-            passward=make_password(password),
-        )
+        try:
+            with transaction.atomic():
+                patient = Patient.objects.create(
+                    name=request.POST.get("name"),
+                    date_of_birth=request.POST.get("date_of_birth"),
+                    gender=request.POST.get("gender"),
+                    blood_group=request.POST.get("blood_group", ""),
+                    phone=request.POST.get("phone", ""),
+                    email=request.POST.get("email", ""),
+                    address=request.POST.get("address", ""),
+                    passward=make_password(password),
+                )
 
-        # Automatically create Patient ID
-        patient.patient_id = f"PAT{patient.id:04d}"
-        patient.save()
+                # Automatically create Patient ID
+                patient.patient_id = f"PAT{patient.id:04d}"
+                patient.save()
+
+        except IntegrityError as e:
+            logger.exception("Registration IntegrityError: %s", e)
+            return render(
+                request,
+                "paitent/register.html",
+                {"error": "Registration failed due to a data conflict. Please try again."}
+            )
+        except Exception as e:
+            logger.exception("Registration error: %s", e)
+            return render(
+                request,
+                "paitent/register.html",
+                {"error": "An unexpected error occurred. Please try again."}
+            )
 
         return redirect("/patient/login/")
 
